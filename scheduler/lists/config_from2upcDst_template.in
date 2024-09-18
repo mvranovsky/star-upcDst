@@ -1,0 +1,15 @@
+
+#example configuration for reading picoDst
+
+macro RunFrom2upcDst.C
+
+top /gpfs01/star/pwg/mvranovsk/run17PicoOut/upc
+
+add_input
+
+#submit local
+
+outfile out.root
+
+outdir out
+

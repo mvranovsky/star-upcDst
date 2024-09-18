@@ -1,0 +1,15 @@
+
+#example configuration for reading picoDst
+
+macro RunFromPicoDst.C
+
+top /star/u/truhlar/picoDstReader/test/star-upcDst/test
+
+add_input test_1 /star/u/truhlar/picoDstReader/test/star-upcDst/utils/test.list
+
+submit local
+
+outfile test1.root
+
+outdir out
+
