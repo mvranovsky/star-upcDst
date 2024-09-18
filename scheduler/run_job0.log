@@ -1,0 +1,107 @@
+nohup: ignoring input
+ *** Start at Date : Mon Aug 26 08:51:32 2024
+
+Processing RunFromPicoDst.C("production=P20ic,trgsetupname=pp500_production_2017,filetype=daq_reco_picoDst,filename~st_rp,storage!=hpss,runnumber=",999999,"/gpfs01/star/pwg/mvranovsk/run17PicoOut/18053098/StUPCRP_production.root","/direct/star+u/mvranovsk/star-upcDst/scheduler/config_picoTest.in")...
+------- In RunFromPicoDst.C, the list of files is: -------
+------------------ End of list of files ------------------
+strangeArrayNames-arrayNames-__NARRAYS__ = 0
+ loading of shared libraries done
+Note: File "/afs/rhic.bnl.gov/star/packages/SL23f/.sl73_gcc485/lib/StarClassLibrary.so" already loaded
+Warning in <TClassTable::Add>: class StPicoHelix already in TClassTable
+Warning in <TClassTable::Add>: class StPicoPhysicalHelix already in TClassTable
+StInfo: StUPCMakerFromPicoDst::StUPCMakerFromPicoDst called
+RunFromPicoDst, using config from: /direct/star+u/mvranovsk/star-upcDst/scheduler/config_picoTest.in
+StWarning:  No good input file to read ...
+StWarning: setBranchAddress: Branch name Event does not exist!
+StWarning: setBranchAddress: Branch name Track does not exist!
+StWarning: setBranchAddress: Branch name EmcTrigger does not exist!
+StWarning: setBranchAddress: Branch name MtdTrigger does not exist!
+StWarning: setBranchAddress: Branch name BTowHit does not exist!
+StWarning: setBranchAddress: Branch name BTofHit does not exist!
+StWarning: setBranchAddress: Branch name MtdHit does not exist!
+StWarning: setBranchAddress: Branch name BbcHit does not exist!
+StWarning: setBranchAddress: Branch name EpdHit does not exist!
+StWarning: setBranchAddress: Branch name FmsHit does not exist!
+StWarning: setBranchAddress: Branch name EmcPidTraits does not exist!
+StWarning: setBranchAddress: Branch name BTofPidTraits does not exist!
+StWarning: setBranchAddress: Branch name MtdPidTraits does not exist!
+StWarning: setBranchAddress: Branch name TrackCovMatrix does not exist!
+StWarning: setBranchAddress: Branch name BEmcSmdEHit does not exist!
+StWarning: setBranchAddress: Branch name BEmcSmdPHit does not exist!
+StWarning: setBranchAddress: Branch name ETofHit does not exist!
+StWarning: setBranchAddress: Branch name ETofPidTraits does not exist!
+StWarning: setBranchAddress: Branch name McVertex does not exist!
+StWarning: setBranchAddress: Branch name McTrack does not exist!
+StInfo: StUPCMakerFromPicoDst::Init
+StInfo: StDbManagerImpl::lookUpServers(): config file name is /afs/rhic.bnl.gov/star/packages/conf/dbLoadBalancerLocalConfig_BNL.xml
+There is no 1  /star/u/mvranovsk/dbServers.xml
+ looking at 2 /afs/rhic.bnl.gov/star/packages/SL23f/StDb/servers/dbServers.xml
+DB OVERRIDE default user with: mvranovsk
+StInfo: StDbManagerImpl::lookUpServer() line=713 
+******** Order of Files searched for dbServers ********* 
+  3. /afs/rhic.bnl.gov/star/packages/SL23f/StDb/servers/dbServers.xml
+********************************************************
+
+StHyperCacheManager: reading cache config from /afs/rhic.bnl.gov/star/packages/conf/hyperconfig.json
+StInfo: StDbLib: db server found in 3 iterations
+StInfo: MysqlDb::Connect: Load balancer took 0 ms, will use star-db09.rcf.bnl.gov:3316
+StInfo: Ssl_cipher = AES128-SHA
+StInfo: MysqlDb::Connect(host,user,pw,database,port) line=527 Server Connecting: DB=StarDb  Host=star-db09.rcf.bnl.gov:3316
+ --> Connection Time=0.029247 sec    MysqlVersion=5.7.24
+Warning in <St_db_Maker::OpenMySQL>: Unknown table tpc/tpcDedxPidAmpDb..tpcDedxPidAmpDb
+Warning in <St_db_Maker::OpenMySQL>: Unknown table tpc/tpcGainNorms..tpcGainNorms
+Warning in <St_db_Maker::OpenMySQL>: Unknown table tpc/tpcChargeStepCalib..tpcChargeStepCalib
+Warning in <St_db_Maker::OpenMySQL>: Unknown table tpc/tpcHitErrors..tpcHitErrors
+Warning in <St_db_Maker::OpenMySQL>: Unknown table fcs/fcsEcalGainOnline..fcsEcalGainOnline
+Warning in <St_db_Maker::OpenMySQL>: Unknown table fcs/fcsHcalGainOnline..fcsHcalGainOnline
+Warning in <St_db_Maker::OpenMySQL>: Unknown table fcs/fcsPresThreshold..fcsPresThreshold
+Warning in <St_db_Maker::OpenMySQL>: Unknown table ftt/fttDataWindowsB..fttDataWindowsB
+Number of events: 0
+StUCMInfo: StageID='1',MessageKey='MemUsed',MessageValue='19'
+StUCMInfo: StageID='1',MessageKey='ProgSize',MessageValue='229'
+StQAInfo: QAInfo:EventLoop completed code 0
+Mon Aug 26 08:51:41 EDT 2024
+StQAInfo: QAInfo:Run is finished at Date/Time 20240826/85141; Total events processed :0 and not completed: 0
+StQAInfo: =================================================================================
+StQAInfo: QAInfo:Chain              StChain::bfcChain             Ast =  4.01        Cpu =  1.67
+StQAInfo: QAInfo:Maker          St_db_Maker::db                   Ast =  0.00( 0.0%) Cpu =  0.00( 0.0%)
+StQAInfo: QAInfo:Maker StUPCMakerFromPicoDst::StReadPico           Ast =  4.01(100.0%) Cpu =  1.66(99.4%)
+StQAInfo: QAInfo:Maker       StPicoDstMaker::PicoDst              Ast =  0.00( 0.0%) Cpu =  0.01( 0.6%)
+St_db_Maker::Init 
+Real time 0:00:00, CP time 0.170, 3 slices
+      MySQL::Init 
+Real time 0:00:03, CP time 1.430, 2 slices
+St_db_Maker::Make 
+Real time 0:00:00, CP time 0.000
+      MySQL::Make 
+Real time 0:00:00, CP time 0.000
+      MySQL::Data 
+Real time 0:00:00, CP time 0.000
+StInfo: StUPCMakerFromPicoDst::Finish()
+StInfo: --------------Error Codes-------------------------
+StInfo:      nStOK   nStWarn    nStEOF    nStErr  nStFatal
+StInfo:          0         0         0         0         0
+StInfo: --------------------------------------------------
+               StMemStat::Summary(calls)        Min        Aver         Max         RMS 
+=============================================================================================
+StInfo: StDbConfigNodeImpl::printNumberStats() line=458 ******************** Number Stats ******************** 
+Total Number of Nodes        = 1074
+Total Number of Tables       = 3067
+Total Size of Data in Tables = 0 kBytes
+******************************************************
+
+StInfo: StDbManagerImpl::printTimeStats() line=1626 
+*************************** DataBase ClockTime Stats *************************** 
+Total Time in DB-API       = 3.73923	 sec
+ --------------------- In aggregate ------------------
+ - Prepare Nodes & Servers = 3.73923	 sec --> 100% of total
+ - Select & Retrieve data  = 0	 sec --> 0% of total
+ --------------- In MySQL C-API (approximate) ---------
+ - Connecting to Servers   = 0.029813	 sec --> 0.797303% of total
+ - SQL Query Times         = 3.13061	 sec --> 83.7233% of total
+ - socket transfer Times   = 0.148637	 sec --> 3.97506% of total
+********************************************************************************
+
+
+This is the end of STAR ROOT -- Goodbye
+

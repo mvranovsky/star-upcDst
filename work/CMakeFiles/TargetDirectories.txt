@@ -1,0 +1,4 @@
+/star/u/mvranovsk/star-upcDst/work/CMakeFiles/rebuild_cache.dir
+/star/u/mvranovsk/star-upcDst/work/CMakeFiles/edit_cache.dir
+/star/u/mvranovsk/star-upcDst/work/CMakeFiles/AnalysisManager.dir
+/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir

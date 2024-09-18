@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE job>
+
+<job maxFilesPerProcess="1" fileListSyntax="xrootd" simulateSubmission="false">
+  <command>
+    echo "Starting the job"
+    ls
+    hostname
+    starver pro
+    ./AnalysisManager ${FILELIST} 
+    mv AnalysisOutput.root ${JOBID}.root
+    <!-- ./AnalysisManager <input URL="filelist:/star/u/mvranovsk/star-upcDst/work/lists/extendedUpc.list"/>  -->
+    <!-- mv AnalysisOutput.root __DAYID__.root  -->
+    ls
+  </command>
+
+  <input URL="filelist:/star/u/mvranovsk/star-upcDst/work/lists/extendedUpc.list"/>
+  
+  <!-- <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaV0_10.9.24/logs/__DAYID__.out"/>  -->
+  <!-- <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaV0_10.9.24/logs/__DAYID__.err"/>  -->
+
+  <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaV0_10.9.24/logs/$JOBID.out"/>
+  <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaV0_10.9.24/logs/$JOBID.err"/>
+
+  <output fromScratch="*.root" toURL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaV0_10.9.24/" />
+
+  <Generator>
+    <Location>/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaV0_10.9.24/sched</Location>
+  </Generator>
+
+  <SandBox installer="ZIP">
+    <Package>
+      <File>file:/star/u/mvranovsk/star-upcDst/work/AnalysisManager</File>
+      <File>file:/star/u/mvranovsk/star-upcDst/work/OffSetsRun17.list</File>
+      <File>file:/star/u/mvranovsk/star-upcDst/work/OffSetsCorrectionsRun17.list</File>
+      <File>file:/star/u/mvranovsk/star-upcDst/build/libstar-upc.so</File>
+      <File>file:/star/u/mvranovsk/star-upcDst/work/libupc-reader.so</File>
+    </Package>
+  </SandBox>
+</job>

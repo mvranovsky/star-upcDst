@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE job>
+
+<job maxFilesPerProcess="1" fileListSyntax="xrootd" simulateSubmission="false">
+  <command>
+    echo "Starting the job"
+    ls
+    hostname
+    starver pro
+    ./__EXE__ ${FILELIST} 
+    mv AnalysisOutput.root ${JOBID}.root
+    <!-- ./__EXE__ __INPUT__  -->
+    <!-- mv AnalysisOutput.root __DAYID__.root  -->
+    ls
+  </command>
+
+  __INPUT__
+  
+  <!-- <stdout URL="file:__BASEDIR__/logs/__DAYID__.out"/>  -->
+  <!-- <stderr URL="file:__BASEDIR__/logs/__DAYID__.err"/>  -->
+
+  <stdout URL="file:__BASEDIR__/logs/$JOBID.out"/>
+  <stderr URL="file:__BASEDIR__/logs/$JOBID.err"/>
+
+  <output fromScratch="*.root" toURL="file:__BASEDIR__/" />
+
+  <Generator>
+    <Location>__BASEDIR__/sched</Location>
+  </Generator>
+
+  <SandBox installer="ZIP">
+    <Package>
+      <File>file:__SRCDIR__/work/__EXE__</File>
+      <File>file:__SRCDIR__/work/OffSetsRun17.list</File>
+      <File>file:__SRCDIR__/work/OffSetsCorrectionsRun17.list</File>
+      <File>file:__SRCDIR__/build/libstar-upc.so</File>
+      <File>file:__SRCDIR__/work/libupc-reader.so</File>
+    </Package>
+  </SandBox>
+</job>
