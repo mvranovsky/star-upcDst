@@ -63,6 +63,8 @@ TLorentzVector.h
 /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
 TObject.h
 /star/u/mvranovsk/star-upcDst/include/TObject.h
+TVector3.h
+/star/u/mvranovsk/star-upcDst/include/TVector3.h
 
 /star/u/mvranovsk/star-upcDst/work/src/AnalysisManager.cxx
 AnalysisManager.h
@@ -75,6 +77,8 @@ Util.h
 include/Util.h
 RecTree.h
 include/RecTree.h
+StUPCV0.h
+include/StUPCV0.h
 
 include/AnaBP.h
 UpcDstLibreries.h
@@ -95,30 +99,6 @@ RecTree.h
 include/RecTree.h
 Ana.h
 include/Ana.h
-StUPCSelectV0Modified.h
-include/StUPCSelectV0Modified.h
-StUPCV0.h
-include/StUPCV0.h
-iostream
--
-vector
--
-utility
--
-unordered_map
--
-
-include/AnaV0Control.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
-Util.h
-include/Util.h
-RecTree.h
-include/RecTree.h
-Ana.h
-include/Ana.h
-StUPCSelectV0Modified.h
-include/StUPCSelectV0Modified.h
 StUPCV0.h
 include/StUPCV0.h
 iostream
@@ -139,8 +119,6 @@ RecTree.h
 include/RecTree.h
 Ana.h
 include/Ana.h
-StUPCSelectV0Modified.h
-include/StUPCSelectV0Modified.h
 StUPCV0.h
 include/StUPCV0.h
 iostream
@@ -150,6 +128,8 @@ vector
 utility
 -
 unordered_map
+-
+memory
 -
 
 include/AnalysisManager.h
@@ -163,10 +143,12 @@ Ana.h
 include/Ana.h
 AnaV0.h
 include/AnaV0.h
-AnaV0Control.h
-include/AnaV0Control.h
 AnaV0SingleState.h
 include/AnaV0SingleState.h
+TofEff.h
+include/TofEff.h
+TofEffMult.h
+include/TofEffMult.h
 RpMCAna.h
 include/RpMCAna.h
 VertexStudy.h
@@ -318,16 +300,6 @@ include/Libreries.h
 Util.h
 include/Util.h
 
-include/RpMCAna.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
-Util.h
-include/Util.h
-RecTree.h
-include/RecTree.h
-ElasticAna.h
-include/ElasticAna.h
-
 include/RunDef.h
 vector
 -
@@ -336,7 +308,25 @@ bitset
 TString.h
 include/TString.h
 
-include/StUPCSelectV0Modified.h
+include/TofEff.h
+UpcDstLibreries.h
+include/UpcDstLibreries.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
+
+include/TofEffMult.h
+UpcDstLibreries.h
+include/UpcDstLibreries.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
 
 include/UpcDstLibreries.h
 Libreries.h

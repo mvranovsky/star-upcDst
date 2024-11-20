@@ -5,6 +5,7 @@
 #include "UpcDstLibreries.h"
 #include "Util.h"
 #include "RecTree.h"
+#include "StUPCV0.h"
 
 using namespace std;
 using namespace UTIL;
@@ -16,9 +17,25 @@ class Ana{
 
       bool RPInFidRange(double x, double y) const;
       bool IsInRpRange(double x, double y, int rpId, TVector3 offSet) const;
-      bool IsGoodTrack(const StUPCTrack *trk) const;
-      bool IsGoodTofTrack(const StUPCTrack *trk) const;
+
+
+      //inline bool RPInFidRange(double x, double y) const { return (abs(y) < fpPyMax[EU] && abs(y) > fpPyMin[EU] && x > fpPxMin[EU] && (x + fpPxCenter[EU])*(x + fpPxCenter[EU]) + y*y < fpPRadius[EU]) ? true : false;}
+      //inline bool RPInElFidRange(double x, double y) const { return (abs(y) < fpElPyMax && abs(y) > fpElPyMin && x > fpElPxMin && x < fpElPxMax) ? true : false;}
+      //inline bool IsInRpRange(double x, double y, int rpId, TVector3 offSet) const { return (abs(y) < abs(offSet[Y]) || abs(y) > abs(offSet[Y]) + 0.03 || x < -0.02 || x > 0.02) ? false : true; };
+      double vertexEtaRange(double vtxZ , int rSide );
+      bool etaVertexZCut(const StUPCTrack*& trk1, const StUPCTrack*& trk2, double vtxZ );
+      //inline bool IsGoodEtaTrack(const StUPCTrack *trk) const { return (abs(trk->getEta()) < maxEta && trk->getEta() > vertexEtaRange(0) && trk->getEta() < vertexEtaRange(1) );}
+      inline bool IsGoodTrack(const StUPCTrack *trk) const { return ( trk->getNhitsFit() > minNHitsFit && trk->getNhitsDEdx() > minNHitsDEdx && trk->getPt() > minPt);}
+      inline bool IsGoodTofTrack(const StUPCTrack *trk) const {return (trk->getTofTime() > 0 && trk->getTofPathLength() > 0);}
+      int hasGoodTPCnSigma(const StUPCTrack *trk); 
+
       bool CheckTriggers(const vector<int> *triggerArray, StUPCEvent *mUpcEvt, TH1D *hTriggerBits) const;
+
+
+      void fillTrackQualityCuts(const StUPCTrack* trk);
+      void fillNSigmaPlots(const StUPCTrack *trk);
+      void fillEtaVtxPlots(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+
 
       void AnaRpTracks(StRPEvent *event);
 
@@ -34,7 +51,7 @@ class Ana{
       void SaveTrackInfo(const StUPCTrack *trk, unsigned int iTrack);
       void SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned int iTrack);
       void SaveStateInfo(TLorentzVector state,int totQ, unsigned int iState);
-      void SaveVertexInfo(const TVector3 vrtx, Double_t dcaDaughters, Double_t dcaBeamline, Double_t pointingAngle, Double_t decayLength, Double_t vertexDiff, unsigned int iVtx);
+      void SaveVertexInfo(const StUPCV0* V0, unsigned int iVtx);
       void SaveZdcInfo(const StUPCEvent *upcEvt);
       void SaveBbcInfo(const StUPCEvent *upcEvt);
       void SaveTriggerInfo(const StUPCEvent *upcEvt, const StRPEvent *rpEvt);
@@ -60,8 +77,13 @@ class Ana{
       // Control plots
       TH1D *hAnalysisFlow; 
 
+
       TString anaName;
       const vector<int> *trigger;
+
+      double bField;
+      double beamline[4]; 
+
 
 };
 

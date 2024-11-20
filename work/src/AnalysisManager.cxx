@@ -43,13 +43,17 @@ int main(int argc, char** argv)
       mAnaVector.push_back(new AnaV0(outFile));
       cout << "Will run analysis AnaV0." << endl;
    }
-   if( runAnaV0Control){
-      mAnaVector.push_back(new AnaV0Control(outFile));
-      cout << "Will run analysis AnaV0Control." << endl;
-   }
    if( runAnaV0SingleState && !runMCAna){
       mAnaVector.push_back(new AnaV0SingleState(outFile));
       cout << "Will run analysis AnaV0SingleState." << endl;
+   }
+   if( runTofEff && !runMCAna){
+      mAnaVector.push_back(new TofEff(outFile));
+      cout << "Will run analysis ToF efficiency." << endl; 
+   }
+   if( runTofEffMult && !runMCAna){
+      mAnaVector.push_back(new TofEffMult(outFile));
+      cout << "Will run analysis ToF efficiency with multiple states." << endl;       
    }
 
 

@@ -11,6 +11,8 @@ const bool runAnaV0 = false;
 const bool runAnaV0Control = false;
 const bool runAnaV0SingleState = true;
 const bool runMCAna = false;
+const bool runTofEff = false;
+const bool runTofEffMult = false;
 
 const bool runStudy[] = { runAnaBP, runAnaV0, runAnaV0Control};
 
@@ -22,7 +24,7 @@ const bool V0Control = false; // used in runAnaV0, runAnaSingleState: true=kPrim
 // 590708 RP_CPTnoBBCL // 570209 JPsi*HTTP // 570219 JPsi*HTTP // 570229 JPsi*HTTP
 const std::vector<int> triggerID = { 570209, 570219, 570229, 570701, 570702, 570703, 570704, 570705, 
            570709, 570711, 570712, 570719, 590701, 590703, 590705, 590708, 590709};
-const std::vector<int> CEPtriggers = { 570705, 590705 }; //{ 570701, 570705, 570711, 590701, 590705, 590708};
+const std::vector<int> CEPtriggers = { 570705 }; //, 590705 //{ 570701, 570705, 570711, 590701, 590705, 590708};
 
 
 const int nPlanesUsed = 3;
@@ -40,7 +42,10 @@ const TString nameOfAnaV0ControlTree = "recTreeV0Control";
 const std::bitset<16> AnaV0ControlTreeBits = std::bitset<16>(std::string("0000011100010001")); 
 const TString nameOfAnaV0SingleStateTree = "recTreeV0SingleState";
 const std::bitset<16> AnaV0SingleStateTreeBits = std::bitset<16>(std::string("0000000000001111")); //RPs info turned off
-
+const TString nameOfAnaTofEff = "recTreeTofEff";
+const std::bitset<16> TofEffTreeBits = std::bitset<16>(std::string("0000000000001111")); //RPs info turned off
+const TString nameOfAnaTofEffMult = "recTreeTofEffMult";
+const std::bitset<16> TofEffMultTreeBits = std::bitset<16>(std::string("0000011100010001")); 
 
 
 const TString YAxisDescription = "counts";
@@ -67,22 +72,26 @@ const double minPt = 0.2;
 const double maxDcaXY = 1.5;
 const double minDcaZ = -1.0;
 const double maxDcaZ = 1.0;
-const double maxEta = 0.9;
-const double minEta = 0.;
-const bool TOF2Tracks = false;
+const bool TOF2Tracks = false;  // condition whether both tracks are to be matched to ToF or not
+const bool usePrimVtx = false;  // condition whether to use or not to use primary vertex in the analysis
 
 //topology cuts for V0 selection
 const double vertexDiffMax = 5.;
 const double maxDcaDaughters = 1.5;
 const double maxDcaBeamLine = 1.5;
-const double minPointingAngle = 0.95;
+const double minPointingAngle = 0.97;
 const double maxDecayLengthHypo = 3.;
 
+// specific conditions for special eta-vtxZ cut
+const double maxEta = 0.9;
+const double minEta = 0.;
+const double etaVertexSlope = -1/250.0;
+const double etaVertexShift = 0.9;
+
 // vertex range in z-coordinate
-const double vertexRange = 60.0;
-// Exclusivity cut
+const double vertexRange = 100.0; // cm
 //const double exclusivityCut = 0.7;
-const double exclusivityCut = 0.1;
+//const double exclusivityCut = 0.1;
 
 //const double sqrtOfTwo = 1.41421356237;
 

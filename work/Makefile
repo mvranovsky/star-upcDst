@@ -163,33 +163,6 @@ src/Ana.cxx.s:
 	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/Ana.cxx.s
 .PHONY : src/Ana.cxx.s
 
-src/AnaV0.o: src/AnaV0.cxx.o
-
-.PHONY : src/AnaV0.o
-
-# target to build an object file
-src/AnaV0.cxx.o:
-	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o
-.PHONY : src/AnaV0.cxx.o
-
-src/AnaV0.i: src/AnaV0.cxx.i
-
-.PHONY : src/AnaV0.i
-
-# target to preprocess a source file
-src/AnaV0.cxx.i:
-	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0.cxx.i
-.PHONY : src/AnaV0.cxx.i
-
-src/AnaV0.s: src/AnaV0.cxx.s
-
-.PHONY : src/AnaV0.s
-
-# target to generate assembly for a file
-src/AnaV0.cxx.s:
-	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0.cxx.s
-.PHONY : src/AnaV0.cxx.s
-
 src/AnaV0SingleState.o: src/AnaV0SingleState.cxx.o
 
 .PHONY : src/AnaV0SingleState.o
@@ -271,32 +244,59 @@ src/RecTree.cxx.s:
 	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/RecTree.cxx.s
 .PHONY : src/RecTree.cxx.s
 
-src/StUPCSelectV0Modified.o: src/StUPCSelectV0Modified.cxx.o
+src/TofEff.o: src/TofEff.cxx.o
 
-.PHONY : src/StUPCSelectV0Modified.o
+.PHONY : src/TofEff.o
 
 # target to build an object file
-src/StUPCSelectV0Modified.cxx.o:
-	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.o
-.PHONY : src/StUPCSelectV0Modified.cxx.o
+src/TofEff.cxx.o:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/TofEff.cxx.o
+.PHONY : src/TofEff.cxx.o
 
-src/StUPCSelectV0Modified.i: src/StUPCSelectV0Modified.cxx.i
+src/TofEff.i: src/TofEff.cxx.i
 
-.PHONY : src/StUPCSelectV0Modified.i
+.PHONY : src/TofEff.i
 
 # target to preprocess a source file
-src/StUPCSelectV0Modified.cxx.i:
-	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.i
-.PHONY : src/StUPCSelectV0Modified.cxx.i
+src/TofEff.cxx.i:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/TofEff.cxx.i
+.PHONY : src/TofEff.cxx.i
 
-src/StUPCSelectV0Modified.s: src/StUPCSelectV0Modified.cxx.s
+src/TofEff.s: src/TofEff.cxx.s
 
-.PHONY : src/StUPCSelectV0Modified.s
+.PHONY : src/TofEff.s
 
 # target to generate assembly for a file
-src/StUPCSelectV0Modified.cxx.s:
-	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.s
-.PHONY : src/StUPCSelectV0Modified.cxx.s
+src/TofEff.cxx.s:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/TofEff.cxx.s
+.PHONY : src/TofEff.cxx.s
+
+src/TofEffMult.o: src/TofEffMult.cxx.o
+
+.PHONY : src/TofEffMult.o
+
+# target to build an object file
+src/TofEffMult.cxx.o:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o
+.PHONY : src/TofEffMult.cxx.o
+
+src/TofEffMult.i: src/TofEffMult.cxx.i
+
+.PHONY : src/TofEffMult.i
+
+# target to preprocess a source file
+src/TofEffMult.cxx.i:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.i
+.PHONY : src/TofEffMult.cxx.i
+
+src/TofEffMult.s: src/TofEffMult.cxx.s
+
+.PHONY : src/TofEffMult.s
+
+# target to generate assembly for a file
+src/TofEffMult.cxx.s:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.s
+.PHONY : src/TofEffMult.cxx.s
 
 src/Util.o: src/Util.cxx.o
 
@@ -338,9 +338,6 @@ help:
 	@echo "... src/Ana.o"
 	@echo "... src/Ana.i"
 	@echo "... src/Ana.s"
-	@echo "... src/AnaV0.o"
-	@echo "... src/AnaV0.i"
-	@echo "... src/AnaV0.s"
 	@echo "... src/AnaV0SingleState.o"
 	@echo "... src/AnaV0SingleState.i"
 	@echo "... src/AnaV0SingleState.s"
@@ -350,9 +347,12 @@ help:
 	@echo "... src/RecTree.o"
 	@echo "... src/RecTree.i"
 	@echo "... src/RecTree.s"
-	@echo "... src/StUPCSelectV0Modified.o"
-	@echo "... src/StUPCSelectV0Modified.i"
-	@echo "... src/StUPCSelectV0Modified.s"
+	@echo "... src/TofEff.o"
+	@echo "... src/TofEff.i"
+	@echo "... src/TofEff.s"
+	@echo "... src/TofEffMult.o"
+	@echo "... src/TofEffMult.i"
+	@echo "... src/TofEffMult.s"
 	@echo "... src/Util.o"
 	@echo "... src/Util.i"
 	@echo "... src/Util.s"

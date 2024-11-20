@@ -96,22 +96,9 @@ CMakeFiles/upc-reader.dir/src/Ana.cxx.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/Ana.cxx.s"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/Ana.cxx -o CMakeFiles/upc-reader.dir/src/Ana.cxx.s
 
-CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: CMakeFiles/upc-reader.dir/flags.make
-CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: src/AnaV0.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o -c /star/u/mvranovsk/star-upcDst/work/src/AnaV0.cxx
-
-CMakeFiles/upc-reader.dir/src/AnaV0.cxx.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/upc-reader.dir/src/AnaV0.cxx.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /star/u/mvranovsk/star-upcDst/work/src/AnaV0.cxx > CMakeFiles/upc-reader.dir/src/AnaV0.cxx.i
-
-CMakeFiles/upc-reader.dir/src/AnaV0.cxx.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/AnaV0.cxx.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/AnaV0.cxx -o CMakeFiles/upc-reader.dir/src/AnaV0.cxx.s
-
 CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o: CMakeFiles/upc-reader.dir/flags.make
 CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o: src/AnaV0SingleState.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o -c /star/u/mvranovsk/star-upcDst/work/src/AnaV0SingleState.cxx
 
 CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.i: cmake_force
@@ -122,27 +109,40 @@ CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.s"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/AnaV0SingleState.cxx -o CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.s
 
-CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.o: CMakeFiles/upc-reader.dir/flags.make
-CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.o: src/StUPCSelectV0Modified.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.o"
-	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.o -c /star/u/mvranovsk/star-upcDst/work/src/StUPCSelectV0Modified.cxx
+CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: CMakeFiles/upc-reader.dir/flags.make
+CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: src/TofEff.cxx
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/upc-reader.dir/src/TofEff.cxx.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/upc-reader.dir/src/TofEff.cxx.o -c /star/u/mvranovsk/star-upcDst/work/src/TofEff.cxx
 
-CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /star/u/mvranovsk/star-upcDst/work/src/StUPCSelectV0Modified.cxx > CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.i
+CMakeFiles/upc-reader.dir/src/TofEff.cxx.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/upc-reader.dir/src/TofEff.cxx.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /star/u/mvranovsk/star-upcDst/work/src/TofEff.cxx > CMakeFiles/upc-reader.dir/src/TofEff.cxx.i
 
-CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/StUPCSelectV0Modified.cxx -o CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.s
+CMakeFiles/upc-reader.dir/src/TofEff.cxx.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/TofEff.cxx.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/TofEff.cxx -o CMakeFiles/upc-reader.dir/src/TofEff.cxx.s
+
+CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: CMakeFiles/upc-reader.dir/flags.make
+CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: src/TofEffMult.cxx
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o -c /star/u/mvranovsk/star-upcDst/work/src/TofEffMult.cxx
+
+CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /star/u/mvranovsk/star-upcDst/work/src/TofEffMult.cxx > CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.i
+
+CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/TofEffMult.cxx -o CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.s
 
 # Object files for target upc-reader
 upc__reader_OBJECTS = \
 "CMakeFiles/upc-reader.dir/src/Util.cxx.o" \
 "CMakeFiles/upc-reader.dir/src/RecTree.cxx.o" \
 "CMakeFiles/upc-reader.dir/src/Ana.cxx.o" \
-"CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o" \
 "CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o" \
-"CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.o"
+"CMakeFiles/upc-reader.dir/src/TofEff.cxx.o" \
+"CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o"
 
 # External object files for target upc-reader
 upc__reader_EXTERNAL_OBJECTS =
@@ -150,9 +150,9 @@ upc__reader_EXTERNAL_OBJECTS =
 libupc-reader.so: CMakeFiles/upc-reader.dir/src/Util.cxx.o
 libupc-reader.so: CMakeFiles/upc-reader.dir/src/RecTree.cxx.o
 libupc-reader.so: CMakeFiles/upc-reader.dir/src/Ana.cxx.o
-libupc-reader.so: CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o
 libupc-reader.so: CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o
-libupc-reader.so: CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.o
+libupc-reader.so: CMakeFiles/upc-reader.dir/src/TofEff.cxx.o
+libupc-reader.so: CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o
 libupc-reader.so: CMakeFiles/upc-reader.dir/build.make
 libupc-reader.so: CMakeFiles/upc-reader.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX shared library libupc-reader.so"

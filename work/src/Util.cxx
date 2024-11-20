@@ -124,16 +124,25 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mV0CutName = new TString[nV0SelectionCuts];
    mV0CutName[V0ALL] = TString("All");
    mV0CutName[V0TRIG] = TString("CPT");
-   mV0CutName[V0ETA] = TString("|#eta| < 0.7");
+   //mV0CutName[V0ETA] = TString("|#eta| < 0.7");
    mV0CutName[V0PID] = TString("PID");
    mV0CutName[V0FLAG] = TString("V0 flag");
    mV0CutName[V0PAIR] = TString("V0 pair selection");
-   mV0CutName[V0ZVERTEX] = TString("|V_{z}| < 100 cm");
+   mV0CutName[V0ETAVTXZ] = TString("eta + vertex range");
    mV0CutName[V0OPPOSITE] = TString("Unlike-sign");
    mV0CutName[V0PIPI] = TString("#pi^{+}#pi^{-}");
    mV0CutName[V0PPI] = TString("p#pi^{-}");
    mV0CutName[V0PIPBAR] = TString("#pi^{+}#bar{p}");
    
+
+   mTOFEFFName = new TString[nTOFEFFCuts];
+   mTOFEFFName[TOFALL] = TString("All");
+   mTOFEFFName[TOFTRIG] = TString("CPT");
+   mTOFEFFName[TOFTRACKQUALITY] = TString("Good track quality");
+   mTOFEFFName[TOFETAVTXZ] = TString("#eta - Vtx_{Z}");
+   mTOFEFFName[TOFPAIR] = TString("topology");
+   mTOFEFFName[TOFOPPOSITE] = TString("Q_{tot} = 0");
+
    mDataSetName = new TString[nDataSets];
    mDataSetName[MC] = TString("PureMc");
    mDataSetName[MCZB] = TString("MCZB");

@@ -4,34 +4,34 @@ AnaV0SingleState::AnaV0SingleState(TFile *outFile): Ana(outFile){}
 
 void AnaV0SingleState::Make()
 {
-    
+    hAnalysisFlow->Fill(V0ALL);
+
+    if(!runMCAna && !CheckTriggers(&CEPtriggers, mUpcEvt, hTriggerBits))
+       return;
+    hAnalysisFlow->Fill(V0TRIG);
+
+
     vector<int> tracksV0;
+    int tofCounter = 0;
+    int tpcCounter = 0;
     for (int itrk = 0; itrk < mUpcEvt->getNumberOfTracks(); ++itrk){
 
-
-        hAnalysisFlow->Fill(V0ALL);
-        if(!runMCAna && !CheckTriggers(&triggerID, mUpcEvt, hTriggerBits))
-           return;
-        hAnalysisFlow->Fill(V0TRIG);
         const StUPCTrack* trk = mUpcEvt->getTrack(itrk);
+
         
         if( trk->getFlag( StUPCTrack::kV0 ) && V0Control)
             continue;
         if( trk->getFlag( StUPCTrack::kPrimary ) && !V0Control)
             continue;
-        if (trk->getFlag( StUPCTrack::kPrimary ) && trk->getFlag( StUPCTrack::kV0 )){
-            cout << "We got a track with kPrimary and kV0 flag." << endl;
-            hBothFlags->Fill(1);
-            continue;
-        }
 
         hAnalysisFlow->Fill(V0FLAG);
 
-        if(TOF2Tracks && !trk->getFlag( StUPCTrack::kTof ) )
+        if(TOF2Tracks && !(trk->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk) ) )
             continue;
 
+
         //conditions for track quality
-        fillGoodTrackCuts(trk);
+        fillTrackQualityCuts(trk);
         if (trk->getNhitsFit() < minNHitsFit)
             continue;
         if (trk->getNhitsDEdx() < minNHitsDEdx)
@@ -39,26 +39,27 @@ void AnaV0SingleState::Make()
         if (trk->getPt() < minPt)
             continue; 
 
-        //condition for pseudorapidity and filling histos
-        Double_t eta = trk->getEta();
-        Double_t phi = trk->getPhi();
-        hEtaPhi->Fill(eta, phi);
-        hEta->Fill(eta);
-        if(abs(eta) > maxEta) 
-            continue;
-        if(abs(eta) < minEta) // avoid the peak in the middle
-            continue;
-        hAnalysisFlow->Fill(V0ETA);
 
-        saveNSigmaCorr(trk);
+        fillNSigmaPlots(trk);
         //particle identification: proton or pion
         if(!(hasGoodTPCnSigma(trk) == PROTON || hasGoodTPCnSigma(trk) == PION))
             continue;
+
+        tpcCounter += 1;
+        if(trk->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk) )
+            tofCounter += 1;
+
         hAnalysisFlow->Fill(V0PID);
 
         tracksV0.push_back(itrk);
 
     }//global tracks loop
+    hNTracksTof->Fill( tofCounter );
+    hNTracksTpc->Fill( tpcCounter );
+
+    if(tpcCounter == 0)
+        return;
+
     mRecTree->setNGoodTpcTrks( tracksV0.size() );
     SaveEventInfo(mUpcEvt);
     
@@ -70,14 +71,17 @@ void AnaV0SingleState::Make()
     fillBeamlineInfo(mUpcEvt);
 
 
-    TVector3 vertex, vertex0, primaryVertex;
-    vertex0 = {0,0,0};
+    TVector3 vertex, primaryVertex;
+    TVector3 vertex0 = {0,0,0};
     int HADRON1, HADRON2, totalCharge;
     int vertexIdTrk1, vertexIdTrk2;
     Bool_t tofMatchTrk1, tofMatchTrk2;
     vector<pair<int, int>> hadronPairV0;
+    StUPCV0 *V0;
 
+    // outer loop of tracks
     for (unsigned int itrk = 0; itrk < tracksV0.size(); ++itrk){
+
         const StUPCTrack* trk1 = mUpcEvt->getTrack(tracksV0[itrk]);
         tofMatchTrk1 = trk1->getFlag( StUPCTrack::kTof );
         vertexIdTrk1 = trk1->getVertexId();
@@ -92,137 +96,188 @@ void AnaV0SingleState::Make()
             HADRON2 = hasGoodTPCnSigma(trk2);
 
             // checking for at least 1 tof match
-            if(!tofMatchTrk1 && !tofMatchTrk2)
+            if(!(tofMatchTrk1 && IsGoodTofTrack(trk1)) && !(tofMatchTrk2 && IsGoodTofTrack(trk2)) )
                 continue;
-            // interested only in pi-pi or pi-p
+            // interested only in pi-pi or pi-p/p - pi
             if (HADRON1 == PROTON && HADRON2 == PROTON)
                 continue; 
 
-            
-            //if possibly both tracks originate from a upcDst vertex, calculate the difference between prodvertexhypo and upcDst vtx
-            const StUPCVertex* vtx = mUpcEvt->getVertex(vertexIdTrk1);
-            // same vertex
+
+            // find out if both tracks belong to the same primary vtx
+            const StUPCVertex* vtx = trk1->getVertex();
             double vertexDiff;
-            bool primVtx;
-            if(vtx && vertexIdTrk1 == vertexIdTrk2){            
-                primaryVertex = {vtx->getPosX(),vtx->getPosY(), vtx->getPosZ()};
-                StUPCV0 K0prim(trk1,trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), tracksV0[itrk], tracksV0[jtrk], primaryVertex, beamline, bField, false);
-                vertexDiff = K0prim.prodVertexHypo().Z();
-                primVtx = true;
-
-            } else{
-                primVtx = false;
-
-
+            if(usePrimVtx && !(vtx && vertexIdTrk1 == vertexIdTrk2) ){
+                continue;
+            } else if(usePrimVtx && (vtx && vertexIdTrk1 == vertexIdTrk2) ){
+                primaryVertex = vtx->getPosVtx();
+                V0 = new StUPCV0(trk1,trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), tracksV0[itrk], tracksV0[jtrk], primaryVertex, beamline, bField, false);
+                StUPCV0 V0alt(trk1,trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), tracksV0[itrk], tracksV0[jtrk],vertex0, beamline, bField, false);
+                hVtxDiff->Fill( abs(V0->prodVertexHypo().Z() - V0alt.prodVertexHypo().Z() ) );
+                vertexDiff = abs(V0->prodVertexHypo().Z() - V0alt.prodVertexHypo().Z() );
+            }else if(!usePrimVtx && (vtx && vertexIdTrk1 == vertexIdTrk2) ){
+                primaryVertex = vtx->getPosVtx();
+                V0 = new StUPCV0(trk1,trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), tracksV0[itrk], tracksV0[jtrk], vertex0, beamline, bField, false);
+                StUPCV0 V0alt(trk1,trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), tracksV0[itrk], tracksV0[jtrk], primaryVertex, beamline, bField, false);
+                hVtxDiff->Fill( abs(V0->prodVertexHypo().Z() - V0alt.prodVertexHypo().Z() ) );
+                vertexDiff = abs(V0->prodVertexHypo().Z() - V0alt.prodVertexHypo().Z() );
+            }else{
+                V0 = new StUPCV0(trk1,trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), tracksV0[itrk], tracksV0[jtrk], vertex0, beamline, bField, false);
+                vertexDiff = -1;
             }
-            
-            //define V0 pair
-            StUPCV0 K0(trk1,trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), tracksV0[itrk], tracksV0[jtrk], vertex0, beamline, bField, false);
-            vertex = K0.prodVertexHypo();
 
 
             //same cuts as were in StUPCSelectV0 except K0L1, K0L2 -> K0
-            fillTopologyCutsBefore(K0);
-            //cout << "beamline: " << beamline[0] << beamline[1] << beamline[2] << beamline[3] << " dca daughters: " << K0.dcaDaughters() << ", dca beamline: " << K0.DCABeamLine() << ", pointing angle: " << K0.pointingAngleHypo() << ", decay length: " << K0.decayLengthHypo() << endl;
-            if ( !(K0.dcaDaughters() < maxDcaDaughters && K0.DCABeamLine() < maxDcaBeamLine && ( K0.pointingAngleHypo()> minPointingAngle || K0.decayLengthHypo()< maxDecayLengthHypo) ) )
+            fillTopologyCutsBefore(*V0);
+            if ( !(V0->dcaDaughters() < maxDcaDaughters && V0->DCABeamLine() < maxDcaBeamLine && ( V0->pointingAngleHypo()> minPointingAngle || V0->decayLengthHypo()< maxDecayLengthHypo) ) )
                 continue;
-            fillTopologyCutsAfter(K0);
+            fillTopologyCutsAfter(*V0);
             
-            
-            // condition for difference between vtx and hypo vertex
-            if(primVtx){
-                vertexDiff = abs(vertexDiff - vertex.Z() );
-                hVtxDiff->Fill(vertexDiff);
-                hTOFTracks->Fill(1);
-            }else{
-                hTOFTracks->Fill(-1);
-            }
-
+            hVtxDiffAfter->Fill(vertexDiff);
+            TVector3 vertex = V0->prodVertexHypo();
             hAnalysisFlow->Fill(V0PAIR);
 
-            //cut for z position of vertex- using prodvertexhypo
-            hPosZ->Fill(vertex.Z());
-            if (abs(vertex.Z()) > vertexRange )
-                continue;
 
-            hPosZCut->Fill(vertex.Z()); 
-            hAnalysisFlow->Fill(V0ZVERTEX);
             hadronPairV0.push_back(make_pair(tracksV0[itrk],tracksV0[jtrk]));
         }//inner track loop
     }// outer track loop
-    hNPairV0->Fill(hadronPairV0.size());
 
-    if(hadronPairV0.size() == 0){
-        return;
-    }else if (hadronPairV0.size() > 1){
-        // first filter if 1 track is not in 2 pairs
-        hadronPairV0 = filterPairs(hadronPairV0);
-        // if still more than 1 pair, then resize and keep only the first
-        // tree can hold only 1 V0 per event
-        if(hadronPairV0.size() > 1){
-            hadronPairV0.resize(1);
+
+    //special eta-vtxZ cut with filling of control plots
+    vector<pair<int, int>> hadronPairV0After;
+
+    for (int i = 0; i < hadronPairV0.size(); ++i){
+        const StUPCTrack* trk1 = mUpcEvt->getTrack(hadronPairV0[0].first);
+        const StUPCTrack* trk2 = mUpcEvt->getTrack(hadronPairV0[0].second);
+
+
+        Double_t eta2 = trk2->getEta();
+        Double_t phi2 = trk2->getPhi();
+
+        Double_t eta1 = trk1->getEta();
+        Double_t phi1 = trk1->getPhi();
+
+        hPosZ->Fill(vertex.Z());
+        hEtaVtxZ->Fill(eta1 , vertex.Z() );
+        hEtaPhi->Fill(eta1, phi1);
+        hEta->Fill(eta1);
+
+        hEtaVtxZ->Fill(eta2 , vertex.Z() );
+        hEtaPhi->Fill(eta2, phi2);
+        hEta->Fill(eta2);
+
+        if(!etaVertexZCut(trk1, trk2, vertex.Z() ) )
+            continue;
+
+        hPosZCut->Fill( vertex.Z() ); 
+        hEtaCut->Fill( eta1 );
+        hEtaCut->Fill( eta2 );
+        hEtaVtxZCut->Fill( eta1, vertex.Z() );
+        hEtaVtxZCut->Fill( eta2, vertex.Z() );
+
+        hAnalysisFlow->Fill( V0ETAVTXZ );
+
+        totalCharge = trk1->getCharge() + trk2->getCharge(); 
+        hTotQ->Fill( totalCharge );
+
+        if(totalCharge == 0 && hasGoodTPCnSigma(trk1) == PION && hasGoodTPCnSigma(trk2) == PION){
+            hadronPairV0After.push_back(hadronPairV0[i]);  
+            if(trk2->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk2) && trk1->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk1) ){
+               hInvMassTof2->Fill( V0->lorentzVector().M() );
+               hInvMassTof2->Fill( V0->lorentzVector().M() );
+               hInvMassTof1->Fill( V0->lorentzVector().M() );
+               hInvMassTof1->Fill( V0->lorentzVector().M() );  
+            }
+            else{
+               hInvMassTof1->Fill( V0->lorentzVector().M() );
+            }
         }
-    } 
 
-    //checking for pair made of one track
-    if (hadronPairV0[0].first == hadronPairV0[0].second){
-        hSameTrackPair->Fill(1);
-        cout << "We got a pair with same track for both. " << endl;     
+
+    }
+
+    hNPairV0->Fill(hadronPairV0After.size());
+
+    pair<int,int> finalPair;
+
+    if(hadronPairV0After.size() >= 1){
+        finalPair = resizePairs( hadronPairV0After );
+    }else{ 
         return;
     }
 
-    const StUPCTrack* trk1 = mUpcEvt->getTrack(hadronPairV0[0].first);
-    const StUPCTrack* trk2 = mUpcEvt->getTrack(hadronPairV0[0].second);
+
+    const StUPCTrack* trk1 = mUpcEvt->getTrack(finalPair.first);
+    const StUPCTrack* trk2 = mUpcEvt->getTrack(finalPair.second);
 
     HADRON1 = hasGoodTPCnSigma(trk1);
     HADRON2 = hasGoodTPCnSigma(trk2);
 
-    hTotQ->Fill( trk1->getCharge() + trk2->getCharge() );
-    if (oppositePair(trk1, trk2))
-        hAnalysisFlow->Fill(V0OPPOSITE);
 
 
-    totalCharge = trk1->getCharge() + trk2->getCharge(); 
     if (HADRON1 == HADRON2){
         mRecTree->setPairID(K0S,0);
-        if(totalCharge == 0)
+        if(totalCharge == 0){
+            hAnalysisFlow->Fill(V0OPPOSITE);
             hAnalysisFlow->Fill(V0PIPI);
+        }
     } else if((HADRON1 == PROTON || HADRON2 == PROTON ) && lambda(trk1, trk2) ){ 
         mRecTree->setPairID(LAMBDA,0);
-        if(totalCharge == 0)
+        if(totalCharge == 0){
+            hAnalysisFlow->Fill(V0OPPOSITE);
             hAnalysisFlow->Fill(V0PPI);
+        }
     } else if((HADRON1 == PROTON || HADRON2 == PROTON ) && !lambda(trk1, trk2) ){
         mRecTree->setPairID(LAMBDABAR,0);
-        if(totalCharge == 0)
+        if(totalCharge == 0){
+            hAnalysisFlow->Fill(V0OPPOSITE);
             hAnalysisFlow->Fill(V0PIPBAR); 
+        }
     } else return;
 
 
-    StUPCV0 V0(trk1, trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), hadronPairV0[0].first,hadronPairV0[0].second, vertex0, beamline, bField, false);  
-    vertex = V0.prodVertexHypo();
+    if(usePrimVtx){
+        V0 = new StUPCV0(trk1, trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), hadronPairV0[0].first,hadronPairV0[0].second, trk1->getVertex()->getPosVtx(), beamline, bField, false);  
+    }else{
+        V0 = new StUPCV0(trk1, trk2, mUtil->mass(HADRON1), mUtil->mass(HADRON2), hadronPairV0[0].first,hadronPairV0[0].second, vertex0, beamline, bField, false);  
+    }
+    vertex = V0->prodVertexHypo();
 
     // saving info about vertex
-    SaveVertexInfo(vertex, V0.dcaDaughters(), V0.DCABeamLine(), V0.pointingAngleHypo(), V0.decayLengthHypo(), -999 , 0);
-    
+    SaveVertexInfo(V0, 0);
+    //fillPrimVtxInfo(trk1, trk2);
+
     TLorentzVector state, hadron1, hadron2;
-    state = V0.lorentzVector();
-    hadron1 = V0.lorentzVectorPart1();
-    hadron2 = V0.lorentzVectorPart2();
+    state = V0->lorentzVector();
+    hadron1 = V0->lorentzVectorPart1();
+    hadron2 = V0->lorentzVectorPart2();
+
+
+    if(trk1->getCharge() + trk2->getCharge() == 0 && hasGoodTPCnSigma(trk1) == PION && hasGoodTPCnSigma(trk2) == PION){
+        if(trk2->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk2) && trk1->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk1) ){
+           hInvMassTof2AfterPicking1->Fill( V0->lorentzVector().M() );
+           hInvMassTof2AfterPicking1->Fill( V0->lorentzVector().M() );
+           hInvMassTof1AfterPicking1->Fill( V0->lorentzVector().M() );
+           hInvMassTof1AfterPicking1->Fill( V0->lorentzVector().M() );      
+        }
+        else{
+           hInvMassTof1AfterPicking1->Fill( V0->lorentzVector().M() );
+        }
+    }
 
 
     // save info about tracks-> the first one always has match with ToF 
-    if(trk1->getFlag( StUPCTrack::kTof ) && trk2->getFlag( StUPCTrack::kTof ) ){
+    if(trk1->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk1) && trk2->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk2) ){
         SaveTrackInfo(trk1,hadron1,1);
         SaveTrackInfo(trk2,hadron2,0);
 
-    }else if( trk1->getFlag( StUPCTrack::kTof ) ){
+    }else if( trk1->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk1)){
         //trk1 = tag
         SaveTrackInfo(trk1, hadron1,0);
         //trk2 = probe
         SaveTrackInfo(trk2,hadron2,1);
 
 
-    } else if(trk2->getFlag( StUPCTrack::kTof )){
+    } else if(trk2->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk2)){
         //trk2 = tag
         SaveTrackInfo(trk2, hadron2,0);  
         //trk1 = probe
@@ -247,6 +302,10 @@ void AnaV0SingleState::Make()
 
     // end with clearing all the variables for rec tree 
     resetInfo();
+
+    if(DEBUG){
+        cout << "Finished AnaV0SingleState::Make()" << endl;
+    }
 }//end of make()
 
 void AnaV0SingleState::Init(){
@@ -271,41 +330,23 @@ void AnaV0SingleState::Init(){
     mRecTree = new RecTree(nameOfAnaV0SingleStateTree, AnaV0SingleStateTreeBits, false); 
 
 
-    hNSigmaPiPcorr = new TH2F("hNSigmaPiPcorr","n_{#sigma} pions against protons", 100, -25, 25, 100, -25, 25);
-    hNSigmaPiPcorr->GetXaxis()->SetTitle("n#sigma_{#pi}");
-    hNSigmaPiPcorr->GetYaxis()->SetTitle("n#sigma_{p}");
+    hNSigmaPiPcorr = new TH2F("hNSigmaPiPcorr","n_{#sigma} pions against protons;n#sigma_{#pi};n#sigma_{p}", 100, -25, 25, 100, -25, 25);
 
-    hNSigmaPiKcorr = new TH2F("hNSigmaPiKcorr","n_{#sigma} pions against kaons", 100, -25, 25, 100, -25, 25);
-    hNSigmaPiKcorr->GetXaxis()->SetTitle("n#sigma_{#pi}");
-    hNSigmaPiKcorr->GetYaxis()->SetTitle("n#sigma_{K}");
+    hNSigmaPiKcorr = new TH2F("hNSigmaPiKcorr","n_{#sigma} pions against kaons;n#sigma_{#pi};n#sigma_{K}", 100, -25, 25, 100, -25, 25);
 
-    hNSigmaPiecorr = new TH2F("hNSigmaPiecorr","n_{#sigma} pions against electrons", 100, -25, 25, 100, -25, 25);
-    hNSigmaPiecorr->GetXaxis()->SetTitle("n#sigma_{#pi}");
-    hNSigmaPiecorr->GetYaxis()->SetTitle("n#sigma_{e}");
+    hNSigmaPiecorr = new TH2F("hNSigmaPiecorr","n_{#sigma} pions against electrons;n#sigma_{#pi};n#sigma_{e}", 100, -25, 25, 100, -25, 25);
 
-    hNSigmaPPicorr = new TH2F("hNSigmaPPicorr","n_{#sigma} protons against pions", 100, -25, 25, 100, -25, 25);
-    hNSigmaPPicorr->GetXaxis()->SetTitle("n#sigma_{p}");
-    hNSigmaPPicorr->GetYaxis()->SetTitle("n#sigma_{#pi}");
+    hNSigmaPPicorr = new TH2F("hNSigmaPPicorr","n_{#sigma} protons against pions;n#sigma_{p};n#sigma_{#pi}", 100, -25, 25, 100, -25, 25);
 
-    hNSigmaPKcorr = new TH2F("hNSigmaPKcorr","n_{#sigma} protons against kaons", 100, -25, 25, 100, -25, 25);
-    hNSigmaPKcorr->GetXaxis()->SetTitle("n#sigma_{p}");
-    hNSigmaPKcorr->GetYaxis()->SetTitle("n#sigma_{K}");
+    hNSigmaPKcorr = new TH2F("hNSigmaPKcorr","n_{#sigma} protons against kaons;n#sigma_{p};n#sigma_{K}", 100, -25, 25, 100, -25, 25);
 
-    hNSigmaPecorr = new TH2F("hNSigmaPecorr","n_{#sigma} protons against electrons", 100, -25, 25, 100, -25, 25);
-    hNSigmaPecorr->GetXaxis()->SetTitle("n#sigma_{p}");
-    hNSigmaPecorr->GetYaxis()->SetTitle("n#sigma_{e}");
+    hNSigmaPecorr = new TH2F("hNSigmaPecorr","n_{#sigma} protons against electrons;n#sigma_{p};n#sigma_{e}", 100, -25, 25, 100, -25, 25);
 
-    hNSigmaKPicorr = new TH2F("hNSigmaKPicorr","n_{#sigma} kaons against pions", 100, -25, 25, 100, -25, 25);
-    hNSigmaKPicorr->GetXaxis()->SetTitle("n#sigma_{K}");
-    hNSigmaKPicorr->GetYaxis()->SetTitle("n#sigma_{#pi}");
+    hNSigmaKPicorr = new TH2F("hNSigmaKPicorr","n_{#sigma} kaons against pions;n#sigma_{K};n#sigma_{#pi}", 100, -25, 25, 100, -25, 25);
 
-    hNSigmaKPcorr = new TH2F("hNSigmaKPcorr","n_{#sigma} kaons against protons", 100, -25, 25, 100, -25, 25);
-    hNSigmaKPcorr->GetXaxis()->SetTitle("n#sigma_{K}");
-    hNSigmaKPcorr->GetYaxis()->SetTitle("n#sigma_{p}");
+    hNSigmaKPcorr = new TH2F("hNSigmaKPcorr","n_{#sigma} kaons against protons;n#sigma_{K};n#sigma_{p}", 100, -25, 25, 100, -25, 25);
 
-    hNSigmaKecorr = new TH2F("hNSigmaKecorr","n_{#sigma} kaons against electrons", 100, -25, 25, 100, -25, 25);
-    hNSigmaKecorr->GetXaxis()->SetTitle("n#sigma_{K}");
-    hNSigmaKecorr->GetYaxis()->SetTitle("n#sigma_{e}");
+    hNSigmaKecorr = new TH2F("hNSigmaKecorr","n_{#sigma} kaons against electrons;n#sigma_{K};n#sigma_{e}", 100, -25, 25, 100, -25, 25);
 
     hNSigmaPi = new TH1D("hNSigmaPi", "n_{#sigma} pions; n_{#sigma} #pi [-]; counts", 200, -10, 10 );
     
@@ -361,6 +402,8 @@ void AnaV0SingleState::Init(){
     hEta->GetXaxis()->SetTitle("#eta");
     hEta->GetYaxis()->SetTitle(YAxisDescription);
 
+    hEtaCut = new TH1D("hEtaCut", "Pseudorapidity; #eta [-]; counts", 60, -2, 2);
+
     hDcaZ =  new TH1D("hDcaZ", "DcaZ", 100, -3,3); 
     hDcaZ->SetTitle("Distribution of DCA_{z} ");
     hDcaZ->GetXaxis()->SetTitle("DCA_{z} [cm]");
@@ -381,10 +424,12 @@ void AnaV0SingleState::Init(){
     hNhitsDEdx->GetXaxis()->SetTitle("N^{dEdx}_{hits} [-]");
     hNhitsDEdx->GetYaxis()->SetTitle(YAxisDescription);
        
-    hVtxDiff =  new TH1D("hVtxDiff", "Difference in Vtx_{z} between prodVertexHypo and UPCVertex_{z}", 60, 0, 30); 
+    hVtxDiff =  new TH1D("hVtxDiff", "Difference in Vtx_{z} between prodVertexHypo and UPCVertex_{z}", 12, -2, 10); 
     hVtxDiff->SetTitle("Difference in determination of z_{vertex}");
     hVtxDiff->GetXaxis()->SetTitle("Z_{vertexDiff} [cm]");
     hVtxDiff->GetYaxis()->SetTitle(YAxisDescription);
+
+    hVtxDiffAfter =  new TH1D("hVtxDiffAfter", "Difference in Vtx_{z} between prodVertexHypo and UPCVertex_{z}", 12, -2, 10);
 
     hPosZ =  new TH1D("hPosZ", "Position of z_{vertex}", 60, -150, 150); 
     hPosZ->SetTitle("Distribution of position of z_{vertex}");
@@ -396,22 +441,22 @@ void AnaV0SingleState::Init(){
     hPosZCut->GetXaxis()->SetTitle("Vertex_{Z} [cm]");
     hPosZCut->GetYaxis()->SetTitle(YAxisDescription);
 
-    hTOFTracks = new TH1D("hGlobalVtx", "Number of tracks in TOF before cut", 4, -2, 2);
-    hTOFTracks->SetTitle("Number of pairs w. global tracks");
-    hTOFTracks->GetXaxis()->SetTitle("Number of global vtxs");
-    hTOFTracks->GetYaxis()->SetTitle(YAxisDescription);
+    hHasPrimVtx = new TH1D("hHasPrimVtx", "boolean histogram", 3, -1.5, 1.5);
+    hHasPrimVtx->SetTitle("Number of pairs w. global tracks");
+    hHasPrimVtx->GetXaxis()->SetTitle("1=hasPrimVtx, -1=noPrimVtx");
+    hHasPrimVtx->GetYaxis()->SetTitle(YAxisDescription);
      
     hNVertices = new TH1D("hNVertices", "Number of vertices before cut", 100, 0, 10);
     hNVertices->SetTitle("Number of vertices");
     hNVertices->GetXaxis()->SetTitle("Number of vertices");
     hNVertices->GetYaxis()->SetTitle(YAxisDescription);
 
-    hNPairV0 = new TH1D("hNPairV0", "Number of pairs after cuts", 30, 0, 30);
-    hNPairV0->SetTitle("Number of pairs");
-    hNPairV0->GetXaxis()->SetTitle("Number of pairs");
+    hNPairV0 = new TH1D("hNPairV0", "Number of pairs after cuts", 5, -0.5, 4.5);
+    hNPairV0->SetTitle("Number of V0 pairs");
+    hNPairV0->GetXaxis()->SetTitle("Number of V0 pairs");
     hNPairV0->GetYaxis()->SetTitle(YAxisDescription);
 
-    hTotQ = new TH1D("TotQ", "Total charge of pair", 1000, -10, 10);
+    hTotQ = new TH1D("hTotQ", "Total charge of pair", 3, -1.5, 1.5);
     hTotQ->SetTitle("Total charge of pair");
     hTotQ->GetXaxis()->SetTitle("Charge of pair");
     hTotQ->GetYaxis()->SetTitle(YAxisDescription);
@@ -425,7 +470,6 @@ void AnaV0SingleState::Init(){
     hBothFlags->SetTitle("track with kPrimary and kV0");
     hBothFlags->GetXaxis()->SetTitle("bothFlags [-]");
     hBothFlags->GetYaxis()->SetTitle(YAxisDescription);
-
 
     hDecayLength = new TH1D("hDecayLength", "decaylength", 100, 0., 10.);
     hDecayLength->SetTitle("DecayLength");
@@ -479,139 +523,75 @@ void AnaV0SingleState::Init(){
     hInvMassEta = new TH2F("hInvMassEta", "hInvMassEta; m_{#pi^{+} #pi^{-}} [GeV/c^{2}]; #eta [-]", 100, 0.2,1.2, 200, -1.,1. );
     hInvMassEta->SetTitle("correlation plot of invMass and eta");
 
-    /*
-    hEta1Tag = new TH1D("hEta1Tag", "hEtaTag; #eta_{tag} [-]; counts", 20, -1,1);
-    hEta1Probe = new TH1D("hEta1Probe", "hEtaProbe; #eta_{probe} [-]; counts", 20, -1,1);
+    hEtaVtxZ = new TH2F("hEtaVtxZ", "hEtaVtxZ; #eta [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
 
-    hpT1Tag = new TH1D("hpT1Tag", "hpTTag; p_{T}^{tag} [GeV/c]; counts", 15, 0,1.5);
-    hpT1Probe = new TH1D("hpT1Probe", "hpTProbe; p_{T}^{probe} [GeV/c]; counts", 15, 0,1.5);
+    hEtaVtxZCut = new TH2F("hEtaVtxZCut", "hEtaVtxZ; #eta [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
 
-    hPhi1Tag = new TH1D("hPhi1Tag", "hPhiTag; #phi_{tag} [GeV/c]; counts", 12, -3.15, 3.15);
-    hPhi1Probe = new TH1D("hPhi1Probe", "hPhiProbe; #phi_{probe} [GeV/c]; counts", 12, -3.15, 3.15);
+    hNTracksTof = new TH1D("hNTracksTof", "hNTracksTof; Number of ToF tracks [-]; counts", 11, -0.5, 10.5);
 
-    hEtaPhi1Tag = new TH2F("hEtaPhi1Tag", "hEtaPhiTag; #eta_{tag} [-]; #phi_{tag} [-]", 20,-1,1,12,-3.15, 3.15);
-    hEtaPhi1Probe = new TH2F("hEtaPhi1Probe", "hEtaPhiProbe; #eta_{probe} [-]; #phi_{probe} [-]", 20,-1,1,12,-3.15, 3.15);
+    hNTracksTpc = new TH1D("hNTracksTpc", "hNTracksTpc; Number of TPC tracks [-]; counts", 26, -0.5, 25.5);
 
-    hEta2Tag = new TH1D("hEta2Tag", "hEtaTag; #eta_{tag} [-]; counts", 20, -1,1);
-    hEta2Probe = new TH1D("hEta2Probe", "hEtaProbe; #eta_{probe} [-]; counts", 20, -1,1);
+    hInvMassTof1 = new TH1D("hInvMassTof1", "hInvMassTof1; m_{#pi^{+} #pi^{-} }; counts",90 , 0.45, 0.54);
+    hInvMassTof2 = new TH1D("hInvMassTof2", "hInvMassTof2; m_{#pi^{+} #pi^{-} }; counts",90 , 0.45, 0.54);
 
-    hpT2Tag = new TH1D("hpT2Tag", "hpTTag; p_{T}^{tag} [GeV/c]; counts", 15, 0,1.5);
-    hpT2Probe = new TH1D("hpT2Probe", "hpTProbe; p_{T}^{probe} [GeV/c]; counts", 15, 0,1.5);
-
-    hPhi2Tag = new TH1D("hPhi2Tag", "hPhiTag; #phi_{tag} [GeV/c]; counts", 12, -3.15, 3.15);
-    hPhi2Probe = new TH1D("hPhi2Probe", "hPhiProbe; #phi_{probe} [GeV/c]; counts", 12, -3.15, 3.15);
-
-    hEtaPhi2Tag = new TH2F("hEtaPhi2Tag", "hEtaPhiTag; #eta_{tag} [-]; #phi_{tag} [-]", 20,-1,1,12,-3.15, 3.15);
-    hEtaPhi2Probe = new TH2F("hEtaPhi2Probe", "hEtaPhiProbe; #eta_{probe} [-]; #phi_{probe} [-]", 20,-1,1,12,-3.15, 3.15);
-    */
-    //plots for nSigma around eta == 0
-
-    hNSigmaPiProbe1 = new TH1D("hNSigmaPiProbe1", "hNSigmaPiProbe1; n#sigma [-];counts", 20,-10,10);  
-    hNSigmaPiTag1 = new TH1D("hNSigmaPiTag1", "hNSigmaPiTag1; n#sigma [-];counts", 20,-10,10);  
-
-    hNSigmaPProbe1 = new TH1D("hNSigmaPProbe1", "hNSigmaPProbe1; n#sigma [-];counts", 20,-10,10);  
-    hNSigmaPTag1 = new TH1D("hNSigmaPTag1", "hNSigmaPTag1; n#sigma [-];counts", 20,-10,10);  
-
-    hNSigmaKProbe1 = new TH1D("hNSigmaKProbe1", "hNSigmaKProbe1; n#sigma [-];counts", 20,-10,10);  
-    hNSigmaKTag1 = new TH1D("hNSigmaKTag1", "hNSigmaKTag1; n#sigma [-];counts", 20,-10,10);  
-
-    hNSigmaEProbe1 = new TH1D("hNSigmaEProbe1", "hNSigmaEProbe1; n#sigma [-];counts", 20,-10,10);  
-    hNSigmaETag1 = new TH1D("hNSigmaETag1", "hNSigmaETag1; n#sigma [-];counts", 20,-10,10);  
-
-    hNSigmaPiProbe2 = new TH1D("hNSigmaPiProbe2", "hNSigmaPiProbe2; n#sigma [-];counts", 20,-10,10);  
-    hNSigmaPiTag2 = new TH1D("hNSigmaPiTag2", "hNSigmaPiTag2; n#sigma [-];counts", 20,-10,10);  
-
-    hNSigmaPProbe2 = new TH1D("hNSigmaPProbe2", "hNSigmaPProbe2; n#sigma [-];counts", 20,-10,10);  
-    hNSigmaPTag2 = new TH1D("hNSigmaPTag2", "hNSigmaPTag2; n#sigma [-];counts", 20,-10,10);  
-
-    hNSigmaKProbe2 = new TH1D("hNSigmaKProbe2", "hNSigmaKProbe2; n#sigma [-];counts", 20,-10,10);  
-    hNSigmaKTag2 = new TH1D("hNSigmaKTag2", "hNSigmaKTag2; n#sigma [-];counts", 20,-10,10);  
-
-    hNSigmaEProbe2 = new TH1D("hNSigmaEProbe2", "hNSigmaEProbe2; n#sigma [-];counts", 20,-10,10);  
-    hNSigmaETag2 = new TH1D("hNSigmaETag2", "hNSigmaETag2; n#sigma [-];counts", 20,-10,10);  
-
-
-    hPtPhi1 = new TH2F("hPtPhiTagAround0", "hPtPhi; p_{T} [GeV/c]; #phi [-]", 180,0.2,2,120,-3.15, 3.15);
-    hPtVz1 = new TH2F("hPtVzTagAround0", "hPtVz; p_{T} [GeV/c]; V_{Z} [cm]", 180,0.2,2,200,-100, 100);
-    hVzPhi1 = new TH2F("hVzPhiTagAround0", "hVzPhi;  V_{Z} [cm]; #phi [-]", 200,-100, 100, 120, -3.15, 3.15);
-    hInvMassPhi1 = new TH2F("hInvMassPhiTagAround0", "hInvMassPhi;  m_{#pi #pi} [GeV/c^{2}]; #phi [-]", 180,0.2,2, 120, -3.15, 3.15);
-    hInvMassVz1 = new TH2F("hInvMassVzTagAround0", "hInvMassVz;  m_{#pi #pi} [GeV/c^{2}]; V_{Z} [cm]", 180,0.2,2, 200, -100, 100);
-    hInvMassPt1 = new TH2F("hInvMassPtTagAround0", "hInvMassPt;  m_{#pi #pi} [GeV/c^{2}]; p_{T} [GeV/c]", 180,0.2,2, 180, 0.2, 2.);
-
-    hPtPhi2 = new TH2F("hPtPhiProbeAround0", "hPtPhi; p_{T} [GeV/c]; #phi [-]", 180,0.2,2,120,-3.15, 3.15);
-    hPtVz2 = new TH2F("hPtVzProbeAround0", "hPtVz; p_{T} [GeV/c]; V_{Z} [cm]", 180,0.2,2,200,-100, 100);
-    hVzPhi2 = new TH2F("hVzPhiProbeAround0", "hVzPhi;  V_{Z} [cm]; #phi [-]", 200,-100, 100, 120, -3.15, 3.15);
-    hInvMassPhi2 = new TH2F("hInvMassPhiProbeAround0", "hInvMassPhi;  m_{#pi #pi} [GeV/c^{2}]; #phi [-]", 180,0.2,2, 120, -3.15, 3.15);
-    hInvMassVz2 = new TH2F("hInvMassVzProbeAround0", "hInvMassVz;  m_{#pi #pi} [GeV/c^{2}]; V_{Z} [cm]", 180,0.2,2, 200, -100, 100);
-    hInvMassPt2 = new TH2F("hInvMassPtProbeAround0", "hInvMassPt;  m_{#pi #pi} [GeV/c^{2}]; p_{T} [GeV/c]", 180,0.2,2, 180, 0.2, 2.);
-      
-    hEtaPhiProbeYesToF = new TH2F("hEtaPhiProbeYesToFAround0", "hEtaPhiProbeYesToF; #eta_{Probe}^{w ToF} [-]; #phi_{Probe}^{w ToF} [-]", 40, -0.2, 0.2, 120, -3.15, 3.15);
-    hEtaPhiProbeNoToF = new TH2F("hEtaPhiProbeNoToFAround0", "hEtaPhiProbeNoToF; #eta_{Probe}^{w/o ToF} [-]; #phi_{Probe}^{w/o ToF} [-]", 40, -0.2, 0.2, 120, -3.15, 3.15);
-
-    hEtaPhiProbeYesToFLarge = new TH2F("hEtaPhiProbeYesToF", "hEtaPhiProbeYesToF; #eta_{Probe}^{w ToF} [-]; #phi_{Probe}^{w ToF} [-]", 180, -0.9, 0.9, 120, -3.15, 3.15);
-    hEtaPhiProbeNoToFLarge = new TH2F("hEtaPhiProbeNoToF", "hEtaPhiProbeNoToF; #eta_{Probe}^{w/o ToF} [-]; #phi_{Probe}^{w/o ToF} [-]", 180, -0.9, 0.9, 120, -3.15, 3.15);
-
+    hInvMassTof1AfterPicking1 = new TH1D("hInvMassTof1AfterPicking1", "hInvMassTof1; m_{#pi^{+} #pi^{-} }; counts",90 , 0.45, 0.54);
+    hInvMassTof2AfterPicking1 = new TH1D("hInvMassTof2AfterPicking1", "hInvMassTof2; m_{#pi^{+} #pi^{-} }; counts",90 , 0.45, 0.54);
 
 }
 
-void AnaV0SingleState::fillTag1(const StUPCTrack* trk, Double_t pT, Double_t Vz, Double_t invMass) {
+void AnaV0SingleState::fillTrackQualityCuts(const StUPCTrack* trk){
 
-    if(abs(trk->getEta() ) < 0.2){
-        hPtPhi1->Fill(pT , trk->getPhi() );
-        hPtVz1->Fill(pT, Vz);
-        hVzPhi1->Fill(Vz, trk->getPhi() );
-        hInvMassPhi1->Fill( invMass,trk->getPhi() );
-        hInvMassVz1->Fill( invMass, Vz);
-        hInvMassPt1->Fill( invMass, pT);
+   hDcaZ->Fill( trk->getDcaZ() );
+   hDcaXY->Fill( trk->getDcaXY() );
+   hNfitHits->Fill(trk->getNhitsFit() );
+   hNhitsDEdx->Fill(trk->getNhitsDEdx() );
+   hPt->Fill(trk->getPt());
+}
 
-    }
+
+
+void AnaV0SingleState::fillNSigmaPlots(const StUPCTrack *trk){
+    Double_t nSigmaPion, nSigmaProton, nSigmaKaon, nSigmaElectron;
+    nSigmaPion = trk->getNSigmasTPCPion();
+    nSigmaProton = trk->getNSigmasTPCProton();
+    nSigmaKaon = trk->getNSigmasTPCKaon();
+    nSigmaElectron = trk->getNSigmasTPCElectron();
+
+    hNSigmaPi->Fill(nSigmaPion);
+    hNSigmaP->Fill(nSigmaProton);
+    hNSigmaK->Fill(nSigmaKaon);
+    hDEdxSignal->Fill( trk->getDEdxSignal() );
+    hNSigmaPiPcorr->Fill(nSigmaPion, nSigmaProton);
+    hNSigmaPiKcorr->Fill(nSigmaPion, nSigmaKaon);
+    hNSigmaPiecorr->Fill(nSigmaPion, nSigmaElectron);
+    hNSigmaPKcorr->Fill(nSigmaProton, nSigmaKaon);
+    hNSigmaPecorr->Fill(nSigmaProton, nSigmaElectron);
+    hNSigmaPPicorr->Fill(nSigmaProton, nSigmaPion);
+    hNSigmaKecorr->Fill(nSigmaKaon, nSigmaElectron);
+    hNSigmaKPcorr->Fill(nSigmaKaon, nSigmaProton);
+    hNSigmaKPicorr->Fill(nSigmaKaon, nSigmaPion);
+}
+void AnaV0SingleState::fillEtaVtxPlots(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+
+   Double_t eta2 = trk2->getEta();
+   Double_t phi2 = trk2->getPhi();
+
+   Double_t eta1 = trk1->getEta();
+   Double_t phi1 = trk1->getPhi();
+
+   hPosZ->Fill(posZ);
+
+   hEtaVtxZ->Fill(eta1 , posZ );
+   hEtaVtxZ->Fill(eta2 , posZ );
+
+   hEtaPhi->Fill(eta1, phi1);
+   hEtaPhi->Fill(eta2, phi2);
+
+   hEta->Fill(eta1);
+   hEta->Fill(eta2);
 
 }
 
-void AnaV0SingleState::fillProbe1(const StUPCTrack* trk, Double_t pT, Double_t Vz, Double_t invMass) {
-
-    if(abs(trk->getEta() ) < 0.2){
-        hPtPhi2->Fill(pT , trk->getPhi() );
-        hPtVz2->Fill(pT, Vz);
-        hVzPhi2->Fill(Vz, trk->getPhi() );
-        hInvMassPhi2->Fill( invMass,trk->getPhi() );
-        hInvMassVz2->Fill( invMass, Vz);
-        hInvMassPt2->Fill( invMass, pT);
-    }
-}
-/*
-void AnaV0SingleState::fillTag2(const StUPCTrack* trk) {
-
-
-    if(abs(trk->getEta()) <0.2 ){
-        hEta2Tag->Fill( trk->getEta() );
-        hPhi2Tag->Fill( trk->getPhi() );
-        hpT2Tag->Fill( trk->getPt() );
-        hEtaPhi2Tag->Fill(trk->getEta() , trk->getPhi() );
-        hNSigmaPiTag2->Fill(trk->getNSigmasTPCPion());
-        hNSigmaPTag2->Fill(trk->getNSigmasTPCProton());
-        hNSigmaKTag2->Fill(trk->getNSigmasTPCKaon());
-        hNSigmaETag2->Fill(trk->getNSigmasTPCElectron());
-    }
-
-}
-
-void AnaV0SingleState::fillProbe2(const StUPCTrack* trk) {
-    
-
-    if(abs(trk->getEta()) <0.2 ){
-        hEta2Probe->Fill( trk->getEta() );
-        hPhi2Probe->Fill( trk->getPhi() );
-        hpT2Probe->Fill( trk->getPt() );
-        hEtaPhi2Probe->Fill(trk->getEta() , trk->getPhi() );
-        hNSigmaPiProbe2->Fill(trk->getNSigmasTPCPion());
-        hNSigmaPProbe2->Fill(trk->getNSigmasTPCProton());
-        hNSigmaKProbe2->Fill(trk->getNSigmasTPCKaon());
-        hNSigmaEProbe2->Fill(trk->getNSigmasTPCElectron());
-    }
-
-}
-*/
 void AnaV0SingleState::fillBeamlineInfo(const StUPCEvent *mUpcEvt){
 
     if(!runMCAna){
@@ -678,6 +658,31 @@ void AnaV0SingleState::fillTopologyCutsAfter(const StUPCV0& V0){
     hPointingAngleCut->Fill(V0.pointingAngleHypo());
     hDecayLengthCut->Fill(V0.decayLengthHypo());
     hDecayLPointingACut->Fill(V0.decayLengthHypo(), V0.pointingAngleHypo());
+}
+
+
+pair<int,int> AnaV0SingleState::resizePairs( vector<pair<int,int>> hadronPairV0 ){
+
+
+    // first filter if 1 track is not in 2 pairs
+    if(hadronPairV0.size() > 1){
+        hadronPairV0 = filterPairs(hadronPairV0);
+        // if still more than 1 pair, then resize and keep only the first
+        // tree can hold only 1 V0 per event
+        if(hadronPairV0.size() > 1){
+            hadronPairV0.resize(1);
+        }
+    }
+     
+
+    //checking for pair made of one track
+    if (hadronPairV0[0].first == hadronPairV0[0].second){
+        hSameTrackPair->Fill(1);
+        cout << "We got a pair with same track for both. " << endl;     
+        return make_pair(-1, -1) ;
+    }
+
+    return hadronPairV0[0]; 
 }
 
 bool AnaV0SingleState::shouldKeepPair(const pair<int, int>& a, const pair<int, int>& b) {
@@ -785,223 +790,9 @@ int AnaV0SingleState::hasGoodTPCnSigma(const StUPCTrack *trk){ //zmiernit podmie
         return 10;
 }
 
-void AnaV0SingleState::fillGoodTrackCuts(const StUPCTrack* trk){
-    //hDcaZ->Fill(trk->getDcaZ());
-    //hDcaXY->Fill(trk->getDcaXY());
-    hNfitHits->Fill(trk->getNhitsFit());
-    hNhitsDEdx->Fill(trk->getNhitsDEdx());
-    hPt->Fill(trk->getPt());
-}
 
 
-void AnaV0SingleState::saveNSigmaCorr(const StUPCTrack *trk){
-    Double_t nSigmaPion, nSigmaProton, nSigmaKaon, nSigmaElectron;
-    nSigmaPion = trk->getNSigmasTPCPion();
-    nSigmaProton = trk->getNSigmasTPCProton();
-    nSigmaKaon = trk->getNSigmasTPCKaon();
-    nSigmaElectron = trk->getNSigmasTPCElectron();
-    hNSigmaPi->Fill(nSigmaPion);
-    hNSigmaP->Fill(nSigmaProton);
-    hNSigmaK->Fill(nSigmaKaon);
-    hDEdxSignal->Fill( trk->getDEdxSignal() );
-    hNSigmaPiPcorr->Fill(nSigmaPion, nSigmaProton);
-    hNSigmaPiKcorr->Fill(nSigmaPion, nSigmaKaon);
-    hNSigmaPiecorr->Fill(nSigmaPion, nSigmaElectron);
-    hNSigmaPKcorr->Fill(nSigmaProton, nSigmaKaon);
-    hNSigmaPecorr->Fill(nSigmaProton, nSigmaElectron);
-    hNSigmaPPicorr->Fill(nSigmaProton, nSigmaPion);
-    hNSigmaKecorr->Fill(nSigmaKaon, nSigmaElectron);
-    hNSigmaKPcorr->Fill(nSigmaKaon, nSigmaProton);
-    hNSigmaKPicorr->Fill(nSigmaKaon, nSigmaPion);
-}
 
-/*
-void AnaV0SingleState::CalculateTOFEff(unsigned int tagID)
-{
-   // eta cut and PID not implemented
-   unsigned int vertexID = mUpcEvt->getVertex(0)->getId();
-   vector<int> hadronId;
-
-   TLorentzVector tag, probe, state;
-   const StUPCTrack* tagTrk = mUpcEvt->getTrack(tagID);
-   int tagCharge = static_cast<int>( tagTrk->getCharge() );
-   tagTrk->getLorentzVector(tag, mUtil->mass(PION));
-   if( abs(tagTrk->getNSigmasTPC(StUPCTrack::kPion)) > 3)
-      return;
-   if( abs(tagTrk->getEta()) > 0.7 )
-      return;
-
-   for(unsigned int trackID = 0; trackID < mUpcEvt->getNumberOfTracks(); ++trackID)
-   {
-      if( trackID == tagID)
-         continue;
-
-      const StUPCTrack* trk = mUpcEvt->getTrack(trackID);
-      if( !trk->getFlag(StUPCTrack::kPrimary) || trk->getVertexId() != vertexID || !IsGoodTrack(trk)) 
-         continue;
-
-      if( abs(trk->getNSigmasTPC(StUPCTrack::kPion)) > 3)
-         continue;
-
-      if( static_cast<int>( trk->getCharge() ) == -tagCharge  );
-         hadronId.push_back(trackID);
-   } 
-
-   double missPt, minMissPt;
-   unsigned int probeID;
-   minMissPt = 999;
-   nProbes = hadronId.size();
-   for (unsigned int id = 0; id < hadronId.size(); ++id)
-   {
-      const StUPCTrack* trk = mUpcEvt->getTrack(hadronId[id]);
-
-      trk->getLorentzVector(probe, mUtil->mass(PION));
-      state = tag + probe;
-
-      missPt = (state.Vect() + mRPpTBalance).Pt();
-      if( missPt < minMissPt){
-         minMissPt = missPt;
-         probeID = hadronId[id];
-      }
-   }
-   
-   if( minMissPt > 2 )
-      return;
-
-   const StUPCTrack* probeTrk = mUpcEvt->getTrack(probeID);
-   probeTrk->getLorentzVector(probe, mUtil->mass(PION));
-   state = tag + probe;
-
-   deltaPhiProtons = abs(mRecTree->getPhiRp(East) - mRecTree->getPhiRp(West)); 
-   pTState = state.Pt();
-   phiState = abs(state.Phi());
-   double deltaPhiPions = abs(tag.Phi() - probe.Phi());
-   double piHalf = mUtil->pi() / 2;
-
-   
-   if( deltaPhiProtons > piHalf){ // is elastic
-      if(pTState > 0.7)
-         return;
-      if( deltaPhiPions < 2.36)
-         return;
-   }else{ // is inelastic
-      if( pTState < 0.7)
-         return;
-      if( phiState < 1.14 || phiState > 2.0)
-         return;
-      if( deltaPhiPions > 2.36)
-         return;
-   }
-
-   // Fill sample total
-   pTMiss = minMissPt;
-   invMass = state.M();
-
-   tagPt = tagTrk->getPt();
-   tagEta = tagTrk->getEta();
-   tagPhi = tagTrk->getPhi();
-
-   probePt = probeTrk->getPt();
-   probeEta = probeTrk->getEta();
-   probePhi = probeTrk->getPhi();
-   probeTof = probeTrk->getFlag(StUPCTrack::kTof);
-   probeTofHit = IsGoodTofTrack(probeTrk);
-
-   tofEffTree->Fill();
-}
-
-void AnaV0SingleState::CalculatePID()
-{
-
-   Int_t pairID = -1;
-   double chiPair[nParticles];
-   for(int iPart = 0; iPart < nParticles; ++iPart)
-      chiPair[iPart] = mRecTree->getNSigmaTPC(0, iPart)*mRecTree->getNSigmaTPC(0, iPart) + 
-                     mRecTree->getNSigmaTPC(1, iPart)*mRecTree->getNSigmaTPC(1, iPart);
-
-   double deltaTOF = mRecTree->getTofTimeInNs(1) - mRecTree->getTofTimeInNs(0);
-   double speedOfLight2 = mUtil->c()*mUtil->c();
-   double speedOfLight4 = speedOfLight2*speedOfLight2; 
-   double length1Squared = mRecTree->getTofLengthInCm(0)*mRecTree->getTofLengthInCm(0)/(100*100); // convert TOFlength from cm to m
-   double length2Squared = mRecTree->getTofLengthInCm(1)*mRecTree->getTofLengthInCm(1)/(100*100); // convert TOFlength from cm to m
-   double deltaTime2 = (deltaTOF*deltaTOF)/(pow(10.0,18.0)); // convert TOFtime from ns to s
-   double deltaTime4 = deltaTime2*deltaTime2;
-   double oneOverMomentum1sq = 1/(mRecTree->getMomentumInGeV(0)*mRecTree->getMomentumInGeV(0));
-   double oneOverMomentum2sq = 1/(mRecTree->getMomentumInGeV(1)*mRecTree->getMomentumInGeV(1));
-   double cEq = -2*length1Squared*length2Squared + speedOfLight4*deltaTime4 + length2Squared*length2Squared + length1Squared*length1Squared -2*speedOfLight2*deltaTime2*(length2Squared + length1Squared);
-   double bEq = -2*length1Squared*length2Squared*(oneOverMomentum1sq + oneOverMomentum2sq) + 2*length1Squared*length1Squared*oneOverMomentum1sq + 2*length2Squared*length2Squared*oneOverMomentum2sq -2*speedOfLight2*deltaTime2*(length1Squared*oneOverMomentum1sq + length2Squared*oneOverMomentum2sq);
-   double aEq = -2*length1Squared*length2Squared*oneOverMomentum1sq*oneOverMomentum2sq + length1Squared*length1Squared*oneOverMomentum1sq*oneOverMomentum1sq + length2Squared*length2Squared*oneOverMomentum2sq*oneOverMomentum2sq;
-   double mSquared = (-bEq + sqrt(bEq*bEq-4*aEq*cEq)) / (2*aEq);
-   double pT[] = { mRecTree->getPtInGev(0), mRecTree->getPtInGev(1)};
-
-   if(chiPair[PION] > 9 && chiPair[KAON] > 9 && chiPair[PROTON] < 9 && mSquared > 0.6) // it is... proton!
-   {
-      if(pT[0] > 0.4 && pT[1] > 0.4 && (pT[0] < 1.1 || pT[1] < 1.1) )
-         pairID = PROTON;
-   }
-   else if(chiPair[PION] > 9 && chiPair[KAON] < 9 && chiPair[PROTON] > 9 && mSquared > 0.15) // it is... kaon!
-   {
-      if(pT[0] > 0.3 && pT[1] > 0.3 && (pT[0] < 0.7 || pT[1] < 0.7) )
-         pairID = KAON;
-   }
-   else if( chiPair[PION] < 12) // it is... pion!
-   {
-      pairID = PION;
-   }
-   
-   mRecTree->setPairID(pairID);
-   mRecTree->setMSquared(mSquared);
-}
-
-Int_t AnaV0SingleState::PIDStartegy(int strategy)
-{
-   // 0 - the main PID stragy without mSquared
-   // 1 - the main PID stragy without mSquared and without pT cuts
-   // else return -1
-   if( strategy < 0 || strategy > 1)
-      return -1;
-
-   Int_t pairID = -1;
-   double chiPair[nParticles];
-   for(int iPart = 0; iPart < nParticles; ++iPart)
-      chiPair[iPart] = mRecTree->getNSigmaTPC(0, iPart)*mRecTree->getNSigmaTPC(0, iPart) + 
-                     mRecTree->getNSigmaTPC(1, iPart)*mRecTree->getNSigmaTPC(1, iPart);
-   double pT[] = { mRecTree->getPtInGev(0), mRecTree->getPtInGev(1)};
-
-   if(chiPair[PION] > 9 && chiPair[KAON] > 9 && chiPair[PROTON] < 9) // it is... proton!
-   {
-      if(pT[0] > 0.4 && pT[1] > 0.4 && (pT[0] < 1.1 || pT[1] < 1.1) && strategy == 0)
-         pairID = PROTON;
-      if( strategy == 1)
-         pairID = PROTON;
-   }
-   else if(chiPair[PION] > 9 && chiPair[KAON] < 9 && chiPair[PROTON] > 9) // it is... kaon!
-   {
-      if(pT[0] > 0.3 && pT[1] > 0.3 && (pT[0] < 0.7 || pT[1] < 0.7) && strategy == 0 )
-         pairID = KAON;
-      if( strategy == 1)
-         pairID = KAON;
-   }
-   else if( chiPair[PION] < 12) // it is... pion!
-   {
-      pairID = PION;
-   }
-   
-   return pairID;
-}
-
-bool AnaV0SingleState::IsPairOf(int type)
-{
-   // 0 - PION
-   // 1 - KAON
-   // 2 - PROTON
-   if( type < 0 || type > 2)
-      return false;
-
-   return (mRecTree->getNSigmaTPC(0, type) < 2 && mRecTree->getNSigmaTPC(1, type) < 2);
-
-}
-*/
 void AnaV0SingleState::SaveMissingMomenta(TVector3 missP)
 {
    mRecTree->setPtMissing( missP.Pt() );
@@ -1009,46 +800,3 @@ void AnaV0SingleState::SaveMissingMomenta(TVector3 missP)
    mRecTree->setPyMissing( missP.Y() );   
 }
 
-/*
-void AnaV0SingleState::FillMSquared()
-{
-   int totCharge = mRecTree->getCharge(0) + mRecTree->getCharge(1);
-   double pTMissing = mRecTree->getPtMissing();
-   double mSquared = mRecTree->getMSquared();
-   
-   // hMSquared[strategy][state][particle]
-   // particle: All Pion Kaon Proton
-   // state: before tot charge | after tot charge | exclusive
-   // strategy: standard PID | standard PID w/O pT | selective dEdx 
-
-   // fill hMSquared for "before tot charge cut"
-   for (int iState = 0; iState < 3; ++iState)
-   {
-      // iState == 0 -> fill hMSquared for "before tot charge cut"
-      // iState == 1 -> fill hMSquared for "after tot charge cut"
-      // iState == 2 -> fill hMSquared for "after exclusive cut"
-
-      if( iState == 1 && totCharge != 0 )
-         continue;
-
-      if( iState == 2 && pTMissing > exclusivityCut )
-         continue;
-
-      for (int iStrategy = 0; iStrategy < 3; ++iStrategy) // for each strategy
-         hMSquared[iStrategy][iState][0]->Fill(mSquared);
-
-      int partTypeStrategyOne = PIDStartegy(0) + 1;
-      int partTypeStrategyTwo = PIDStartegy(1) + 1;
-
-      if( partTypeStrategyOne > 0 )
-         hMSquared[0][iState][partTypeStrategyOne]->Fill(mSquared);
-
-      if( partTypeStrategyTwo > 0 )
-         hMSquared[1][iState][partTypeStrategyTwo]->Fill(mSquared);
-
-      for(int iPart = 0; iPart < nParticles; ++iPart)
-         if( IsPairOf(iPart))
-            hMSquared[2][iState][iPart+1]->Fill(mSquared);
-   }
-}
-*/

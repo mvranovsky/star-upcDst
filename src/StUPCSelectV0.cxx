@@ -35,7 +35,7 @@ int StUPCSelectV0::selectTracks(vector<StUPCTrack>& tracks, std::vector<UChar_t>
     if( track1.getNhits() < 15 ) continue;
     if( track1.getPt() < 0.15 ) continue;
     hists1D[4]->Fill( track1.getEta() );
-    if( track1.getEta() > 1.1 ) continue;
+    if( abs(track1.getEta()) > 1.1 ) continue;
 
     Bool_t matchTof1 =  track1.getFlag( StUPCTrack::kTof );
 
@@ -46,7 +46,7 @@ int StUPCSelectV0::selectTracks(vector<StUPCTrack>& tracks, std::vector<UChar_t>
 
       if( track2.getPt() < 0.15 ) continue;
       hists1D[4]->Fill( track2.getEta() );
-      if( track2.getEta() > 1.1 ) continue;
+      if( abs(track2.getEta()) > 1.1 ) continue;
 
       Bool_t matchTof2 =  track2.getFlag( StUPCTrack::kTof );
 

@@ -63,6 +63,8 @@ TLorentzVector.h
 /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
 TObject.h
 /star/u/mvranovsk/star-upcDst/include/TObject.h
+TVector3.h
+/star/u/mvranovsk/star-upcDst/include/TVector3.h
 
 /star/u/mvranovsk/star-upcDst/work/include/Libreries.h
 iostream
@@ -198,10 +200,6 @@ Libreries.h
 Ana.h
 /star/u/mvranovsk/star-upcDst/work/src/Ana.h
 
-/star/u/mvranovsk/star-upcDst/work/src/AnaV0.cxx
-AnaV0.h
-/star/u/mvranovsk/star-upcDst/work/src/AnaV0.h
-
 /star/u/mvranovsk/star-upcDst/work/src/AnaV0SingleState.cxx
 AnaV0SingleState.h
 /star/u/mvranovsk/star-upcDst/work/src/AnaV0SingleState.h
@@ -210,23 +208,17 @@ AnaV0SingleState.h
 ../include/RecTree.h
 /star/u/mvranovsk/star-upcDst/work/include/RecTree.h
 
-/star/u/mvranovsk/star-upcDst/work/src/StUPCSelectV0Modified.cxx
-vector
--
-iostream
--
-StUPCEvent.h
-/star/u/mvranovsk/star-upcDst/work/src/StUPCEvent.h
-StUPCTrack.h
-/star/u/mvranovsk/star-upcDst/work/src/StUPCTrack.h
-StUPCVertex.h
-/star/u/mvranovsk/star-upcDst/work/src/StUPCVertex.h
-StUPCSelectV0Modified.h
-/star/u/mvranovsk/star-upcDst/work/src/StUPCSelectV0Modified.h
-StUPCV0.h
-/star/u/mvranovsk/star-upcDst/work/src/StUPCV0.h
-Util.h
-/star/u/mvranovsk/star-upcDst/work/src/Util.h
+/star/u/mvranovsk/star-upcDst/work/src/TofEff.cxx
+TofEff.h
+/star/u/mvranovsk/star-upcDst/work/src/TofEff.h
+RunDef.h
+/star/u/mvranovsk/star-upcDst/work/src/RunDef.h
+
+/star/u/mvranovsk/star-upcDst/work/src/TofEffMult.cxx
+TofEffMult.h
+/star/u/mvranovsk/star-upcDst/work/src/TofEffMult.h
+RunDef.h
+/star/u/mvranovsk/star-upcDst/work/src/RunDef.h
 
 /star/u/mvranovsk/star-upcDst/work/src/Util.cxx
 ../include/Util.h
@@ -239,28 +231,8 @@ Util.h
 include/Util.h
 RecTree.h
 include/RecTree.h
-
-include/AnaV0.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
-Util.h
-include/Util.h
-RecTree.h
-include/RecTree.h
-Ana.h
-include/Ana.h
-StUPCSelectV0Modified.h
-include/StUPCSelectV0Modified.h
 StUPCV0.h
 include/StUPCV0.h
-iostream
--
-vector
--
-utility
--
-unordered_map
--
 
 include/AnaV0SingleState.h
 UpcDstLibreries.h
@@ -271,8 +243,6 @@ RecTree.h
 include/RecTree.h
 Ana.h
 include/Ana.h
-StUPCSelectV0Modified.h
-include/StUPCSelectV0Modified.h
 StUPCV0.h
 include/StUPCV0.h
 iostream
@@ -282,6 +252,8 @@ vector
 utility
 -
 unordered_map
+-
+memory
 -
 
 include/EmbedMaker.h
@@ -422,7 +394,25 @@ bitset
 TString.h
 include/TString.h
 
-include/StUPCSelectV0Modified.h
+include/TofEff.h
+UpcDstLibreries.h
+include/UpcDstLibreries.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
+
+include/TofEffMult.h
+UpcDstLibreries.h
+include/UpcDstLibreries.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
 
 include/UpcDstLibreries.h
 Libreries.h

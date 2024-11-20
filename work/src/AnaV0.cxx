@@ -31,7 +31,7 @@ void AnaV0::Make()
        hEtaPhi->Fill(eta, phi);
        hEta->Fill(eta);
        if(abs(eta) > maxEta) continue;
-       hAnalysisFlow->Fill(V0ETA);
+       //hAnalysisFlow->Fill(V0ETA);
 
 
        saveNSigmaCorr(trk);
@@ -134,7 +134,7 @@ void AnaV0::Make()
            if (abs(vertex.Z()) > vertexRange )
                continue;
            hPosZCut->Fill(vertex.Z()); 
-           hAnalysisFlow->Fill(V0ZVERTEX);
+           //AnalysisFlow->Fill(V0ZVERTEX);
            hadronPairV0.push_back(make_pair(tracksV0[itrk],tracksV0[jtrk]));
        }
    }

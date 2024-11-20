@@ -234,6 +234,7 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
                mRecTree->Branch(Form("QAHadron%i",i) + tag, &mQATruth[i]);
          } 
 
+         mRecTree->Branch(Form("tofHit%i",i), &mTofHit[i]);
          mRecTree->Branch(Form("dEdxInKevCm%i",i), &mDEdxInKevCm[i]);
          mRecTree->Branch(Form("tofTimeInNs%i",i), &mTofTimeInNs[i]);
          mRecTree->Branch(Form("tofLengthInCm%i",i), &mTofLengthInCm[i]);

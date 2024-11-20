@@ -275,6 +275,8 @@ include/TLorentzVector.h
 include/StUPCVertex.h
 TObject.h
 include/TObject.h
+TVector3.h
+include/TVector3.h
 
 include/SystemOfUnits.h
 math.h

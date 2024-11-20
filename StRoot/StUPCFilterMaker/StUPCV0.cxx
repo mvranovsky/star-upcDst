@@ -16,36 +16,38 @@ ClassImp(StUPCV0)
 
 
 // _________________________________________________________
-StUPCV0::StUPCV0(): mLorentzVector(TLorentzVector()), mDecayVertex(TVector3()), mProdPlane(TVector3()), 
+StUPCV0::StUPCV0(): is_initialized(false), mLorentzVector(TLorentzVector()), mDecayVertex(TVector3()), mProdPlane(TVector3()), 
   mDCABeamLine(std::numeric_limits<float>::quiet_NaN()), mProdVertexHypo(TVector3()), 
   mPointingAngleHypo(std::numeric_limits<float>::quiet_NaN()), mDecayLengthHypo(std::numeric_limits<float>::quiet_NaN()), 
   mPointingAngle(std::numeric_limits<float>::quiet_NaN()), mDecayLength(std::numeric_limits<float>::quiet_NaN()), 
   mParticle1Dca(std::numeric_limits<float>::quiet_NaN()), mParticle2Dca(std::numeric_limits<float>::quiet_NaN()), 
   mDcaToPrimaryVertex(std::numeric_limits<float>::quiet_NaN()), mDcaDaughters(std::numeric_limits<float>::max()), 
   mCosThetaStar(std::numeric_limits<float>::quiet_NaN()), mThetaProdPlane(std::numeric_limits<float>::quiet_NaN()) , 
-  mAlphaAP(std::numeric_limits<float>::quiet_NaN()), mPtAP(std::numeric_limits<float>::quiet_NaN()) {
+  mAlphaAP(std::numeric_limits<float>::quiet_NaN()), mPtAP(std::numeric_limits<float>::quiet_NaN()), 
+  mCharge(std::numeric_limits<int>::quiet_NaN()) {
 }
 
 // _________________________________________________________
-StUPCV0::StUPCV0(StUPCV0 const * t) : mLorentzVector(t->mLorentzVector), mDecayVertex(t->mDecayVertex), mProdPlane(t->mProdPlane), 
+StUPCV0::StUPCV0(StUPCV0 const * t) : is_initialized(true), mLorentzVector(t->mLorentzVector), mDecayVertex(t->mDecayVertex), mProdPlane(t->mProdPlane), 
   mDCABeamLine(t->mDCABeamLine), mProdVertexHypo(TVector3()), mPointingAngleHypo(t->mPointingAngleHypo), mDecayLengthHypo(t->mDecayLengthHypo), 
   mPointingAngle(t->mPointingAngle), mDecayLength(t->mDecayLength), mParticle1Dca(t->mParticle1Dca), mParticle2Dca(t->mParticle2Dca), 
   mDcaToPrimaryVertex(t->mDcaToPrimaryVertex), mDcaDaughters(t->mDcaDaughters), mCosThetaStar(t->mCosThetaStar), 
-  mThetaProdPlane(t->mThetaProdPlane), mAlphaAP(t->mAlphaAP), mPtAP(t->mPtAP){
+  mThetaProdPlane(t->mThetaProdPlane), mAlphaAP(t->mAlphaAP), mPtAP(t->mPtAP), mCharge(t->mCharge) {
 }
 
 // _________________________________________________________
 StUPCV0::StUPCV0(StUPCTrack const * const particle1, StUPCTrack const * const particle2,
 		   float p1MassHypo, float p2MassHypo, unsigned short const p1Idx, unsigned short const p2Idx,
 		   TVector3 const & vtx, double * beamLine, float const bField, bool const useStraightLine) : 
-  mLorentzVector(TLorentzVector()), mDecayVertex(TVector3()), mProdPlane(TVector3()), 
+  is_initialized(true), mLorentzVector(TLorentzVector()), mDecayVertex(TVector3()), mProdPlane(TVector3()), 
   mDCABeamLine(std::numeric_limits<float>::quiet_NaN()), mProdVertexHypo(TVector3()), 
   mPointingAngleHypo(std::numeric_limits<float>::quiet_NaN()), mDecayLengthHypo(std::numeric_limits<float>::quiet_NaN()), 
   mPointingAngle(std::numeric_limits<float>::quiet_NaN()), mDecayLength(std::numeric_limits<float>::quiet_NaN()), 
   mParticle1Dca(std::numeric_limits<float>::quiet_NaN()), mParticle2Dca(std::numeric_limits<float>::quiet_NaN()), 
   mDcaToPrimaryVertex(std::numeric_limits<float>::quiet_NaN()), mDcaDaughters(std::numeric_limits<float>::max()), 
   mCosThetaStar(std::numeric_limits<float>::quiet_NaN()), mThetaProdPlane(std::numeric_limits<float>::quiet_NaN()) , 
-  mAlphaAP(std::numeric_limits<float>::quiet_NaN()), mPtAP(std::numeric_limits<float>::quiet_NaN()){
+  mAlphaAP(std::numeric_limits<float>::quiet_NaN()), mPtAP(std::numeric_limits<float>::quiet_NaN()),
+  mCharge(std::numeric_limits<int>::quiet_NaN()){
   // -- Create pair out of 2 tracks
   //     prefixes code:
   //      p1 means particle 1
@@ -76,8 +78,13 @@ StUPCV0::StUPCV0(StUPCTrack const * const particle1, StUPCTrack const * const pa
 // -- use straight lines approximation to get point of DCA of particle1-particle2 pair
 // bField is in kilogauss
 
+  if(bField == 0){
+    cout << "bField equal to 0" << endl;
+  }
+
   TVector3 const p1Mom = p1Helix.momentum(bField * kilogauss);  //vrati 3vektor hybnost v pociatku
   TVector3 const p2Mom = p2Helix.momentum(bField * kilogauss);
+
 
   StPicoPhysicalHelix const p1StraightLine(p1Mom, p1Helix.origin(), 0, particle1->getCharge());
   StPicoPhysicalHelix const p2StraightLine(p2Mom, p2Helix.origin(), 0, particle2->getCharge());
@@ -94,19 +101,22 @@ StUPCV0::StUPCV0(StUPCTrack const * const particle1, StUPCTrack const * const pa
   TVector3 const p1MomAtDca = p1Helix.momentumAt(ss.first,  bField *kilogauss);
   TVector3 const p2MomAtDca = p2Helix.momentumAt(ss.second, bField *kilogauss);
 
-  TLorentzVector const p1FourMom(p1MomAtDca, sqrt(p1MomAtDca.Mag2() + p1MassHypo*p1MassHypo));
-  TLorentzVector const p2FourMom(p2MomAtDca, sqrt(p2MomAtDca.Mag2() + p2MassHypo*p2MassHypo));
+  TLorentzVector p1FourMom(p1MomAtDca, sqrt(p1MomAtDca.Mag2() + p1MassHypo*p1MassHypo));
+  TLorentzVector p2FourMom(p2MomAtDca, sqrt(p2MomAtDca.Mag2() + p2MassHypo*p2MassHypo));
+  
+  mP1FourMom = p1FourMom;
+  mP2FourMom = p2FourMom;
 
   //4-hybnost V0 kandidata
-  mLorentzVector = p1FourMom + p2FourMom; // K0 momentum
+  mLorentzVector = mP1FourMom + mP2FourMom; // K0 momentum
 
   // -- calculate cosThetaStar
   TLorentzVector const pairFourMomReverse(-mLorentzVector.Px(), -mLorentzVector.Py(), -mLorentzVector.Pz(), mLorentzVector.E());
   TLorentzVector FourMomStar;
   if ( particle1->getCharge() == 1 ) {
-    FourMomStar = p1FourMom; }
+    FourMomStar = mP1FourMom; }
   else { 
-    FourMomStar = p2FourMom; }
+    FourMomStar = mP2FourMom; }
   FourMomStar.Boost(pairFourMomReverse.BoostVector());  
   mCosThetaStar = std::cos(FourMomStar.Vect().Angle(mLorentzVector.Vect()));
 
@@ -114,7 +124,9 @@ StUPCV0::StUPCV0(StUPCTrack const * const particle1, StUPCTrack const * const pa
   // this may be wrong
   TVector3 beamVector(beamLine[2],beamLine[3],1.); //unity vector along the beam axis with beamLine3D
 
+
   TVector3 mProdPlane_work = beamVector.Cross(mLorentzVector.Vect());
+
   mProdPlane = ( mProdPlane_work )*(1./mProdPlane_work.Mag() ); //unity normal vector to production plane
 
   mThetaProdPlane = mProdPlane.Angle(FourMomStar.Vect());
@@ -138,6 +150,7 @@ StUPCV0::StUPCV0(StUPCTrack const * const particle1, StUPCTrack const * const pa
   mDecayLength = vtxToV0.Mag();
   mDecayLengthHypo = ProdvtxToV0.Mag();
   mDcaToPrimaryVertex = mDecayLength*sin(mPointingAngle); // sine law: DcaToPrimaryVertex/sin(pointingAngle) = decayLength/sin(90°)
+  mCharge = particle1->getCharge() + particle2->getCharge();
 
   // -- calculate DCA of tracks to primary vertex
   //    if decay vertex is a tertiary vertex

@@ -34,12 +34,13 @@ namespace UTIL {
    enum SIGN { PLUS, MINUS, nSigns };
    enum LIST_OF_EFF_CORRECTIONS { RPACC, TPCRECOEFF, TOFMATCHEFF, nEffCorrections };
    enum ANALYSIS_CUT { ALL = 1, TRIG, TWORPTRKS, INFID, ONETOFVX, ZVERTEX, TWOTOFTRKS, ETA, OPPOSITE, PIPI, PPI, PIPBAR, nAnalysisCuts };
-   enum V0SELECTION_CUT {V0ALL = 1, V0TRIG,V0FLAG, V0ETA ,V0PID, V0PAIR, V0ZVERTEX, V0OPPOSITE, V0PIPI, V0PPI, V0PIPBAR , nV0SelectionCuts };
+   enum V0SELECTION_CUT {V0ALL = 1, V0TRIG,V0FLAG, V0PID, V0PAIR, V0ETAVTXZ, V0OPPOSITE, V0PIPI, V0PPI, V0PIPBAR , nV0SelectionCuts };
+   enum TOFEFF_CUT {TOFALL = 1, TOFTRIG, TOFTRACKQUALITY, TOFETAVTXZ, TOFPAIR, TOFOPPOSITE , nTOFEFFCuts};
    enum RANGE_LIMIT { MIN, MAX };
    enum DATASET { MC = 0, MCZB, DATA, nDataSets };
    enum DATATAG { TRUEMC = 0, RECO, nDataTag };
-   enum NUMBEREDHADRONS {PLUS1 = 0, MINUS1, PLUS2, MINUS2, PLUS3, MINUS3, PLUS4, MINUS4, PLUS5, MINUS5,PLUS6, MINUS6, PLUS7, MINUS7, PLUS8,MINUS8, PLUS9, MINUS9, PLUS10,MINUS10, nHadrons};
-   enum NUMBEREDSTATES {STATE0, STATE1, STATE2, STATE3, STATE4, STATE5, STATE6, STATE7, STATE8, STATE9, nStates};
+   enum NUMBEREDHADRONS {PLUS0 = 0,MINUS0, PLUS1, MINUS1, PLUS2, MINUS2, PLUS3, MINUS3, PLUS4, MINUS4, nHadrons};
+   enum NUMBEREDSTATES {STATE0 = 0, STATE1, STATE2, STATE3, STATE4, nStates};
 }
 
 using namespace std;
@@ -68,6 +69,7 @@ class UTIL::Util{
       inline TString efficiencyName(UInt_t id) const { if(id<nEffCorrections) return mEfficiencyName[id]; else{ std::cerr << "ERROR in Util::efficiencyName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisCutName(UInt_t id) const { if(id<nAnalysisCuts) return mCutName[id]; else{ std::cerr << "ERROR in Util::analysisCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisV0SelectionName(UInt_t id) const { if(id<nV0SelectionCuts) return mV0CutName[id]; else{ std::cerr << "ERROR in Util::analysisCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
+      inline TString analysisTofEff(UInt_t id) const { if(id<nTOFEFFCuts) return mTOFEFFName[id]; else{ std::cerr << "ERROR in Util::analysisTofEff(UInt_t id): id out of range" << std::endl; return TString("");} }      
       inline TString dataSetName(UInt_t id) const { if(id<nDataSets) return mDataSetName[id]; else{ std::cerr << "ERROR in Util::dataSetName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString dataTagName(UInt_t id) const { if(id<nDataTag) return mDataTagName[id]; else{ std::cerr << "ERROR in Util::dataTagName(UInt_t id): id out of range" << std::endl; return TString("");} }
 
@@ -122,6 +124,7 @@ class UTIL::Util{
       TString* mV0CutName;
       TString* mDataSetName;
       TString* mDataTagName;
+      TString* mTOFEFFName;
           
       Double_t mParticleMass[nParticles]; // GeV/c^2
       const Double_t mSpeedOfLight; // m/s

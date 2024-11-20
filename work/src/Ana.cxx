@@ -21,19 +21,27 @@ void Ana::SetEvent(StUPCEvent *upcEvt, StRPEvent *rpEvt, StRPEvent *mcEvt){
 //const int Util::triggerID[nTriggers] = { 570209, 570219, 570229, 570701, 570702, 570703, 570704, 570705, 
 //           570709, 570711, 570712, 570719, 590701, 590703, 590705, 590708, 590709};
 
+bool Ana::etaVertexZCut(const StUPCTrack*& trk1, const StUPCTrack*& trk2, double vtxZ ){
 
-bool Ana::IsGoodTrack(const StUPCTrack *trk) const{
-   if(trk->getNhitsFit() > minNHitsFit && trk->getNhitsDEdx() > minNHitsDEdx && trk->getPt() > minPt 
-   && trk->getDcaXY() < maxDcaXY && trk->getDcaZ() < maxDcaZ && trk->getDcaZ() > minDcaZ)
-      return true;
-   return false;
+    if( abs(trk1->getEta()) > maxEta || abs( trk2->getEta() ) > maxEta || abs( vtxZ ) > vertexRange  )
+        return false;
+    //track 1
+    if( !(trk1->getEta() > vertexEtaRange( vtxZ ,0 ) && trk1->getEta() < vertexEtaRange( vtxZ ,1 ) ) )
+        return false;
+    //track 1
+    if( !(trk2->getEta() > vertexEtaRange(vtxZ ,0 ) && trk2->getEta() < vertexEtaRange(vtxZ ,1 ) ) )
+        return false;
+
+    return true;
 }
 
-bool Ana::IsGoodTofTrack(const StUPCTrack *trk) const{
-   if(trk->getTofTime() > 0 && trk->getTofPathLength() > 0)
-      return true;
-   return false;
+
+double Ana::vertexEtaRange(double vtxZ , int rSide ){  // 0 for min, 1 for max
+
+    return etaVertexSlope*vtxZ + (2*rSide - 1)*etaVertexShift; 
 }
+
+
 
 bool Ana::RPInFidRange(double x, double y) const{
    return (abs(y) < 0.8 && abs(y) > 0.4 && x > -0.27 && (x + 0.6)*(x + 0.6) + y*y < 1.25) ? true : false;
@@ -60,6 +68,21 @@ bool Ana::CheckTriggers(const vector<int> *triggerArray, StUPCEvent *mUpcEvt, TH
    }
    return triggered;
 }
+
+
+int Ana::hasGoodTPCnSigma(const StUPCTrack *trk){ //zmiernit podmienku na proton, skusit prebehnut aj na K0, Lambda 
+  //check for good nSigma of hadron in TPC, 10 means unidentified
+    if((trk->getNSigmasTPCProton() < 3) &&  (trk->getNSigmasTPCKaon() > 3) && (trk->getNSigmasTPCPion() > 3))
+        return PROTON;
+    else if((trk->getNSigmasTPCProton() > 3) && (trk->getNSigmasTPCKaon() < 3) && (trk->getNSigmasTPCPion()>3))
+        return KAON;
+    else if(trk->getNSigmasTPCPion() < 3)
+        return PION;
+    else
+        return 10;
+}
+
+
 
 
 void Ana::AnaRpTracks(StRPEvent *event)
@@ -143,7 +166,7 @@ void Ana::SaveTrackInfo(const StUPCTrack *trk, unsigned int iTrack) // this func
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kPion) , iTrack, PION );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kKaon) , iTrack, KAON );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kProton) , iTrack, PROTON );
-   if( trk->getFlag( StUPCTrack::kTof ) ){
+   if( trk->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk) ){
       mRecTree->setTofHit(1, iTrack);
    } else {
       mRecTree->setTofHit(-1, iTrack);
@@ -176,7 +199,7 @@ void Ana::SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned i
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kPion) , iTrack, PION );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kKaon) , iTrack, KAON );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kProton) , iTrack, PROTON );
-   if( trk->getFlag( StUPCTrack::kTof ) ){
+   if( trk->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk) ){
       mRecTree->setTofHit(1, iTrack);
    } else {
       mRecTree->setTofHit(-1, iTrack);
@@ -216,6 +239,9 @@ void Ana::SaveRPinfo(const StUPCRpsTrack *trackRP, unsigned int iSide)
 */
 }
 
+
+
+
 void Ana::SaveStateInfo(TLorentzVector state, int totQ, unsigned int iState){
 
    mRecTree->setInvMass( state.M(), iState );
@@ -227,17 +253,17 @@ void Ana::SaveStateInfo(TLorentzVector state, int totQ, unsigned int iState){
    mRecTree->setTotQ( totQ , iState);
 }
 
-void Ana::SaveVertexInfo(const TVector3 vrtx, Double_t dcaDaughters, Double_t dcaBeamline, Double_t pointingAngle, Double_t decayLength,Double_t vertexDiff, unsigned int iVtx)
+void Ana::SaveVertexInfo(const StUPCV0* V0, unsigned int iVtx)
 {
-   mRecTree->setVertexZInCm( vrtx.Z(), iVtx );
-   mRecTree->setVertexYInCm( vrtx.Y(), iVtx );
-   mRecTree->setVertexXInCm( vrtx.X(), iVtx );
+   mRecTree->setVertexZInCm( V0->prodVertexHypo().Z(), iVtx );
+   mRecTree->setVertexYInCm( V0->prodVertexHypo().Y(), iVtx );
+   mRecTree->setVertexXInCm( V0->prodVertexHypo().X(), iVtx );
 
-   mRecTree->setDcaDaughters( dcaDaughters, iVtx );
-   mRecTree->setDcaBeamline( dcaBeamline, iVtx );
-   mRecTree->setPointingAngle( pointingAngle, iVtx );
-   mRecTree->setDecayLength( decayLength, iVtx );
-   mRecTree->setVertexDiff( vertexDiff, iVtx );
+   mRecTree->setDcaDaughters( V0->dcaDaughters(), iVtx );
+   mRecTree->setDcaBeamline( V0->DCABeamLine(), iVtx );
+   mRecTree->setPointingAngle( V0->pointingAngleHypo(), iVtx );
+   mRecTree->setDecayLength( V0->decayLengthHypo(), iVtx );
+   mRecTree->setVertexDiff( -999, iVtx );
 }
 
 

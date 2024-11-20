@@ -6,7 +6,6 @@
 #include "Util.h"
 #include "RecTree.h"
 #include "Ana.h"
-#include "StUPCSelectV0Modified.h"
 #include "StUPCV0.h"
 #include <iostream>
 #include <vector>
@@ -40,7 +39,6 @@ class AnaV0 : public Ana{
       TH1D *hPosZCut, *hVtxDiff, *hNPairV0, *hSameTrackPair, *hBothFlags;
       TH1D *hNSigmaPi, *hNSigmaP, *hNSigmaK, *hDEdxSignal;
 
-      StUPCSelectV0Modified *mSelectV0; // selector for tracks from V0 candidates
       Util* mUtil;
       //topology cuts
       TH1D *hDcaDaughters, *hDcaBeamline, *hPointingAngle, *hDecayLength;

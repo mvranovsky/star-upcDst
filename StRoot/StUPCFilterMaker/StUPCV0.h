@@ -39,8 +39,12 @@ class StUPCV0 : public TObject
 
   ~StUPCV0() {;}
   
-
+  // Method to check initialization status
+  bool isInitialized() const;
+  
   TLorentzVector const & lorentzVector() const;
+  TLorentzVector const & lorentzVectorPart1() const;
+  TLorentzVector const & lorentzVectorPart2() const;
   TVector3 const & decayVertex() const;    // V0 decay vertex
   TVector3 const & prodVertexHypo() const; // V0 production vertex 
   TVector3 const & prodPlane() const;
@@ -48,6 +52,7 @@ class StUPCV0 : public TObject
   float pt()   const;
   float eta()  const;
   float phi()  const;
+  int charge() const;
   float pointingAngle() const;       // Pointing angle using input vertex (vtx)
   float pointingAngleHypo() const;   // Pointing angle using reconstructed V0 production vertex 
   float pointingAngle(TVector3 const & vtx2) const;
@@ -75,7 +80,13 @@ class StUPCV0 : public TObject
  private:
   StUPCV0(StUPCV0 const &);
   StUPCV0& operator=(StUPCV0 const &);
+
+  bool is_initialized; // Flag to indicate if the object is fully initialized
+
   TLorentzVector mLorentzVector; 
+  TLorentzVector mP1FourMom;
+  TLorentzVector mP2FourMom;
+
   TVector3   mDecayVertex;
 
   TVector3 mProdPlane; //production plane vector: unity vector perpendicular to production plane
@@ -95,14 +106,23 @@ class StUPCV0 : public TObject
   float mThetaProdPlane; //anlgle between momentum of particle1 and mProdPlane vector in mother rest frame
   float mAlphaAP;
   float mPtAP;
+  int mCharge;
+
+
   ClassDef(StUPCV0,2)
 };
 
+
+
+inline bool StUPCV0::isInitialized() const {return is_initialized;}
 inline TLorentzVector const & StUPCV0::lorentzVector() const { return mLorentzVector;}
+inline TLorentzVector const & StUPCV0::lorentzVectorPart1() const { return mP1FourMom;}
+inline TLorentzVector const & StUPCV0::lorentzVectorPart2() const { return mP2FourMom;}
 inline float StUPCV0::m()    const { return mLorentzVector.M();}
 inline float StUPCV0::pt()   const { return mLorentzVector.Perp();}
 inline float StUPCV0::eta()  const { return mLorentzVector.PseudoRapidity();}
 inline float StUPCV0::phi()  const { return mLorentzVector.Phi();}
+inline int StUPCV0::charge() const { return mCharge; }
 inline float StUPCV0::px()   const { return mLorentzVector.Px();}
 inline float StUPCV0::py()   const { return mLorentzVector.Py();}
 inline float StUPCV0::pz()   const { return mLorentzVector.Pz();}

@@ -16,36 +16,38 @@ ClassImp(StUPCV0)
 
 
 // _________________________________________________________
-StUPCV0::StUPCV0(): mLorentzVector(TLorentzVector()), mDecayVertex(TVector3()), mProdPlane(TVector3()), 
+StUPCV0::StUPCV0(): is_initialized(false), mLorentzVector(TLorentzVector()), mDecayVertex(TVector3()), mProdPlane(TVector3()), 
   mDCABeamLine(std::numeric_limits<float>::quiet_NaN()), mProdVertexHypo(TVector3()), 
   mPointingAngleHypo(std::numeric_limits<float>::quiet_NaN()), mDecayLengthHypo(std::numeric_limits<float>::quiet_NaN()), 
   mPointingAngle(std::numeric_limits<float>::quiet_NaN()), mDecayLength(std::numeric_limits<float>::quiet_NaN()), 
   mParticle1Dca(std::numeric_limits<float>::quiet_NaN()), mParticle2Dca(std::numeric_limits<float>::quiet_NaN()), 
   mDcaToPrimaryVertex(std::numeric_limits<float>::quiet_NaN()), mDcaDaughters(std::numeric_limits<float>::max()), 
   mCosThetaStar(std::numeric_limits<float>::quiet_NaN()), mThetaProdPlane(std::numeric_limits<float>::quiet_NaN()) , 
-  mAlphaAP(std::numeric_limits<float>::quiet_NaN()), mPtAP(std::numeric_limits<float>::quiet_NaN()) {
+  mAlphaAP(std::numeric_limits<float>::quiet_NaN()), mPtAP(std::numeric_limits<float>::quiet_NaN()), 
+  mCharge(std::numeric_limits<int>::quiet_NaN()) {
 }
 
 // _________________________________________________________
-StUPCV0::StUPCV0(StUPCV0 const * t) : mLorentzVector(t->mLorentzVector), mDecayVertex(t->mDecayVertex), mProdPlane(t->mProdPlane), 
+StUPCV0::StUPCV0(StUPCV0 const * t) : is_initialized(true), mLorentzVector(t->mLorentzVector), mDecayVertex(t->mDecayVertex), mProdPlane(t->mProdPlane), 
   mDCABeamLine(t->mDCABeamLine), mProdVertexHypo(TVector3()), mPointingAngleHypo(t->mPointingAngleHypo), mDecayLengthHypo(t->mDecayLengthHypo), 
   mPointingAngle(t->mPointingAngle), mDecayLength(t->mDecayLength), mParticle1Dca(t->mParticle1Dca), mParticle2Dca(t->mParticle2Dca), 
   mDcaToPrimaryVertex(t->mDcaToPrimaryVertex), mDcaDaughters(t->mDcaDaughters), mCosThetaStar(t->mCosThetaStar), 
-  mThetaProdPlane(t->mThetaProdPlane), mAlphaAP(t->mAlphaAP), mPtAP(t->mPtAP){
+  mThetaProdPlane(t->mThetaProdPlane), mAlphaAP(t->mAlphaAP), mPtAP(t->mPtAP), mCharge(t->mCharge) {
 }
 
 // _________________________________________________________
 StUPCV0::StUPCV0(StUPCTrack const * const particle1, StUPCTrack const * const particle2,
 		   float p1MassHypo, float p2MassHypo, unsigned short const p1Idx, unsigned short const p2Idx,
 		   TVector3 const & vtx, double * beamLine, float const bField, bool const useStraightLine) : 
-  mLorentzVector(TLorentzVector()), mDecayVertex(TVector3()), mProdPlane(TVector3()), 
+  is_initialized(true), mLorentzVector(TLorentzVector()), mDecayVertex(TVector3()), mProdPlane(TVector3()), 
   mDCABeamLine(std::numeric_limits<float>::quiet_NaN()), mProdVertexHypo(TVector3()), 
   mPointingAngleHypo(std::numeric_limits<float>::quiet_NaN()), mDecayLengthHypo(std::numeric_limits<float>::quiet_NaN()), 
   mPointingAngle(std::numeric_limits<float>::quiet_NaN()), mDecayLength(std::numeric_limits<float>::quiet_NaN()), 
   mParticle1Dca(std::numeric_limits<float>::quiet_NaN()), mParticle2Dca(std::numeric_limits<float>::quiet_NaN()), 
   mDcaToPrimaryVertex(std::numeric_limits<float>::quiet_NaN()), mDcaDaughters(std::numeric_limits<float>::max()), 
   mCosThetaStar(std::numeric_limits<float>::quiet_NaN()), mThetaProdPlane(std::numeric_limits<float>::quiet_NaN()) , 
-  mAlphaAP(std::numeric_limits<float>::quiet_NaN()), mPtAP(std::numeric_limits<float>::quiet_NaN()){
+  mAlphaAP(std::numeric_limits<float>::quiet_NaN()), mPtAP(std::numeric_limits<float>::quiet_NaN()),
+  mCharge(std::numeric_limits<int>::quiet_NaN()){
   // -- Create pair out of 2 tracks
   //     prefixes code:
   //      p1 means particle 1
@@ -148,6 +150,7 @@ StUPCV0::StUPCV0(StUPCTrack const * const particle1, StUPCTrack const * const pa
   mDecayLength = vtxToV0.Mag();
   mDecayLengthHypo = ProdvtxToV0.Mag();
   mDcaToPrimaryVertex = mDecayLength*sin(mPointingAngle); // sine law: DcaToPrimaryVertex/sin(pointingAngle) = decayLength/sin(90°)
+  mCharge = particle1->getCharge() + particle2->getCharge();
 
   // -- calculate DCA of tracks to primary vertex
   //    if decay vertex is a tertiary vertex

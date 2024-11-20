@@ -10,6 +10,7 @@ CMakeFiles/upc-reader.dir/src/Ana.cxx.o
  /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
  /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
  /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
  /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
  /star/u/mvranovsk/star-upcDst/work/src/Ana.cxx
  include/Ana.h
@@ -17,27 +18,6 @@ CMakeFiles/upc-reader.dir/src/Ana.cxx.o
  include/Libreries.h
  include/RecTree.h
  include/RunDef.h
- include/UpcDstLibreries.h
- include/Util.h
-CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o
- /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
- /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
- /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
- /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
- /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
- /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
- /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
- /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
- /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
- /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
- /star/u/mvranovsk/star-upcDst/work/src/AnaV0.cxx
- include/Ana.h
- include/AnaV0.h
- include/EmbedMaker.h
- include/Libreries.h
- include/RecTree.h
- include/RunDef.h
- include/StUPCSelectV0Modified.h
  include/UpcDstLibreries.h
  include/Util.h
 CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o
@@ -58,7 +38,6 @@ CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o
  include/Libreries.h
  include/RecTree.h
  include/RunDef.h
- include/StUPCSelectV0Modified.h
  include/UpcDstLibreries.h
  include/Util.h
 CMakeFiles/upc-reader.dir/src/RecTree.cxx.o
@@ -66,14 +45,45 @@ CMakeFiles/upc-reader.dir/src/RecTree.cxx.o
  /star/u/mvranovsk/star-upcDst/work/include/RecTree.h
  /star/u/mvranovsk/star-upcDst/work/include/Util.h
  /star/u/mvranovsk/star-upcDst/work/src/RecTree.cxx
-CMakeFiles/upc-reader.dir/src/StUPCSelectV0Modified.cxx.o
+CMakeFiles/upc-reader.dir/src/TofEff.cxx.o
+ /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
  /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
  /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
  /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
  /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
- /star/u/mvranovsk/star-upcDst/work/src/StUPCSelectV0Modified.cxx
+ /star/u/mvranovsk/star-upcDst/work/src/TofEff.cxx
+ include/Ana.h
+ include/EmbedMaker.h
  include/Libreries.h
- include/StUPCSelectV0Modified.h
+ include/RecTree.h
+ include/RunDef.h
+ include/TofEff.h
+ include/UpcDstLibreries.h
+ include/Util.h
+CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o
+ /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
+ /star/u/mvranovsk/star-upcDst/work/src/TofEffMult.cxx
+ include/Ana.h
+ include/EmbedMaker.h
+ include/Libreries.h
+ include/RecTree.h
+ include/RunDef.h
+ include/TofEffMult.h
+ include/UpcDstLibreries.h
  include/Util.h
 CMakeFiles/upc-reader.dir/src/Util.cxx.o
  /star/u/mvranovsk/star-upcDst/work/include/Libreries.h

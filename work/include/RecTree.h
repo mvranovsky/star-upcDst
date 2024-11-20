@@ -281,7 +281,7 @@ class RecTree{
       Double_t mNSigmaTPC[nHadrons][nParticles]; 
       Double_t mDcaXYInCm[nHadrons], mDcaZInCm[nHadrons], mNHitsFit[nHadrons], mNHitsDEdx[nHadrons];
       UInt_t mQATruth[nHadrons]; // for true MC hadrons
-      Int_t  mTofHit[nStates];
+      Int_t mTofHit[nHadrons];
       
       // RP track info
       Double_t mThetaRp[nSides], mPhiRp[nSides], mTimeRp[nSides], mT[nSides];
