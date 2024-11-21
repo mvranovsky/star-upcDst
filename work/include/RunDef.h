@@ -9,9 +9,9 @@
 const bool runAnaBP = false;
 const bool runAnaV0 = false;
 const bool runAnaV0Control = false;
-const bool runAnaV0SingleState = true;
+const bool runAnaV0SingleState = false;
 const bool runMCAna = false;
-const bool runTofEff = false;
+const bool runTofEff = true;
 const bool runTofEffMult = false;
 
 const bool runStudy[] = { runAnaBP, runAnaV0, runAnaV0Control};
@@ -85,11 +85,12 @@ const double maxDecayLengthHypo = 3.;
 // specific conditions for special eta-vtxZ cut
 const double maxEta = 0.9;
 const double minEta = 0.;
+const double vertexRangeForEVz = 100;
 const double etaVertexSlope = -1/250.0;
 const double etaVertexShift = 0.9;
 
 // vertex range in z-coordinate
-const double vertexRange = 100.0; // cm
+const double vertexRange = 60.0; // cm
 //const double exclusivityCut = 0.7;
 //const double exclusivityCut = 0.1;
 

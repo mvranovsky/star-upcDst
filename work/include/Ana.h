@@ -22,11 +22,14 @@ class Ana{
       //inline bool RPInFidRange(double x, double y) const { return (abs(y) < fpPyMax[EU] && abs(y) > fpPyMin[EU] && x > fpPxMin[EU] && (x + fpPxCenter[EU])*(x + fpPxCenter[EU]) + y*y < fpPRadius[EU]) ? true : false;}
       //inline bool RPInElFidRange(double x, double y) const { return (abs(y) < fpElPyMax && abs(y) > fpElPyMin && x > fpElPxMin && x < fpElPxMax) ? true : false;}
       //inline bool IsInRpRange(double x, double y, int rpId, TVector3 offSet) const { return (abs(y) < abs(offSet[Y]) || abs(y) > abs(offSet[Y]) + 0.03 || x < -0.02 || x > 0.02) ? false : true; };
-      double vertexEtaRange(double vtxZ , int rSide );
-      bool etaVertexZCut(const StUPCTrack*& trk1, const StUPCTrack*& trk2, double vtxZ );
-      //inline bool IsGoodEtaTrack(const StUPCTrack *trk) const { return (abs(trk->getEta()) < maxEta && trk->getEta() > vertexEtaRange(0) && trk->getEta() < vertexEtaRange(1) );}
+
       inline bool IsGoodTrack(const StUPCTrack *trk) const { return ( trk->getNhitsFit() > minNHitsFit && trk->getNhitsDEdx() > minNHitsDEdx && trk->getPt() > minPt);}
       inline bool IsGoodTofTrack(const StUPCTrack *trk) const {return (trk->getTofTime() > 0 && trk->getTofPathLength() > 0);}
+      
+      inline double vertexEtaRange(int rSide, int idx ) const{ return mRecTree->IsVertexSet(idx) ? etaVertexSlope*mRecTree->getVertexZInCm(idx) + (2*rSide - 1)*etaVertexShift : (2*rSide - 1)*maxEta; } // 0 for min, 1 for max
+      inline bool IsGoodEtaTrack(const StUPCTrack *trk, int idx) const { return (abs(trk->getEta()) < maxEta && trk->getEta() > vertexEtaRange(0,idx) && trk->getEta() < vertexEtaRange(1, idx) );}
+
+
       int hasGoodTPCnSigma(const StUPCTrack *trk); 
 
       bool CheckTriggers(const vector<int> *triggerArray, StUPCEvent *mUpcEvt, TH1D *hTriggerBits) const;

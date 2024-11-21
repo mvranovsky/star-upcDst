@@ -253,8 +253,6 @@ utility
 -
 unordered_map
 -
-memory
--
 
 include/EmbedMaker.h
 UpcDstLibreries.h

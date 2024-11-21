@@ -129,8 +129,6 @@ utility
 -
 unordered_map
 -
-memory
--
 
 include/AnalysisManager.h
 Libreries.h

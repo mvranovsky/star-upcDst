@@ -21,26 +21,6 @@ void Ana::SetEvent(StUPCEvent *upcEvt, StRPEvent *rpEvt, StRPEvent *mcEvt){
 //const int Util::triggerID[nTriggers] = { 570209, 570219, 570229, 570701, 570702, 570703, 570704, 570705, 
 //           570709, 570711, 570712, 570719, 590701, 590703, 590705, 590708, 590709};
 
-bool Ana::etaVertexZCut(const StUPCTrack*& trk1, const StUPCTrack*& trk2, double vtxZ ){
-
-    if( abs(trk1->getEta()) > maxEta || abs( trk2->getEta() ) > maxEta || abs( vtxZ ) > vertexRange  )
-        return false;
-    //track 1
-    if( !(trk1->getEta() > vertexEtaRange( vtxZ ,0 ) && trk1->getEta() < vertexEtaRange( vtxZ ,1 ) ) )
-        return false;
-    //track 1
-    if( !(trk2->getEta() > vertexEtaRange(vtxZ ,0 ) && trk2->getEta() < vertexEtaRange(vtxZ ,1 ) ) )
-        return false;
-
-    return true;
-}
-
-
-double Ana::vertexEtaRange(double vtxZ , int rSide ){  // 0 for min, 1 for max
-
-    return etaVertexSlope*vtxZ + (2*rSide - 1)*etaVertexShift; 
-}
-
 
 
 bool Ana::RPInFidRange(double x, double y) const{

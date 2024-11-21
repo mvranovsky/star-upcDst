@@ -165,7 +165,7 @@ void AnaV0SingleState::Make()
         hEtaPhi->Fill(eta2, phi2);
         hEta->Fill(eta2);
 
-        if(!etaVertexZCut(trk1, trk2, vertex.Z() ) )
+        if(abs(trk1->getEta() )> maxEta || abs(trk2->getEta() ) > maxEta || abs(vertex.Z()) > vertexRange )
             continue;
 
         hPosZCut->Fill( vertex.Z() ); 
