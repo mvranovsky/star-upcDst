@@ -7,17 +7,10 @@
 #include "AnaBP.h"
 #include "Ana.h"
 #include "AnaV0.h"
-#include "AnaV0SingleState.h"
+#include "AnaV0Mult.h"
 #include "TofEff.h"
 #include "TofEffMult.h"
-/*
-#include "RpMCAna.h"
-#include "VertexStudy.h"
-#include "TofQA.h"
-#include "TrigEff.h"
-#include "FullZB.h"
-#include "ElasticAna.h"
-*/
+
 using namespace std;
 using namespace UTIL;
 
@@ -241,27 +234,13 @@ bool ConnectInput(int argc, char** argv)
          return false;
       } 
       upcTree = dynamic_cast<TTree*>( inFile->Get("mUPCTree") );
-      /*
-      if( runRPMCANA ){
-         // open Monte Cralo      
-         string mcInput = pathToMC + input.substr(input.length()-13, input.length()); 
-         cout << "MC input from root file: "<< mcInput << endl;
-         mcFile = TFile::Open(mcInput.c_str(), "read");
-         if(!mcFile)
-         {
-            cout<< "Couldn't open input MC root file..."<<endl;
-            return false;
-         } 
-         mcTree = dynamic_cast<TTree*>( mcFile->Get("picoDST") );    
-      }*/
    }else if(input.find(".list") != string::npos )
    {
       cout << "Input from chain" << endl;
       upcChain = new TChain("mUPCTree");
       mcChain = new TChain("picoDST");
       ifstream instr(input.c_str());
-      if (!instr.is_open())
-      {
+      if (!instr.is_open()){
          cout<< "Couldn't open: "<<input.c_str()<<endl;
          return false;
       }
@@ -271,28 +250,16 @@ bool ConnectInput(int argc, char** argv)
       if(argc == 3)
          fileId = atoi(argv[2]);
 
-      while(getline(instr, line)) 
-      {
+      while(getline(instr, line)) {
          if(fileId==lineId || fileId== -1)
          {
             upcChain->AddFile(line.c_str());
             inFile = TFile::Open(line.c_str(), "read");
-            if(!inFile)
-            {
+            if(!inFile){
                cout<< "Couldn't open: "<<line.c_str()<<endl;
                return false;
             } 
-         }/*
-         if( runRPMCANA ){
-            string mcInput = pathToMC + line.substr(line.length()-13, line.length()); 
-            mcChain->AddFile(mcInput.c_str());
-            inFile = TFile::Open(mcInput.c_str(), "read");
-            if(!inFile)
-            {
-               cout<< "Couldn't open: "<<mcInput.c_str()<<endl;
-               return false;
-            } 
-         }*/
+         }
          lineId++;
       }
       instr.close();
@@ -305,19 +272,6 @@ bool ConnectInput(int argc, char** argv)
 
    upcTree->SetBranchAddress("mUPCEvent", &upcEvt);
    upcTree->SetBranchAddress("mRPEvent", &origRpEvt); 
-   /*
-   if( runRPMCANA ){
-      mcTree->SetBranchAddress("StRPEvent", &mcEvt); 
-      mcTree->SetBranchAddress("mX_IP", &mc_vrtx[0]); 
-      mcTree->SetBranchAddress("mY_IP", &mc_vrtx[1]); 
-      mcTree->SetBranchAddress("mZ_IP", &mc_vrtx[2]); 
-      mcTree->SetBranchAddress("mPx_RPE", &mc_p[0][E]); 
-      mcTree->SetBranchAddress("mPy_RPE", &mc_p[1][E]); 
-      mcTree->SetBranchAddress("mPz_RPE", &mc_p[2][E]); 
-      mcTree->SetBranchAddress("mPx_RPW", &mc_p[0][W]); 
-      mcTree->SetBranchAddress("mPy_RPW", &mc_p[1][W]); 
-      mcTree->SetBranchAddress("mPz_RPW", &mc_p[2][W]); 
-   }*/
 
    return true;
 }//ConnectInput

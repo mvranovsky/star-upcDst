@@ -18,7 +18,6 @@ void TofEff::Make(){
 
    hAnalysisFlow->Fill(TOFTRIG);
 
-   vector<int> hadronID, tagID;
    for (int itrk = 0; itrk < mUpcEvt->getNumberOfTracks(); ++itrk){
 
       const StUPCTrack* trk = mUpcEvt->getTrack(itrk);
@@ -118,8 +117,8 @@ void TofEff::Make(){
          if(V0->charge() == 0){
             if(trk2->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk2) ){
                hInvMassTof2->Fill( V0->lorentzVector().M() );
-               hInvMassTof2->Fill( V0->lorentzVector().M() );
-               hInvMassTof1->Fill( V0->lorentzVector().M() );
+               //hInvMassTof2->Fill( V0->lorentzVector().M() );
+               //hInvMassTof1->Fill( V0->lorentzVector().M() );
                hInvMassTof1->Fill( V0->lorentzVector().M() );      
             }
             else{
@@ -129,10 +128,7 @@ void TofEff::Make(){
             continue;
          }
 
-
          hAnalysisFlow->Fill(TOFOPPOSITE);
-
-
             
          // find the V0 whose invariant mass is the closest to K0S
          double dist = V0->DCABeamLine() + V0->dcaDaughters();
@@ -149,12 +145,15 @@ void TofEff::Make(){
    if( closest == 999 || !bestV0->isInitialized() || bestV0 == nullptr)
       return;
 
-
    
    mRecTree->setPairID(K0S,0);
 
-   SaveTrackInfo(mUpcEvt->getTrack(bestPair.first), 0);
-   SaveTrackInfo(mUpcEvt->getTrack(bestPair.second), 1);
+   TLorentzVector hadron1, hadron2;
+   mUpcEvt->getTrack(bestPair.first)->getLorentzVector(hadron1,mUtil->mass(PION));
+   mUpcEvt->getTrack(bestPair.second)->getLorentzVector(hadron2,mUtil->mass(PION));
+
+   SaveTrackInfo(mUpcEvt->getTrack(bestPair.first),hadron1, 0);
+   SaveTrackInfo(mUpcEvt->getTrack(bestPair.second),hadron2, 1);
 
    SaveStateInfo(bestV0->lorentzVector(), 0 , 0);
 
@@ -224,9 +223,19 @@ void TofEff::Init(){
      TString label; label.Form("%d",triggerID[tb]);
      hTriggerBits->GetXaxis()->SetBinLabel(tb+1, label);
    }
-   mRecTree = new RecTree(nameOfAnaTofEff, TofEffTreeBits, false); 
+   mRecTree = new RecTree(nameOfTofEffTree, TofEffTreeBits, false); 
 
-   tpcCounter = 0;
+   hEta = new TH1D("hEta", "Pseudorapidity; #eta; counts", 60, -2, 2);
+   hEtaCut = new TH1D("hEtaCut", "Pseudorapidity; #eta [-]; counts", 60, -2, 2);
+
+   hEtaPhi = new TH2F("hEtaPhi","Phi vs eta of TOF tracks; #eta; #varphi",100,-2,2,100,-4,4);
+   hEtaPhiCut = new TH2F("hEtaPhiCut","Phi vs eta of TOF tracks; #eta ; #varphi",100,-2,2,100,-4,4);
+
+   hPosZ =  new TH1D("hPosZ", "Position of z_{vertex}; Vertex_{Z} [cm]; counts", 60, -150, 150); 
+   hPosZCut =  new TH1D("hPosZCut", "Position of z_{vertex}; Vertex_{Z} [cm]; counts", 60, -150, 150); 
+
+   hEtaVtxZ = new TH2F("hEtaVtxZ", "hEtaVtxZ; #eta [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
+   hEtaVtxZCut = new TH2F("hEtaVtxZCut", "hEtaVtxZ; #eta [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
 
 
    hNSigmaPiPcorr = new TH2F("hNSigmaPiPcorr","n_{#sigma} pions against protons;n#sigma_{#pi};n#sigma_{p}", 100, -25, 25, 100, -25, 25);
@@ -277,14 +286,6 @@ void TofEff::Init(){
    hRPcorrEast[1]->GetXaxis()->SetTitle("p_{x} [GeV]");
    hRPcorrEast[1]->GetYaxis()->SetTitle("p_{y} [GeV]");
 
-
-   hEtaPhi = new TH2F("hEtaPhi","Phi vs eta of TOF tracks",100,-2,2,100,-4,4);
-   hEtaPhi->GetXaxis()->SetTitle("#eta");
-   hEtaPhi->GetYaxis()->SetTitle("#varphi");
-   hEtaPhi->SetTitle("Pseudorapidity and azimuthal angle distribution");
-
-   hEtaPhiCut = new TH2F("hEtaPhiCut","Phi vs eta of TOF tracks; #eta ; #varphi",100,-2,2,100,-4,4);
-
    hNumberRPTracks = new TH1D("NumberRPTracks", "Number of Tracks in RPs per event", 400, 0, 40);
    hNumberRPTracks->GetXaxis()->SetTitle("Number of tracks in RPs");
    hNumberRPTracks->GetYaxis()->SetTitle(YAxisDescription);
@@ -298,22 +299,6 @@ void TofEff::Init(){
    hPt->GetXaxis()->SetTitle("p_{T} [GeV]");
    hPt->GetYaxis()->SetTitle(YAxisDescription);
 
-   hEta = new TH1D("hEta", "Pseudorapidity", 60, -2, 2);
-   hEta->SetTitle("Distribution of pseudorapidity ");
-   hEta->GetXaxis()->SetTitle("#eta");
-   hEta->GetYaxis()->SetTitle(YAxisDescription);
-
-   hEtaCut = new TH1D("hEtaCut", "Pseudorapidity; #eta [-]; counts", 60, -2, 2);
-
-   hDcaZ =  new TH1D("hDcaZ", "DcaZ", 100, -3,3); 
-   hDcaZ->SetTitle("Distribution of DCA_{z} ");
-   hDcaZ->GetXaxis()->SetTitle("DCA_{z} [cm]");
-   hDcaZ->GetYaxis()->SetTitle(YAxisDescription);
-
-   hDcaXY =  new TH1D("hDcaXY", "DcaXY", 60, -0.5,5.5); 
-   hDcaXY->SetTitle("Distribution of DCA_{xy} ");
-   hDcaXY->GetXaxis()->SetTitle("DCA_{xy} [cm]");
-   hDcaXY->GetYaxis()->SetTitle(YAxisDescription);
 
    hNfitHits = new TH1D("hNfitHits", "NfitHits", 45, 5, 50);
    hNfitHits->SetTitle("Distribution of number of TPC hits");
@@ -332,15 +317,6 @@ void TofEff::Init(){
 
    hVtxDiffAfter =  new TH1D("hVtxDiffAfter", "Difference in Vtx_{z} between prodVertexHypo and UPCVertex_{z}", 12, -2, 10);
 
-   hPosZ =  new TH1D("hPosZ", "Position of z_{vertex}", 60, -150, 150); 
-   hPosZ->SetTitle("Distribution of position of z_{vertex}");
-   hPosZ->GetXaxis()->SetTitle("Vertex_{Z} [cm]");
-   hPosZ->GetYaxis()->SetTitle(YAxisDescription);
-
-   hPosZCut =  new TH1D("hPosZCut", "Position of z_{vertex}", 60, -150, 150); 
-   hPosZCut->SetTitle("Distribution of position of z_{vertex}");
-   hPosZCut->GetXaxis()->SetTitle("Vertex_{Z} [cm]");
-   hPosZCut->GetYaxis()->SetTitle(YAxisDescription);
 
    hHasPrimVtx = new TH1D("hHasPrimVtx", "boolean histogram", 3, -1.5, 1.5);
    hHasPrimVtx->SetTitle("Number of pairs w. global tracks");
@@ -424,9 +400,6 @@ void TofEff::Init(){
    hInvMassEta = new TH2F("hInvMassEta", "hInvMassEta; m_{#pi^{+} #pi^{-}} [GeV/c^{2}]; #eta [-]", 100, 0.2,1.2, 200, -1.,1. );
    hInvMassEta->SetTitle("correlation plot of invMass and eta");
 
-   hEtaVtxZ = new TH2F("hEtaVtxZ", "hEtaVtxZ; #eta [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
-
-   hEtaVtxZCut = new TH2F("hEtaVtxZCut", "hEtaVtxZ; #eta [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
 
    hNTracksTof = new TH1D("hNTracksTof", "hNTracksTof; Number of ToF tracks [-]; counts", 11, -0.5, 10.5);
 
@@ -461,8 +434,6 @@ void TofEff::fillTopologyCutsAfter(const StUPCV0& V0){
 
 void TofEff::fillTrackQualityCuts(const StUPCTrack* trk){
 
-   hDcaZ->Fill( trk->getDcaZ() );
-   hDcaXY->Fill( trk->getDcaXY() );
    hNfitHits->Fill(trk->getNhitsFit() );
    hNhitsDEdx->Fill(trk->getNhitsDEdx() );
    hPt->Fill(trk->getPt());
@@ -490,64 +461,5 @@ void TofEff::fillNSigmaPlots(const StUPCTrack *trk){
     hNSigmaKPcorr->Fill(nSigmaKaon, nSigmaProton);
     hNSigmaKPicorr->Fill(nSigmaKaon, nSigmaPion);
 }
-void TofEff::fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
-
-   Double_t eta2 = trk2->getEta();
-   Double_t phi2 = trk2->getPhi();
-
-   Double_t eta1 = trk1->getEta();
-   Double_t phi1 = trk1->getPhi();
-
-   hPosZ->Fill(posZ);
-
-   hEtaVtxZ->Fill(eta1 , posZ );
-   hEtaVtxZ->Fill(eta2 , posZ );
-
-   hEtaPhi->Fill(eta1, phi1);
-   hEtaPhi->Fill(eta2, phi2);
-
-   hEta->Fill(eta1);
-   hEta->Fill(eta2);
-
-}
-
-void TofEff::fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
-
-   Double_t eta2 = trk2->getEta();
-   Double_t phi2 = trk2->getPhi();
-
-   Double_t eta1 = trk1->getEta();
-   Double_t phi1 = trk1->getPhi();
-
-   hPosZCut->Fill(posZ);
-
-   hEtaVtxZCut->Fill(eta1 , posZ );
-   hEtaVtxZCut->Fill(eta2 , posZ );
-
-   hEtaPhiCut->Fill(eta1, phi1);
-   hEtaPhiCut->Fill(eta2, phi2);
-
-   hEtaCut->Fill(eta1);
-   hEtaCut->Fill(eta2);
-}
 
 
-
-void TofEff::fillBeamlineInfo(){
-
-    if(!runMCAna){
-        bField = mUpcEvt->getMagneticField();
-        beamline[0] = mUpcEvt->getBeamXPosition();
-        beamline[2] = mUpcEvt->getBeamXSlope();
-        beamline[1] = mUpcEvt->getBeamYPosition();
-        beamline[3] = mUpcEvt->getBeamYSlope();
-    }else {
-        bField = -4.991; // guess based on real runs
-        beamline[0] = 0;
-        beamline[2] = 0;
-        beamline[1] = 0;
-        beamline[3] = 0;
-    }
-
-    return;
-}

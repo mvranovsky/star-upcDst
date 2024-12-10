@@ -163,32 +163,59 @@ src/Ana.cxx.s:
 	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/Ana.cxx.s
 .PHONY : src/Ana.cxx.s
 
-src/AnaV0SingleState.o: src/AnaV0SingleState.cxx.o
+src/AnaV0.o: src/AnaV0.cxx.o
 
-.PHONY : src/AnaV0SingleState.o
+.PHONY : src/AnaV0.o
 
 # target to build an object file
-src/AnaV0SingleState.cxx.o:
-	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o
-.PHONY : src/AnaV0SingleState.cxx.o
+src/AnaV0.cxx.o:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o
+.PHONY : src/AnaV0.cxx.o
 
-src/AnaV0SingleState.i: src/AnaV0SingleState.cxx.i
+src/AnaV0.i: src/AnaV0.cxx.i
 
-.PHONY : src/AnaV0SingleState.i
+.PHONY : src/AnaV0.i
 
 # target to preprocess a source file
-src/AnaV0SingleState.cxx.i:
-	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.i
-.PHONY : src/AnaV0SingleState.cxx.i
+src/AnaV0.cxx.i:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0.cxx.i
+.PHONY : src/AnaV0.cxx.i
 
-src/AnaV0SingleState.s: src/AnaV0SingleState.cxx.s
+src/AnaV0.s: src/AnaV0.cxx.s
 
-.PHONY : src/AnaV0SingleState.s
+.PHONY : src/AnaV0.s
 
 # target to generate assembly for a file
-src/AnaV0SingleState.cxx.s:
-	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.s
-.PHONY : src/AnaV0SingleState.cxx.s
+src/AnaV0.cxx.s:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0.cxx.s
+.PHONY : src/AnaV0.cxx.s
+
+src/AnaV0Mult.o: src/AnaV0Mult.cxx.o
+
+.PHONY : src/AnaV0Mult.o
+
+# target to build an object file
+src/AnaV0Mult.cxx.o:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o
+.PHONY : src/AnaV0Mult.cxx.o
+
+src/AnaV0Mult.i: src/AnaV0Mult.cxx.i
+
+.PHONY : src/AnaV0Mult.i
+
+# target to preprocess a source file
+src/AnaV0Mult.cxx.i:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.i
+.PHONY : src/AnaV0Mult.cxx.i
+
+src/AnaV0Mult.s: src/AnaV0Mult.cxx.s
+
+.PHONY : src/AnaV0Mult.s
+
+# target to generate assembly for a file
+src/AnaV0Mult.cxx.s:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.s
+.PHONY : src/AnaV0Mult.cxx.s
 
 src/AnalysisManager.o: src/AnalysisManager.cxx.o
 
@@ -338,9 +365,12 @@ help:
 	@echo "... src/Ana.o"
 	@echo "... src/Ana.i"
 	@echo "... src/Ana.s"
-	@echo "... src/AnaV0SingleState.o"
-	@echo "... src/AnaV0SingleState.i"
-	@echo "... src/AnaV0SingleState.s"
+	@echo "... src/AnaV0.o"
+	@echo "... src/AnaV0.i"
+	@echo "... src/AnaV0.s"
+	@echo "... src/AnaV0Mult.o"
+	@echo "... src/AnaV0Mult.i"
+	@echo "... src/AnaV0Mult.s"
 	@echo "... src/AnalysisManager.o"
 	@echo "... src/AnalysisManager.i"
 	@echo "... src/AnalysisManager.s"

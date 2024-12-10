@@ -14,7 +14,6 @@
 #include "StUPCBemcCluster.h"
 #include "StUPCVertex.h"
 #include "StUPCTofHit.h"
-#include "EmbedMaker.h"
 #include "RunDef.h"
 
 #endif

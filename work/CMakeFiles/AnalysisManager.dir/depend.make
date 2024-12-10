@@ -15,10 +15,8 @@ CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: src/AnalysisManager.cx
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/Ana.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnaBP.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnaV0.h
-CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnaV0SingleState.h
+CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnaV0Mult.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnalysisManager.h
-CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/ElasticAna.h
-CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/EmbedMaker.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/Libreries.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/RecTree.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/RunDef.h

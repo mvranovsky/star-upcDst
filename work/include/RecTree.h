@@ -46,7 +46,7 @@ class RecTree{
       Double_t getZdcWestRate() const { return mZdcWestRate; }
       UShort_t getZdcUnAttEast() const { return mZdcEastUA; }
       UShort_t getZdcUnAttWest() const { return mZdcWestUA; }
-      bool IsVertexSet(unsigned int s, UInt_t dataTag = RECO) const { return mVertexZInCm[s][dataTag] != -9999; }
+      bool IsVertexSet(unsigned int s, UInt_t dataTag = RECO) const { return (mVertexZInCm[s][dataTag] != -9999); }
       Double_t getVertexZInCm(unsigned int s,UInt_t dataTag = RECO) const { return mVertexZInCm[s][dataTag]; }
       Double_t getVertexYInCm(unsigned int s,UInt_t dataTag = RECO) const { return mVertexYInCm[s][dataTag]; }
       Double_t getVertexXInCm(unsigned int s,UInt_t dataTag = RECO) const { return mVertexXInCm[s][dataTag]; }

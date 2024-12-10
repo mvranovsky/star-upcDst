@@ -10,11 +10,11 @@ const bool runAnaBP = false;
 const bool runAnaV0 = false;
 const bool runAnaV0Mult = false;
 const bool runMCAna = false;
-const bool runTofEff = false;
-const bool runTofEffMult = true;
+const bool runTofEff = true;
+const bool runTofEffMult = false;
 
 const unsigned int nAligIteration = 4;
-const bool DEBUG = true;
+const bool DEBUG = false;
 const bool V0Control = false; 
 // 570702 RP_UPC // 570712 RP_UPC // 570703 RP_SDT // 570709 RP_ET // 570719 RP_ET // 570701 RP_CPT2 // 570711 RP_CPT2 
 // 570705 RP_CPT2noBBCL // 570704 RP_Zerobias // 590703 RP_SDT // 590709 RP_ET // 590701 RP_CPT2 // 590705 RP_CPT2noBBCL 

@@ -14,13 +14,12 @@ CMakeFiles/upc-reader.dir/src/Ana.cxx.o
  /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
  /star/u/mvranovsk/star-upcDst/work/src/Ana.cxx
  include/Ana.h
- include/EmbedMaker.h
  include/Libreries.h
  include/RecTree.h
  include/RunDef.h
  include/UpcDstLibreries.h
  include/Util.h
-CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o
+CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o
  /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
  /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
  /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
@@ -31,10 +30,28 @@ CMakeFiles/upc-reader.dir/src/AnaV0SingleState.cxx.o
  /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
  /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
  /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
- /star/u/mvranovsk/star-upcDst/work/src/AnaV0SingleState.cxx
+ /star/u/mvranovsk/star-upcDst/work/src/AnaV0.cxx
  include/Ana.h
- include/AnaV0SingleState.h
- include/EmbedMaker.h
+ include/AnaV0.h
+ include/Libreries.h
+ include/RecTree.h
+ include/RunDef.h
+ include/UpcDstLibreries.h
+ include/Util.h
+CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o
+ /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
+ /star/u/mvranovsk/star-upcDst/work/src/AnaV0Mult.cxx
+ include/Ana.h
+ include/AnaV0Mult.h
  include/Libreries.h
  include/RecTree.h
  include/RunDef.h
@@ -58,7 +75,6 @@ CMakeFiles/upc-reader.dir/src/TofEff.cxx.o
  /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
  /star/u/mvranovsk/star-upcDst/work/src/TofEff.cxx
  include/Ana.h
- include/EmbedMaker.h
  include/Libreries.h
  include/RecTree.h
  include/RunDef.h
@@ -78,7 +94,6 @@ CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o
  /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
  /star/u/mvranovsk/star-upcDst/work/src/TofEffMult.cxx
  include/Ana.h
- include/EmbedMaker.h
  include/Libreries.h
  include/RecTree.h
  include/RunDef.h

@@ -28,20 +28,13 @@ class Ana{
       
       inline double vertexEtaRange(int rSide, int idx ) const{ return mRecTree->IsVertexSet(idx) ? etaVertexSlope*mRecTree->getVertexZInCm(idx) + (2*rSide - 1)*etaVertexShift : (2*rSide - 1)*maxEta; } // 0 for min, 1 for max
       inline bool IsGoodEtaTrack(const StUPCTrack *trk, int idx) const { return (abs(trk->getEta()) < maxEta && trk->getEta() > vertexEtaRange(0,idx) && trk->getEta() < vertexEtaRange(1, idx) );}
-
-
       int hasGoodTPCnSigma(const StUPCTrack *trk); 
-
       bool CheckTriggers(const vector<int> *triggerArray, StUPCEvent *mUpcEvt, TH1D *hTriggerBits) const;
 
 
-      void fillTrackQualityCuts(const StUPCTrack* trk);
-      void fillNSigmaPlots(const StUPCTrack *trk);
-      void fillEtaVtxPlots(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
 
 
       void AnaRpTracks(StRPEvent *event);
-
       virtual void Make(){cout<<"Hi my name is make"<<endl;};
       virtual void Init(){cout<<"Hi I should not be there but I am"<<endl;};
       void SetEvent(StUPCEvent *upcEvt, StRPEvent *rpEvt, StRPEvent *mcEvt);
@@ -49,9 +42,14 @@ class Ana{
       inline void SetAnaName(TString name){ anaName = name; }
       inline void SetTriggers(const vector<int> *trigg){ trigger = trigg; }
 
+      void fillTrackQualityCuts(const StUPCTrack* trk);
+      void fillNSigmaPlots(const StUPCTrack *trk);
+      void fillEtaVtxPlots(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+      void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+      void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
       void SaveEventInfo(const StUPCEvent *upcEvt);
       void SaveRPinfo(const StUPCRpsTrack *trackRP, unsigned int iSide);
-      void SaveTrackInfo(const StUPCTrack *trk, unsigned int iTrack);
+      //void SaveTrackInfo(const StUPCTrack *trk, unsigned int iTrack);
       void SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned int iTrack);
       void SaveStateInfo(TLorentzVector state,int totQ, unsigned int iState);
       void SaveVertexInfo(const StUPCV0* V0, unsigned int iVtx);
@@ -60,6 +58,7 @@ class Ana{
       void SaveTriggerInfo(const StUPCEvent *upcEvt, const StRPEvent *rpEvt);
       void saveRpTrigBit(const StRPEvent *rpEvt);
       bool IsRpTrigBit(const StRPEvent *rpEvt, unsigned int iRp);
+      void fillBeamlineInfo();
 
       void resetInfo();
    
@@ -80,9 +79,14 @@ class Ana{
       // Control plots
       TH1D *hAnalysisFlow; 
 
+      TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut;
+      TH2F* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
 
       TString anaName;
       const vector<int> *trigger;
+
+      vector<int> hadronID, tagID;
+
 
       double bField;
       double beamline[4]; 

@@ -16,10 +16,8 @@ CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o
  include/Ana.h
  include/AnaBP.h
  include/AnaV0.h
- include/AnaV0SingleState.h
+ include/AnaV0Mult.h
  include/AnalysisManager.h
- include/ElasticAna.h
- include/EmbedMaker.h
  include/Libreries.h
  include/RecTree.h
  include/RunDef.h

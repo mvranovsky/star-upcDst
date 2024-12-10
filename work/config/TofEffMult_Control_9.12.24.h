@@ -14,8 +14,8 @@ const bool runTofEff = false;
 const bool runTofEffMult = true;
 
 const unsigned int nAligIteration = 4;
-const bool DEBUG = true;
-const bool V0Control = false; 
+const bool DEBUG = false;
+const bool V0Control = true; 
 // 570702 RP_UPC // 570712 RP_UPC // 570703 RP_SDT // 570709 RP_ET // 570719 RP_ET // 570701 RP_CPT2 // 570711 RP_CPT2 
 // 570705 RP_CPT2noBBCL // 570704 RP_Zerobias // 590703 RP_SDT // 590709 RP_ET // 590701 RP_CPT2 // 590705 RP_CPT2noBBCL 
 // 590708 RP_CPTnoBBCL // 570209 JPsi*HTTP // 570219 JPsi*HTTP // 570229 JPsi*HTTP

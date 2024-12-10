@@ -62,6 +62,66 @@ int Ana::hasGoodTPCnSigma(const StUPCTrack *trk){ //zmiernit podmienku na proton
         return 10;
 }
 
+void Ana::fillBeamlineInfo(){
+
+    if(!runMCAna){
+        bField = mUpcEvt->getMagneticField();
+        beamline[0] = mUpcEvt->getBeamXPosition();
+        beamline[2] = mUpcEvt->getBeamXSlope();
+        beamline[1] = mUpcEvt->getBeamYPosition();
+        beamline[3] = mUpcEvt->getBeamYSlope();
+    }else {
+        bField = -4.991; // guess based on real runs
+        beamline[0] = 0;
+        beamline[2] = 0;
+        beamline[1] = 0;
+        beamline[3] = 0;
+    }
+
+    return;
+}
+
+void Ana::fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+
+   Double_t eta2 = trk2->getEta();
+   Double_t phi2 = trk2->getPhi();
+
+   Double_t eta1 = trk1->getEta();
+   Double_t phi1 = trk1->getPhi();
+
+   hPosZ->Fill(posZ);
+
+   hEtaVtxZ->Fill(eta1 , posZ );
+   hEtaVtxZ->Fill(eta2 , posZ );
+
+   hEtaPhi->Fill(eta1, phi1);
+   hEtaPhi->Fill(eta2, phi2);
+
+   hEta->Fill(eta1);
+   hEta->Fill(eta2);
+
+}
+
+void Ana::fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+
+   Double_t eta2 = trk2->getEta();
+   Double_t phi2 = trk2->getPhi();
+
+   Double_t eta1 = trk1->getEta();
+   Double_t phi1 = trk1->getPhi();
+
+   hPosZCut->Fill(posZ);
+
+   hEtaVtxZCut->Fill(eta1 , posZ );
+   hEtaVtxZCut->Fill(eta2 , posZ );
+
+   hEtaPhiCut->Fill(eta1, phi1);
+   hEtaPhiCut->Fill(eta2, phi2);
+
+   hEtaCut->Fill(eta1);
+   hEtaCut->Fill(eta2);
+}
+
 
 
 
@@ -112,15 +172,16 @@ void Ana::AnaRpTracks(StRPEvent *event)
 
 void Ana::SaveEventInfo(const StUPCEvent *upcEvt)
 {
-   mRecTree->setTofMult( upcEvt->getTOFMultiplicity());
-   mRecTree->setEventNumber( upcEvt->getEventNumber());
-   mRecTree->setFillNumber( upcEvt->getFillNumber());
-   mRecTree->setBunchCrossId( upcEvt->getBunchCrossId());
-   mRecTree->setBunchCrossId7bit( upcEvt->getBunchCrossId7bit());
+   mRecTree->setNGoodTpcTrks( hadronID.size() );
+   mRecTree->setTofMult( tagID.size() );
+   mRecTree->setEventNumber( upcEvt->getEventNumber() );
+   mRecTree->setFillNumber( upcEvt->getFillNumber() );
+   mRecTree->setBunchCrossId( upcEvt->getBunchCrossId() );
+   mRecTree->setBunchCrossId7bit( upcEvt->getBunchCrossId7bit() );
    mRecTree->setRunNumber( upcEvt->getRunNumber() );
    mRecTree->setNVertecies( upcEvt->getNumberOfVertices() );
 }
-
+/*
 void Ana::SaveTrackInfo(const StUPCTrack *trk, unsigned int iTrack) // this function uses momentum with trajectory being refitted to primary vertex
 {
    mRecTree->setDEdxInKevCm( trk->getDEdxSignal()*1000000 , iTrack); // convert to KeV/cm
@@ -146,13 +207,13 @@ void Ana::SaveTrackInfo(const StUPCTrack *trk, unsigned int iTrack) // this func
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kPion) , iTrack, PION );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kKaon) , iTrack, KAON );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kProton) , iTrack, PROTON );
-   if( trk->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk) ){
+   if( trk->getFlag( StUPCTrack::kTof ) && (IsGoodTofTrack(trk) || runMCAna ) ){
       mRecTree->setTofHit(1, iTrack);
    } else {
       mRecTree->setTofHit(-1, iTrack);
    }
 }
-
+*/
 
 void Ana::SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned int iTrack) // this function uses momentum from the picoPhysical helix, not refitted with primary vertex
 {
@@ -179,7 +240,7 @@ void Ana::SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned i
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kPion) , iTrack, PION );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kKaon) , iTrack, KAON );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kProton) , iTrack, PROTON );
-   if( trk->getFlag( StUPCTrack::kTof ) && IsGoodTofTrack(trk) ){
+   if( trk->getFlag( StUPCTrack::kTof ) && (IsGoodTofTrack(trk) || runMCAna ) ){
       mRecTree->setTofHit(1, iTrack);
    } else {
       mRecTree->setTofHit(-1, iTrack);
@@ -187,6 +248,7 @@ void Ana::SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned i
 }
 
 
+ 
 
 
 void Ana::SaveRPinfo(const StUPCRpsTrack *trackRP, unsigned int iSide)
@@ -431,6 +493,10 @@ void Ana::CreateTofClusters()
 */
 
 void Ana::resetInfo() {
+
+
+   hadronID.clear();
+   tagID.clear();
 
    //tracks
    for (int iTrack = 0; iTrack < nHadrons; ++iTrack) {

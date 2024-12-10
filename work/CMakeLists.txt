@@ -8,12 +8,10 @@ set (SRCS
   src/RecTree.cxx
   #src/AnaBP.cxx
   src/Ana.cxx
-  #src/AnaV0.cxx
-  src/AnaV0SingleState.cxx
+  src/AnaV0.cxx
+  src/AnaV0Mult.cxx
   src/TofEff.cxx
   src/TofEffMult.cxx
-  #src/StUPCV0.cxx
-
   )
 
 #name of LIB_READER
