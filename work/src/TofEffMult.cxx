@@ -33,9 +33,6 @@ void TofEffMult::Make(){
       if(!IsGoodTrack(trk))
          continue;
 
-      if(abs(trk->getEta()) > maxEta)
-         continue;
-
       //particle identification: pion
       fillNSigmaPlots(trk);
       if( hasGoodTPCnSigma(trk) != PION )
@@ -44,7 +41,7 @@ void TofEffMult::Make(){
       hadronID.push_back(itrk);
 
       // ToF hit condition
-      if( !( (trk->getFlag( StUPCTrack::kTof) && IsGoodTofTrack(trk) ) || ( trk->getFlag(StUPCTrack::kTof) && runMCAna)) )
+      if( !( (trk->getFlag( StUPCTrack::kTof) && IsGoodTofTrack(trk) ) || ( trk->getFlag(StUPCTrack::kTof) && runMCAna ) ) )
          continue;
 
       tagID.push_back(itrk);
@@ -58,7 +55,7 @@ void TofEffMult::Make(){
    //cout << "tagID: " << tagID.size() << endl;
 
 
-   if(tagID.size() == 0 ){
+   if(tagID.size() == 0 || hadronID.size() == 0 ){
       resetInfo();
       return;
    }
@@ -100,19 +97,18 @@ void TofEffMult::Make(){
 
          fillEtaVtxPlotsBefore(trk1, trk2, V0->prodVertexHypo().Z() );
          
-         //if(abs(V0->prodVertexHypo().Z()) > vertexRangeForEVz  )
-         //   continue;
+         if(abs(V0->prodVertexHypo().Z()) > vertexRangeForEVz  )
+            continue;
 
          SaveVertexInfo(V0, idx);
 
-         if(abs(V0->prodVertexHypo().Z()) > vertexRange )
-            continue;
+         //if(abs(V0->prodVertexHypo().Z()) > vertexRange )
+         //   continue;
 
-         //if(trk1->getEta() )
 
          // special eta-vertexZ cut
-         //if( !( IsGoodEtaTrack(trk1, idx) && IsGoodEtaTrack(trk2, idx ) ) )
-         //   continue;
+         if( !( IsGoodEtaTrack(trk1, idx) && IsGoodEtaTrack(trk2, idx ) ) )
+            continue;
 
          hAnalysisFlow->Fill( TOFETAVTXZ );
 
@@ -141,13 +137,12 @@ void TofEffMult::Make(){
 
          hAnalysisFlow->Fill(TOFOPPOSITE);
 
-
          TLorentzVector hadron1, hadron2, state;
          trk1->getLorentzVector(hadron1, mUtil->mass(PION));
          trk2->getLorentzVector(hadron2, mUtil->mass(PION));
          
-         state = hadron1 + hadron2;
-         if(state.M() < 0.44 || state.M() > 0.56)
+         state = V0->lorentzVector();
+         if(state.M() < 0.45 || state.M() > 0.55)
             continue;
 
 

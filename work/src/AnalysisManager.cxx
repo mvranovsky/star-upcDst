@@ -75,7 +75,7 @@ int main(int argc, char** argv)
    //ask for number of events
    nEvents = upcTree->GetEntries();
    if (DEBUG)
-      nEvents = 100000; // use for debugging and testing
+      nEvents = 30000; // use for debugging and testing
    cout<<"Proccesing "<<nEvents<<" events"<<endl;
 
    for(Long64_t iev=0; iev<nEvents; ++iev) 
