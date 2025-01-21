@@ -15,6 +15,7 @@ CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o
  /star/u/mvranovsk/star-upcDst/work/src/AnalysisManager.cxx
  include/Ana.h
  include/AnaBP.h
+ include/AnaJPsi.h
  include/AnaV0.h
  include/AnaV0Mult.h
  include/AnalysisManager.h

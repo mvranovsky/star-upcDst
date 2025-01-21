@@ -90,6 +90,16 @@ include/RecTree.h
 Ana.h
 include/Ana.h
 
+include/AnaJPsi.h
+UpcDstLibreries.h
+include/UpcDstLibreries.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
+
 include/AnaV0.h
 UpcDstLibreries.h
 include/UpcDstLibreries.h
@@ -149,6 +159,8 @@ TofEff.h
 include/TofEff.h
 TofEffMult.h
 include/TofEffMult.h
+AnaJPsi.h
+include/AnaJPsi.h
 
 include/Libreries.h
 iostream
@@ -283,6 +295,8 @@ bitset
 -
 TString.h
 include/TString.h
+TMath.h
+include/TMath.h
 
 include/TofEff.h
 UpcDstLibreries.h

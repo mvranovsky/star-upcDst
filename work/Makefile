@@ -163,6 +163,33 @@ src/Ana.cxx.s:
 	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/Ana.cxx.s
 .PHONY : src/Ana.cxx.s
 
+src/AnaJPsi.o: src/AnaJPsi.cxx.o
+
+.PHONY : src/AnaJPsi.o
+
+# target to build an object file
+src/AnaJPsi.cxx.o:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o
+.PHONY : src/AnaJPsi.cxx.o
+
+src/AnaJPsi.i: src/AnaJPsi.cxx.i
+
+.PHONY : src/AnaJPsi.i
+
+# target to preprocess a source file
+src/AnaJPsi.cxx.i:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.i
+.PHONY : src/AnaJPsi.cxx.i
+
+src/AnaJPsi.s: src/AnaJPsi.cxx.s
+
+.PHONY : src/AnaJPsi.s
+
+# target to generate assembly for a file
+src/AnaJPsi.cxx.s:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.s
+.PHONY : src/AnaJPsi.cxx.s
+
 src/AnaV0.o: src/AnaV0.cxx.o
 
 .PHONY : src/AnaV0.o
@@ -365,6 +392,9 @@ help:
 	@echo "... src/Ana.o"
 	@echo "... src/Ana.i"
 	@echo "... src/Ana.s"
+	@echo "... src/AnaJPsi.o"
+	@echo "... src/AnaJPsi.i"
+	@echo "... src/AnaJPsi.s"
 	@echo "... src/AnaV0.o"
 	@echo "... src/AnaV0.i"
 	@echo "... src/AnaV0.s"

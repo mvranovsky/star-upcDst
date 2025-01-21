@@ -134,7 +134,6 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mV0CutName[V0PPI] = TString("p#pi^{-}");
    mV0CutName[V0PIPBAR] = TString("#pi^{+}#bar{p}");
    
-
    mTOFEFFName = new TString[nTOFEFFCuts];
    mTOFEFFName[TOFALL] = TString("All");
    mTOFEFFName[TOFTRIG] = TString("CPT");
@@ -142,6 +141,19 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mTOFEFFName[TOFETAVTXZ] = TString("#eta - Vtx_{Z}");
    mTOFEFFName[TOFPAIR] = TString("topology");
    mTOFEFFName[TOFOPPOSITE] = TString("Q_{tot} = 0");
+
+   mJPSICutName = new TString[nJPSISelectionCuts];
+   mJPSICutName[JPSIALL] = TString("All");
+   mJPSICutName[JPSITRIG] = TString("J/#Psi trigger");
+   //mJPSICutName[JPSITRACKQUALITY] = TString("Track quality");
+   mJPSICutName[JPSIBEMC] = TString("BEMC");
+   mJPSICutName[JPSIPID] = TString("PID");
+   mJPSICutName[JPSIBACKTOBACK] = TString("Back-to-back");
+   mJPSICutName[JPSI1VTX] = TString("1 Vertex");
+   mJPSICutName[JPSIETAVTXZ] = TString("#eta - V_{Z} cut");
+   mJPSICutName[JPSIQTOT] = TString("Q_{tot} = 0");
+   mJPSICutName[JPSI1RP] = TString("1 RP track");
+   mJPSICutName[JPSIRPFIDCUT] = TString("Fiducial RP condition");
 
    mDataSetName = new TString[nDataSets];
    mDataSetName[MC] = TString("PureMc");
@@ -155,6 +167,7 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mParticleMass[PION] = 0.13957018;
    mParticleMass[KAON] = 0.493667;
    mParticleMass[PROTON] = 0.93827208;
+   mParticleMass[ELECTRON] = 0.000510998;
    
    mBranchPerRp[E1U] = EU;
    mBranchPerRp[E2U] = EU;

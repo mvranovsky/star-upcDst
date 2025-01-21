@@ -10,6 +10,7 @@
 #include "AnaV0Mult.h"
 #include "TofEff.h"
 #include "TofEffMult.h"
+#include "AnaJPsi.h"
 
 using namespace std;
 using namespace UTIL;

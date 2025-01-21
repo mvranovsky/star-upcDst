@@ -59,6 +59,10 @@ int main(int argc, char** argv)
       mAnaVector.push_back(new TofEffMult(outFile));
       cout << "Will run analysis MC ToF efficiency with multiple states." << endl;       
    }
+   if( runAnaJPsi ){
+      mAnaVector.push_back(new AnaJPsi(outFile));
+      cout << "Will run analysis of JPsi." << endl;       
+   }
 
    // Load RP off-sets with off-set corrections 
    if( !LoadOffsetFile(nameOfOffSetFile, mOffSet) )

@@ -308,6 +308,18 @@ void Ana::SaveVertexInfo(const StUPCV0* V0, unsigned int iVtx)
    mRecTree->setVertexDiff( -999, iVtx );
 }
 
+void Ana::SaveVertexInfo(const StUPCVertex *vtx, unsigned int iVtx)
+{
+   mRecTree->setVertexZInCm( vtx->getPosZ() , iVtx );
+   mRecTree->setVertexYInCm( vtx->getPosY(), iVtx );
+   mRecTree->setVertexXInCm( vtx->getPosX(), iVtx );
+
+   mRecTree->setDcaDaughters( -999, iVtx );
+   mRecTree->setDcaBeamline( -999, iVtx );
+   mRecTree->setPointingAngle( -999, iVtx );
+   mRecTree->setDecayLength( -999, iVtx );
+   mRecTree->setVertexDiff( -999, iVtx );
+}
 
 void Ana::SaveZdcInfo(const StUPCEvent *upcEvt)
 {

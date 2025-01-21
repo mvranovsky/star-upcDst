@@ -12,6 +12,7 @@ set (SRCS
   src/AnaV0Mult.cxx
   src/TofEff.cxx
   src/TofEffMult.cxx
+  src/AnaJPsi.cxx
   )
 
 #name of LIB_READER

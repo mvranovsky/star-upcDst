@@ -26,7 +26,7 @@ namespace UTIL {
    enum ARM_ID { EU_WD, ED_WU, nArms };
    enum STATION_ID { E1, E2, W1, W2, nStations };
    enum STATION_ORDER { RP1, RP2, nStationPerSide, nRpPerStation = nStationPerSide};
-   enum PARTICLE { PION = 0, KAON, PROTON,nParticles };
+   enum PARTICLE { PION = 0, KAON, PROTON, ELECTRON,nParticles };
    enum NEUTRALPARTICLE { K0S = 0, LAMBDA, LAMBDABAR , nNeutralParticles};
    enum TPC_TRACK_TYPE { GLO, PRI, TOF, QUA, nTpcTrkTypes }; // GLO=global(all), PRI=primary, TOF=PRI&TofMatched, QUA=TOF&QualityCuts
    enum BUNCH_CROSSING { CB, AG, nBnchXngsTypes }; // CB=colliding bunches, AG=abort gaps
@@ -35,6 +35,7 @@ namespace UTIL {
    enum LIST_OF_EFF_CORRECTIONS { RPACC, TPCRECOEFF, TOFMATCHEFF, nEffCorrections };
    enum ANALYSIS_CUT { ALL = 1, TRIG, TWORPTRKS, INFID, ONETOFVX, ZVERTEX, TWOTOFTRKS, ETA, OPPOSITE, PIPI, PPI, PIPBAR, nAnalysisCuts };
    enum V0SELECTION_CUT {V0ALL = 1, V0TRIG,V0FLAG, V0PID, V0PAIR, V0ETAVTXZ, V0OPPOSITE, V0PIPI, V0PPI, V0PIPBAR , nV0SelectionCuts };
+   enum JPSISELECTION_CUT {JPSIALL = 1, JPSITRIG,JPSIBEMC ,JPSIPID, JPSIBACKTOBACK, JPSI1VTX, JPSIETAVTXZ,JPSIQTOT, JPSI1RP, JPSIRPFIDCUT,nJPSISelectionCuts };
    enum TOFEFF_CUT {TOFALL = 1, TOFTRIG, TOFTRACKQUALITY, TOFETAVTXZ, TOFPAIR, TOFOPPOSITE , nTOFEFFCuts};
    enum RANGE_LIMIT { MIN, MAX };
    enum DATASET { MC = 0, MCZB, DATA, nDataSets };
@@ -69,6 +70,7 @@ class UTIL::Util{
       inline TString efficiencyName(UInt_t id) const { if(id<nEffCorrections) return mEfficiencyName[id]; else{ std::cerr << "ERROR in Util::efficiencyName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisCutName(UInt_t id) const { if(id<nAnalysisCuts) return mCutName[id]; else{ std::cerr << "ERROR in Util::analysisCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisV0SelectionName(UInt_t id) const { if(id<nV0SelectionCuts) return mV0CutName[id]; else{ std::cerr << "ERROR in Util::analysisCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
+      inline TString analysisJPSI(UInt_t id) const { if(id<nV0SelectionCuts) return mJPSICutName[id]; else{ std::cerr << "ERROR in Util::analysisCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisTofEff(UInt_t id) const { if(id<nTOFEFFCuts) return mTOFEFFName[id]; else{ std::cerr << "ERROR in Util::analysisTofEff(UInt_t id): id out of range" << std::endl; return TString("");} }      
       inline TString dataSetName(UInt_t id) const { if(id<nDataSets) return mDataSetName[id]; else{ std::cerr << "ERROR in Util::dataSetName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString dataTagName(UInt_t id) const { if(id<nDataTag) return mDataTagName[id]; else{ std::cerr << "ERROR in Util::dataTagName(UInt_t id): id out of range" << std::endl; return TString("");} }
@@ -122,6 +124,7 @@ class UTIL::Util{
       TString* mEfficiencyName;
       TString* mCutName;
       TString* mV0CutName;
+      TString* mJPSICutName;
       TString* mDataSetName;
       TString* mDataTagName;
       TString* mTOFEFFName;

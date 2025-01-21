@@ -200,6 +200,12 @@ Libreries.h
 Ana.h
 /star/u/mvranovsk/star-upcDst/work/src/Ana.h
 
+/star/u/mvranovsk/star-upcDst/work/src/AnaJPsi.cxx
+AnaJPsi.h
+/star/u/mvranovsk/star-upcDst/work/src/AnaJPsi.h
+RunDef.h
+/star/u/mvranovsk/star-upcDst/work/src/RunDef.h
+
 /star/u/mvranovsk/star-upcDst/work/src/AnaV0.cxx
 AnaV0.h
 /star/u/mvranovsk/star-upcDst/work/src/AnaV0.h
@@ -237,6 +243,16 @@ RecTree.h
 include/RecTree.h
 StUPCV0.h
 include/StUPCV0.h
+
+include/AnaJPsi.h
+UpcDstLibreries.h
+include/UpcDstLibreries.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
 
 include/AnaV0.h
 UpcDstLibreries.h
@@ -413,6 +429,8 @@ bitset
 -
 TString.h
 include/TString.h
+TMath.h
+include/TMath.h
 
 include/TofEff.h
 UpcDstLibreries.h

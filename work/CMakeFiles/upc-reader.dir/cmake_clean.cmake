@@ -6,6 +6,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o"
   "CMakeFiles/upc-reader.dir/src/TofEff.cxx.o"
   "CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o"
+  "CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o"
   "libupc-reader.pdb"
   "libupc-reader.so"
 )

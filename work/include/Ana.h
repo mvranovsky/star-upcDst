@@ -44,7 +44,6 @@ class Ana{
 
       void fillTrackQualityCuts(const StUPCTrack* trk);
       void fillNSigmaPlots(const StUPCTrack *trk);
-      void fillEtaVtxPlots(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
       void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
       void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
       void SaveEventInfo(const StUPCEvent *upcEvt);
@@ -53,6 +52,7 @@ class Ana{
       void SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned int iTrack);
       void SaveStateInfo(TLorentzVector state,int totQ, unsigned int iState);
       void SaveVertexInfo(const StUPCV0* V0, unsigned int iVtx);
+      void SaveVertexInfo(const StUPCVertex* vtx, unsigned int iVtx);
       void SaveZdcInfo(const StUPCEvent *upcEvt);
       void SaveBbcInfo(const StUPCEvent *upcEvt);
       void SaveTriggerInfo(const StUPCEvent *upcEvt, const StRPEvent *rpEvt);

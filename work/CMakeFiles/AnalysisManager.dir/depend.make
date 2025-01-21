@@ -14,6 +14,7 @@ CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: /star/u/mvranovsk/star
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: src/AnalysisManager.cxx
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/Ana.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnaBP.h
+CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnaJPsi.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnaV0.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnaV0Mult.h
 CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.o: include/AnalysisManager.h
