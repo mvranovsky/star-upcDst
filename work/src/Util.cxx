@@ -150,7 +150,8 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mJPSICutName[JPSIPID] = TString("PID");
    mJPSICutName[JPSIBACKTOBACK] = TString("Back-to-back");
    mJPSICutName[JPSI1VTX] = TString("1 Vertex");
-   mJPSICutName[JPSIETAVTXZ] = TString("#eta - V_{Z} cut");
+   mJPSICutName[JPSIVTXZ] = TString("|V_{Z}| < 80 cm");
+   //mJPSICutName[JPSIETAVTXZ] = TString("#eta - V_{Z} cut");
    mJPSICutName[JPSIQTOT] = TString("Q_{tot} = 0");
    mJPSICutName[JPSI1RP] = TString("1 RP track");
    mJPSICutName[JPSIRPFIDCUT] = TString("Fiducial RP condition");

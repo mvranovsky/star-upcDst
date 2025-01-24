@@ -13,131 +13,113 @@ void AnaJPsi::Make(){
 
    //trigger
    hAnalysisFlow->Fill(JPSIALL);
-   if(!CheckTriggers(&JPSItriggers, mUpcEvt, hTriggerBits))
+   if(!CheckTriggers(&triggerID, mUpcEvt, hTriggerBits))
       return;
    hAnalysisFlow->Fill(JPSITRIG);
 
    SaveEventInfo(mUpcEvt);
    SaveTriggerInfo(mUpcEvt, mRpEvt);
 
-   // 1 vertex
-   if(mUpcEvt->getNumberOfVertices() != 1)
-      return;
-   hAnalysisFlow->Fill(JPSI1VTX);
-
-   const StUPCVertex *vtx = mUpcEvt->getVertex(0);
-
-   if(!vtx){
-      cout << "Could not load vertex. Leaving event." << endl;
-      return;
-   }
-
-   if(abs(vtx->getPosZ()) > vertexRange)
-      return;
-
-   hAnalysisFlow->Fill(JPSIVTXZ);
-   int vertexID = vtx->getId();
-
    tpcCounter = 0;
-   tracksBEMC.clear();
    //central system good quality tracks + BEMC
    for (int iTrk = 0; iTrk < mUpcEvt->getNumberOfTracks(); ++iTrk){
       const StUPCTrack *trk = mUpcEvt->getTrack(iTrk);
-
-      if(!trk->getFlag(StUPCTrack::kPrimary)) // original star-upcDst
+      if(!trk)
          continue;
-      if(trk->getVertexId() != vertexID){ // only belonging to the 1 vertex
-         cout << "Track belonging to an event with 1 vertex, does not belong to it. Vertex id: "<< trk->getVertexId() << endl;
-         cout << "Number of vertices: " << mUpcEvt->getNumberOfVertices() << endl;
+      if(!trk->getFlag(StUPCTrack::kPrimary))
          continue;
-      }
-      hTrackQualityFlow->Fill(1);
-
-      if( !trk->getFlag(StUPCTrack::kBemc) )
-         continue;
-      hTrackQualityFlow->Fill(2);
 
       fillTrackQualityCuts(trk);
-
       if(!goodQualityTrack(trk))
          continue;
       fillTrackQualityCutsAfter(trk);
-      hNTracksTpc->Fill( tpcCounter );
+   hNTracksTpc->Fill( tpcCounter );
+
+      if( !trk->getFlag(StUPCTrack::kBemc) )
+         continue;
+      hTrackQualityFlow->Fill(5);
 
       tracksBEMC.push_back(iTrk);
    }
+   hAnalysisFlow->Fill(JPSIBEMC);
    hNTracksBEMC->Fill( tracksBEMC.size() );
 
-   if(tracksBEMC.size() != 2){
+   if(tracksBEMC.size() == 0){
       return;
    }
-   hAnalysisFlow->Fill(JPSIBEMC);
 
-   const StUPCTrack* track1 = mUpcEvt->getTrack( tracksBEMC[0] );
-   const StUPCTrack* track2 = mUpcEvt->getTrack( tracksBEMC[1] );
+   //vertex + parovanie(back to back condition)
+   // outer track loop
+   const StUPCTrack *track1, *track2;
+   for (unsigned int iTrk = 0; iTrk < tracksBEMC.size() ; ++iTrk){
+      const StUPCTrack* trk1 = mUpcEvt->getTrack( tracksBEMC[iTrk] );
+      if(!trk1)
+         continue;
 
+      // inner track loop
+      for (unsigned int jTrk = iTrk; jTrk < tracksBEMC.size(); ++jTrk){
+         if(tracksBEMC[iTrk] == tracksBEMC[jTrk])
+            continue;
+         const StUPCTrack* trk2 = mUpcEvt->getTrack( tracksBEMC[jTrk] );
+         if(!trk2)
+            continue;
+         if(!sameVertex(trk1, trk2))
+            continue;
+         hAnalysisFlow->Fill(JPSI1VTX);
+
+
+         //VtxZ - eta cut
+         const StUPCVertex *vtx = mUpcEvt->getVertex(trk1->getVertexId());
+         if(!vtx)
+            continue;
+
+         fillEtaVtxPlotsBefore(trk1, trk2, vtx->getPosZ());
+         if(abs(vtx->getPosZ()) > vertexRangeForEVz )
+            continue;
+         SaveVertexInfo(vtx, 0);
+
+         if( !( IsGoodEtaTrack(trk1, 0) && IsGoodEtaTrack(trk2, 0 ) ) )
+            continue;
+
+         fillEtaVtxPlotsAfter(trk1, trk2, vtx->getPosZ());
+         hAnalysisFlow->Fill(JPSIETAVTXZ);
+
+
+         //PID
+         fillNSigmaPlots(trk1);
+         fillNSigmaPlots(trk2);
+         if(!chiSquarePID(trk1,trk2))
+            continue;
+         hAnalysisFlow->Fill(JPSIPID);
+
+         // back to back
+         Double_t deltaPhi = trk1->getBemcPhi() - trk2->getBemcPhi();
+         if(deltaPhi > minBEMCPhi && deltaPhi < maxBEMCPhi ){
+            track1 = trk1;
+            track2 = trk2;
+            hAnalysisFlow->Fill(JPSIBACKTOBACK);
+            break;
+         }else continue;
+      }
+      if(track1 && track2)
+         break;
+   }
    if(!track1 || !track2)
       return;
 
-   // back to back
-   //Double_t deltaPhi = abs(track1->getBemcPhi() - track2->getBemcPhi());
-   //if( !(deltaPhi > minBEMCPhi && deltaPhi < maxBEMCPhi) )
-   //   return;
-   int sectionTrk1, sectionTrk2;
-   for (int i = 0; i < 6; ++i){
-      double lower, upper;
-      lower = -TMath::Pi() + i*TMath::Pi()/3;
-      upper = -TMath::Pi() + (i+1)*TMath::Pi()/3;
-
-      if(track1->getBemcPhi() >= lower && track1->getBemcPhi() < upper){
-         sectionTrk1 = i;
-      }
-      if(track2->getBemcPhi() >= lower && track2->getBemcPhi() < upper){
-         sectionTrk2 = i;
-      }
-   }
-   double phiDelta = abs(track1->getPhi() - track2->getPhi());
-   if(phiDelta <= 2.6)
-      return;
-   int deltaSections = abs(sectionTrk1 - sectionTrk2);
-   if(deltaSections != 3)
-      return;
-   
-   hAnalysisFlow->Fill(JPSIBACKTOBACK);
-
-
-   //PID
-   fillNSigmaPlots(track1);
-   fillNSigmaPlots(track2);
-   if(!chiSquarePID(track1,track2))
-      return;
-
-   hAnalysisFlow->Fill(JPSIPID);
-
-
    // save info about tracks
-   TLorentzVector electron1, electron2, state;
-   track1->getLorentzVector(electron1, mUtil->mass(ELECTRON));
-   track2->getLorentzVector(electron2, mUtil->mass(ELECTRON));
-   state = electron1 + electron2;
+   TLorentzVector hadron1, hadron2, state;
+   track1->getLorentzVector(hadron1, mUtil->mass(ELECTRON));
+   track2->getLorentzVector(hadron2, mUtil->mass(ELECTRON));
+
    SaveStateInfo(state,track1->getCharge() + track2->getCharge(),0 );
-   SaveTrackInfo(track1,electron1, 0 );
-   SaveTrackInfo(track2,electron2, 1);
+   SaveTrackInfo(track1,hadron1, 0 );
+   SaveTrackInfo(track2,hadron2, 1);
 
-   //Qtot
-   double totQ = track1->getCharge() + track2->getCharge();
-   hTotQ->Fill(totQ);
-   if(totQ != 0){
-      mRecTree->FillBcgTree();
-      hInvMassJPsiBcg->Fill(state.M());
-      return;
-   }
-
-   hAnalysisFlow->Fill(JPSIQTOT);
 
    //1 RP track condition
    AnaRpTracks(mRpEvt);
-   
+
    unsigned int nRpTracksTotal = 0;
    StUPCRpsTrack *trackRP;
    int side = 0;
@@ -168,17 +150,21 @@ void AnaJPsi::Make(){
    hAnalysisFlow->Fill(JPSIRPFIDCUT);
 
 
-   mRecTree->FillRecTree();
-   hInvMassJPsi->Fill(state.M());
+   //Qtot
+   double totQ = track1->getCharge() + track2->getCharge();
+   hTotQ->Fill(totQ);
+   if(totQ == 0){
+      hAnalysisFlow->Fill(JPSIQTOT);
+      mRecTree->FillRecTree();
+      hInvMassJPsi->Fill(state.M());
+   }else{
+      mRecTree->FillBcgTree();
+      hInvMassJPsiBcg->Fill(state.M());
+
+   }
 
    if(DEBUG){
       cout << "Finished AnaJPsi::Make()" << endl;
-      cout << "Invariant mass: " << state.M() << ", total Charge: " << totQ << endl;
-      cout << "track1: " << tracksBEMC[0] << endl;
-      cout << "etaBEMC: " << track1->getBemcEta() << ", phiBEMC: " << track1->getBemcPhi() << ", delta phi sections: " << deltaSections << ", DCAZ: " << track1->getDcaZ() << ", DCAXY: " << track1->getDcaXY() << ", NhitsDEdx: " << track1->getNhitsDEdx() << ", NfitHits: " << track1->getNhitsFit() << ", chi electron: " << (pow(track1->getNSigmasTPCElectron(),2) + pow(track2->getNSigmasTPCElectron(),2)) << endl;
-      cout << "track2: " << tracksBEMC[1] << endl;
-      cout << "etaBEMC: " << track2->getBemcEta() << ", phiBEMC: " << track2->getBemcPhi() << ", delta phi sections: " << phiDelta << ", DCAZ: " << track2->getDcaZ() << ", DCAXY: " << track2->getDcaXY() << ", NhitsDEdx: " << track2->getNhitsDEdx() << ", NfitHits: " << track2->getNhitsFit() << ", chi electron: " << (pow(track1->getNSigmasTPCElectron(),2) + pow(track2->getNSigmasTPCElectron(),2)) << endl;
-
    }
 }
 
@@ -204,15 +190,12 @@ void AnaJPsi::Init(){
      hTriggerBits->GetXaxis()->SetBinLabel(tb+1, label);
    }
 
-   hTrackQualityFlow = new TH1D("hTrackQualityFlow", "hTrackQualityFlow", 8,1,9);
+   hTrackQualityFlow = new TH1D("hTrackQualityFlow", "hTrackQualityFlow", 5,1,6);
    hTrackQualityFlow->GetXaxis()->SetBinLabel(1, TString("all"));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(2, TString("BEMC hit"));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(3, TString::Format("p_{T} > %f GeV/c", minPt));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("|#eta_{BEMC}| < %f", maxEta));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString::Format("DCA_{XY} < %f cm",maxDcaXY ));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(6, TString::Format("|DCA_{Z}| < %f cm", maxDcaZ));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(7, TString::Format("N^{fit}_{hits} > %d", minNHitsFit));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(8, TString::Format("N^{dE/dx}_{hits} > %d", minNHitsDEdx));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(2, TString("p_{T} > 0.2 GeV/c"));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(3, TString::Format("N^{fit}_{hits} > %d", minNHitsFit));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("N^{dE/dx}_{hits} > %d", minNHitsDEdx));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString("BEMC"));
 
    mRecTree = new RecTree(nameOfAnaJPsiTree, AnaJPsiTreeBits, true); 
 
@@ -320,25 +303,17 @@ void AnaJPsi::Init(){
 
 bool AnaJPsi::goodQualityTrack(const StUPCTrack *trk){
 
-   
-   //if(trk->getPt() < minPt)  //pT
-   //   return false;
+   //pT
+   hTrackQualityFlow->Fill(1);
+   if(trk->getPt() < minPt)
+      return false;
+   hTrackQualityFlow->Fill(2);
+   if(trk->getNhitsFit() < minNHitsFit)
+      return false;
    hTrackQualityFlow->Fill(3);
-   if(!(abs(trk->getBemcEta()) < maxEta))  // eta
+   if(trk->getNhitsDEdx() < minNHitsDEdx)
       return false;
    hTrackQualityFlow->Fill(4);
-   if( !(trk->getDcaXY() < maxDcaXY) ) //DCA xy
-      return false;
-   hTrackQualityFlow->Fill(5);   
-   if( !(trk->getDcaZ() > minDcaZ && trk->getDcaZ() < maxDcaZ) )  //DCA z
-      return false;
-   hTrackQualityFlow->Fill(6);
-   if( !(trk->getNhitsFit() > minNHitsFit) )  //NhitsFit
-      return false;
-   hTrackQualityFlow->Fill(7);
-   if( !(trk->getNhitsDEdx() > minNHitsDEdx) ) //NhitsdEdx
-      return false;
-   hTrackQualityFlow->Fill(8);
    tpcCounter += 1;
 
    return true;

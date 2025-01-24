@@ -84,8 +84,8 @@ int main(int argc, char** argv)
 
    for(Long64_t iev=0; iev<nEvents; ++iev) 
    { //get the event
-      if( iev%1000 == 0)
-         cout<<"Analyzing "<<iev<<". event "<<endl;
+      //if( iev%1000 == 0)
+      //   cout<<"Analyzing "<<iev<<". event "<<endl;
       upcTree->GetEntry(iev);
       mRunNumber = upcEvt->getRunNumber();
       if(!runMCAna)

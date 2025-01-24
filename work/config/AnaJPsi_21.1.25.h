@@ -89,8 +89,8 @@ const double vertexRange = 100.0; // cm
 //const double exclusivityCut = 0.1;
 
 // cuts for JPsi analysis
-const double minBEMCPhi = TMath::Pi() - TMath::Pi()/6;
-const double maxBEMCPhi = TMath::Pi() + TMath::Pi()/6;
+const double minBEMCPhi = TMath::Pi()/3;
+const double maxBEMCPhi = TMath::Pi()*2/3;
 const double maxPIDChiEE = 9;
 const double minPIDChiPP = 10;
 const double minPIDChiPiPi = 10;
