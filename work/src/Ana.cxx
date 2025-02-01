@@ -81,49 +81,6 @@ void Ana::fillBeamlineInfo(){
     return;
 }
 
-void Ana::fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
-
-   Double_t eta2 = trk2->getEta();
-   Double_t phi2 = trk2->getPhi();
-
-   Double_t eta1 = trk1->getEta();
-   Double_t phi1 = trk1->getPhi();
-
-   hPosZ->Fill(posZ);
-
-   hEtaVtxZ->Fill(eta1 , posZ );
-   hEtaVtxZ->Fill(eta2 , posZ );
-
-   hEtaPhi->Fill(eta1, phi1);
-   hEtaPhi->Fill(eta2, phi2);
-
-   hEta->Fill(eta1);
-   hEta->Fill(eta2);
-
-}
-
-void Ana::fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
-
-   Double_t eta2 = trk2->getEta();
-   Double_t phi2 = trk2->getPhi();
-
-   Double_t eta1 = trk1->getEta();
-   Double_t phi1 = trk1->getPhi();
-
-   hPosZCut->Fill(posZ);
-
-   hEtaVtxZCut->Fill(eta1 , posZ );
-   hEtaVtxZCut->Fill(eta2 , posZ );
-
-   hEtaPhiCut->Fill(eta1, phi1);
-   hEtaPhiCut->Fill(eta2, phi2);
-
-   hEtaCut->Fill(eta1);
-   hEtaCut->Fill(eta2);
-}
-
-
-
 
 void Ana::AnaRpTracks(StRPEvent *event)
 {
@@ -245,10 +202,18 @@ void Ana::SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned i
    } else {
       mRecTree->setTofHit(-1, iTrack);
    }
+   if(trk->getFlag(StUPCTrack::kBemc ) ){
+      mRecTree->setBemcEta( trk->getBemcEta(), iTrack );
+      mRecTree->setBemcE( trk->getBemcHitE(), iTrack );
+      mRecTree->setBemcPt( trk->getBemcPt(), iTrack );
+      mRecTree->setBemcPhi( trk->getBemcPhi(), iTrack );
+   }else{
+      mRecTree->setBemcEta( -999, iTrack );
+      mRecTree->setBemcE( -999 , iTrack );
+      mRecTree->setBemcPt( -999 , iTrack );
+      mRecTree->setBemcPhi( -999 , iTrack );
+   }
 }
-
-
- 
 
 
 void Ana::SaveRPinfo(const StUPCRpsTrack *trackRP, unsigned int iSide)
@@ -293,6 +258,16 @@ void Ana::SaveStateInfo(TLorentzVector state, int totQ, unsigned int iState){
    mRecTree->setPt( state.Pt(), iState );
    mRecTree->setRap( state.Rapidity(), iState);
    mRecTree->setTotQ( totQ , iState);
+}
+
+void Ana::SaveChiSquareInfo(const StUPCTrack* trk1, const StUPCTrack *trk2 ){
+
+   mRecTree->setPIDChiSquare( pow(trk1->getNSigmasTPCPion(), 2) + pow(trk2->getNSigmasTPCPion(), 2)  , PION );
+   mRecTree->setPIDChiSquare( pow(trk1->getNSigmasTPCProton(), 2) + pow(trk2->getNSigmasTPCProton(), 2)  , PROTON );
+   mRecTree->setPIDChiSquare( pow(trk1->getNSigmasTPCKaon(), 2) + pow(trk2->getNSigmasTPCKaon(), 2)  , KAON );
+   mRecTree->setPIDChiSquare( pow(trk1->getNSigmasTPCElectron(), 2) + pow(trk2->getNSigmasTPCElectron(), 2)  , ELECTRON );
+
+
 }
 
 void Ana::SaveVertexInfo(const StUPCV0* V0, unsigned int iVtx)

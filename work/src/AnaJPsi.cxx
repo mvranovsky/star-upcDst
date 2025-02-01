@@ -42,25 +42,24 @@ void AnaJPsi::Make(){
    tracksBEMC.clear();
    //central system good quality tracks + BEMC
    for (int iTrk = 0; iTrk < mUpcEvt->getNumberOfTracks(); ++iTrk){
+      hTrackQualityFlow->Fill(1);
       const StUPCTrack *trk = mUpcEvt->getTrack(iTrk);
 
       if(!trk->getFlag(StUPCTrack::kPrimary)) // original star-upcDst
          continue;
       if(trk->getVertexId() != vertexID){ // only belonging to the 1 vertex
-         cout << "Track belonging to an event with 1 vertex, does not belong to it. Vertex id: "<< trk->getVertexId() << endl;
-         cout << "Number of vertices: " << mUpcEvt->getNumberOfVertices() << endl;
+         cout << "Found a track that has a different vertex id than the single vertex. Vertex id: "<< vertexID << "track vertex id: " << trk->getVertexId() << endl;
          continue;
       }
-      hTrackQualityFlow->Fill(1);
 
       if( !trk->getFlag(StUPCTrack::kBemc) )
          continue;
-      hTrackQualityFlow->Fill(2);
 
       fillTrackQualityCuts(trk);
 
       if(!goodQualityTrack(trk))
          continue;
+      
       fillTrackQualityCutsAfter(trk);
       hNTracksTpc->Fill( tpcCounter );
 
@@ -78,11 +77,13 @@ void AnaJPsi::Make(){
 
    if(!track1 || !track2)
       return;
-
+   /*
    // back to back
-   //Double_t deltaPhi = abs(track1->getBemcPhi() - track2->getBemcPhi());
-   //if( !(deltaPhi > minBEMCPhi && deltaPhi < maxBEMCPhi) )
-   //   return;
+   Double_t deltaPhi = abs(track1->getBemcPhi() - track2->getBemcPhi());
+   if( !(deltaPhi > minBEMCPhi && deltaPhi < maxBEMCPhi) )
+      return;
+   */
+   
    int sectionTrk1, sectionTrk2;
    for (int i = 0; i < 6; ++i){
       double lower, upper;
@@ -102,7 +103,6 @@ void AnaJPsi::Make(){
    int deltaSections = abs(sectionTrk1 - sectionTrk2);
    if(deltaSections != 3)
       return;
-   
    hAnalysisFlow->Fill(JPSIBACKTOBACK);
 
 
@@ -121,21 +121,17 @@ void AnaJPsi::Make(){
    track2->getLorentzVector(electron2, mUtil->mass(ELECTRON));
    state = electron1 + electron2;
    SaveStateInfo(state,track1->getCharge() + track2->getCharge(),0 );
+   SaveChiSquareInfo(track1, track2);
    SaveTrackInfo(track1,electron1, 0 );
    SaveTrackInfo(track2,electron2, 1);
 
    //Qtot
    double totQ = track1->getCharge() + track2->getCharge();
    hTotQ->Fill(totQ);
-   if(totQ != 0){
-      mRecTree->FillBcgTree();
-      hInvMassJPsiBcg->Fill(state.M());
-      return;
-   }
 
    hAnalysisFlow->Fill(JPSIQTOT);
 
-   //1 RP track condition
+   //1 RP track condition  
    AnaRpTracks(mRpEvt);
    
    unsigned int nRpTracksTotal = 0;
@@ -167,18 +163,27 @@ void AnaJPsi::Make(){
       return;
    hAnalysisFlow->Fill(JPSIRPFIDCUT);
 
+   if(totQ == 0){
+      mRecTree->FillRecTree();
+      hInvMassJPsi->Fill(state.M());
+   }else{
+      mRecTree->FillBcgTree();
+      hInvMassJPsiBcg->Fill(state.M());
 
-   mRecTree->FillRecTree();
-   hInvMassJPsi->Fill(state.M());
+   }
+
+   cout << "Finished AnaJPsi::Make(). Charge of particle: " << totQ << endl;
+   cout << "Invariant mass: " << state.M() << ", total Charge: " << totQ << endl;
+   cout << "track1: " << tracksBEMC[0] << endl;
+   cout << "etaBEMC: " << track1->getBemcEta() << ", phiBEMC: " << track1->getBemcPhi() << ", delta phi sections: " << sectionTrk1 << ", DCAZ: " << track1->getDcaZ() << ", DCAXY: " << track1->getDcaXY() << ", NhitsDEdx: " << track1->getNhitsDEdx() << ", NfitHits: " << track1->getNhitsFit() << ", chi electron: " << (pow(track1->getNSigmasTPCElectron(),2) + pow(track2->getNSigmasTPCElectron(),2)) << endl;
+   cout << "track2: " << tracksBEMC[1] << endl;
+   cout << "etaBEMC: " << track2->getBemcEta() << ", phiBEMC: " << track2->getBemcPhi() << ", delta phi sections: " << sectionTrk2 << ", DCAZ: " << track2->getDcaZ() << ", DCAXY: " << track2->getDcaXY() << ", NhitsDEdx: " << track2->getNhitsDEdx() << ", NfitHits: " << track2->getNhitsFit() << ", chi electron: " << (pow(track1->getNSigmasTPCElectron(),2) + pow(track2->getNSigmasTPCElectron(),2)) << endl;
+   
+
 
    if(DEBUG){
       cout << "Finished AnaJPsi::Make()" << endl;
-      cout << "Invariant mass: " << state.M() << ", total Charge: " << totQ << endl;
-      cout << "track1: " << tracksBEMC[0] << endl;
-      cout << "etaBEMC: " << track1->getBemcEta() << ", phiBEMC: " << track1->getBemcPhi() << ", delta phi sections: " << deltaSections << ", DCAZ: " << track1->getDcaZ() << ", DCAXY: " << track1->getDcaXY() << ", NhitsDEdx: " << track1->getNhitsDEdx() << ", NfitHits: " << track1->getNhitsFit() << ", chi electron: " << (pow(track1->getNSigmasTPCElectron(),2) + pow(track2->getNSigmasTPCElectron(),2)) << endl;
-      cout << "track2: " << tracksBEMC[1] << endl;
-      cout << "etaBEMC: " << track2->getBemcEta() << ", phiBEMC: " << track2->getBemcPhi() << ", delta phi sections: " << phiDelta << ", DCAZ: " << track2->getDcaZ() << ", DCAXY: " << track2->getDcaXY() << ", NhitsDEdx: " << track2->getNhitsDEdx() << ", NfitHits: " << track2->getNhitsFit() << ", chi electron: " << (pow(track1->getNSigmasTPCElectron(),2) + pow(track2->getNSigmasTPCElectron(),2)) << endl;
-
+      
    }
 }
 
@@ -206,14 +211,12 @@ void AnaJPsi::Init(){
 
    hTrackQualityFlow = new TH1D("hTrackQualityFlow", "hTrackQualityFlow", 8,1,9);
    hTrackQualityFlow->GetXaxis()->SetBinLabel(1, TString("all"));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(2, TString("BEMC hit"));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(3, TString::Format("p_{T} > %f GeV/c", minPt));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("|#eta_{BEMC}| < %f", maxEta));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString::Format("DCA_{XY} < %f cm",maxDcaXY ));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(6, TString::Format("|DCA_{Z}| < %f cm", maxDcaZ));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(7, TString::Format("N^{fit}_{hits} > %d", minNHitsFit));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(8, TString::Format("N^{dE/dx}_{hits} > %d", minNHitsDEdx));
-
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(2, TString::Format("|#eta_{BEMC}| < %f", maxEta));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(3, TString::Format("|DCA_{Z}| < %f cm", maxDcaZ));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("DCA_{XY} < %f cm",maxDcaXY ));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString::Format("N^{fit}_{hits} > %d", minNHitsFit));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(6, TString::Format("N^{dE/dx}_{hits} > %d", minNHitsDEdx));
+   
    mRecTree = new RecTree(nameOfAnaJPsiTree, AnaJPsiTreeBits, true); 
 
    hEta = new TH1D("hEta", "Pseudorapidity; #eta; counts", 60, -2, 2);
@@ -323,22 +326,21 @@ bool AnaJPsi::goodQualityTrack(const StUPCTrack *trk){
    
    //if(trk->getPt() < minPt)  //pT
    //   return false;
-   hTrackQualityFlow->Fill(3);
    if(!(abs(trk->getBemcEta()) < maxEta))  // eta
       return false;
-   hTrackQualityFlow->Fill(4);
-   if( !(trk->getDcaXY() < maxDcaXY) ) //DCA xy
-      return false;
-   hTrackQualityFlow->Fill(5);   
+   hTrackQualityFlow->Fill(2);
    if( !(trk->getDcaZ() > minDcaZ && trk->getDcaZ() < maxDcaZ) )  //DCA z
       return false;
-   hTrackQualityFlow->Fill(6);
+   hTrackQualityFlow->Fill(3);   
+   if( !(trk->getDcaXY() < maxDcaXY) ) //DCA xy
+      return false;
+   hTrackQualityFlow->Fill(4);
    if( !(trk->getNhitsFit() > minNHitsFit) )  //NhitsFit
       return false;
-   hTrackQualityFlow->Fill(7);
+   hTrackQualityFlow->Fill(5);
    if( !(trk->getNhitsDEdx() > minNHitsDEdx) ) //NhitsdEdx
       return false;
-   hTrackQualityFlow->Fill(8);
+   hTrackQualityFlow->Fill(6);
    tpcCounter += 1;
 
    return true;

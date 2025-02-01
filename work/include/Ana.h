@@ -44,12 +44,11 @@ class Ana{
 
       void fillTrackQualityCuts(const StUPCTrack* trk);
       void fillNSigmaPlots(const StUPCTrack *trk);
-      void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
-      void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
       void SaveEventInfo(const StUPCEvent *upcEvt);
       void SaveRPinfo(const StUPCRpsTrack *trackRP, unsigned int iSide);
       //void SaveTrackInfo(const StUPCTrack *trk, unsigned int iTrack);
       void SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned int iTrack);
+      void SaveChiSquareInfo(const StUPCTrack* trk1, const StUPCTrack *trk2 );
       void SaveStateInfo(TLorentzVector state,int totQ, unsigned int iState);
       void SaveVertexInfo(const StUPCV0* V0, unsigned int iVtx);
       void SaveVertexInfo(const StUPCVertex* vtx, unsigned int iVtx);
@@ -78,9 +77,6 @@ class Ana{
 
       // Control plots
       TH1D *hAnalysisFlow; 
-
-      TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut;
-      TH2F* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
 
       TString anaName;
       const vector<int> *trigger;

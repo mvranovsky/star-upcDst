@@ -19,6 +19,25 @@ CMakeFiles/upc-reader.dir/src/Ana.cxx.o
  include/RunDef.h
  include/UpcDstLibreries.h
  include/Util.h
+CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o
+ /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
+ /star/u/mvranovsk/star-upcDst/work/src/AnaJPSI.cxx
+ include/Ana.h
+ include/AnaJPSI.h
+ include/Libreries.h
+ include/RecTree.h
+ include/RunDef.h
+ include/UpcDstLibreries.h
+ include/Util.h
 CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o
  /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
  /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h

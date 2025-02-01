@@ -13,7 +13,6 @@ const bool runAnaV0Mult = false;
 const bool runTofEff = false;
 const bool runTofEffMult = false;
 const bool runAnaJPsi = true;
-const bool runAnaJPSI = false;
 
 const unsigned int nAligIteration = 4;
 const bool runMCAna = false;
@@ -51,12 +50,7 @@ const TString nameOfTofEffMultTree = "recTreeTofEffMult";
 const std::bitset<16> TofEffMultTreeBits = std::bitset<16>(std::string("0000011100010001")); 
 
 const TString nameOfAnaJPsiTree = "recTreeAnaJPsi";
-const std::bitset<16> AnaJPsiTreeBits = std::bitset<16>(std::string("0001100000001111")); 
-
-const TString nameOfAnaJPSITree = "recTreeAnaJPSI";
-const std::bitset<16> AnaJPSITreeBits = std::bitset<16>(std::string("0001100000001111")); 
-
-
+const std::bitset<16> AnaJPsiTreeBits = std::bitset<16>(std::string("0001100000001111")); //RPs info turned off
 
 
 const TString YAxisDescription = "counts";

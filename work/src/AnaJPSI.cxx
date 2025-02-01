@@ -1,21 +1,20 @@
-#include "AnaJPsi.h"
+#include "AnaJPSI.h"
 #include "RunDef.h"
 
 //_____________________________________________________________________________
-AnaJPsi::AnaJPsi(TFile *outFile): Ana(outFile){}
+AnaJPSI::AnaJPSI(TFile *outFile): Ana(outFile){}
 
-AnaJPsi::~AnaJPsi(){
+AnaJPSI::~AnaJPSI(){
    //if(mUtil) delete mUtil;
 }
 
-
-void AnaJPsi::Make(){
+void AnaJPSI::Make(){
 
    //trigger
-   hAnalysisFlow->Fill(JPSIALL);
+   hAnalysisFlow->Fill(JPSI2ALL);
    if(!CheckTriggers(&triggerID, mUpcEvt, hTriggerBits))
       return;
-   hAnalysisFlow->Fill(JPSITRIG);
+   hAnalysisFlow->Fill(JPSI2TRIG);
 
    SaveEventInfo(mUpcEvt);
    SaveTriggerInfo(mUpcEvt, mRpEvt);
@@ -26,27 +25,30 @@ void AnaJPsi::Make(){
       const StUPCTrack *trk = mUpcEvt->getTrack(iTrk);
       if(!trk)
          continue;
+      // only original star-upcDst
       if(!trk->getFlag(StUPCTrack::kPrimary))
          continue;
+      hTrackQualityFlow->Fill(1);
+
+      // hit in BEMC
+      if(!trk->getFlag(StUPCTrack::kBemc))
+         continue;
+      hTrackQualityFlow->Fill(2);
 
       fillTrackQualityCuts(trk);
       if(!goodQualityTrack(trk))
          continue;
       fillTrackQualityCutsAfter(trk);
-   hNTracksTpc->Fill( tpcCounter );
 
-      if( !trk->getFlag(StUPCTrack::kBemc) )
-         continue;
-      hTrackQualityFlow->Fill(5);
-
+      hEtaDifference->Fill( abs( trk->getBemcEta() - trk->getEta() ) ); 
       tracksBEMC.push_back(iTrk);
    }
-   hAnalysisFlow->Fill(JPSIBEMC);
    hNTracksBEMC->Fill( tracksBEMC.size() );
 
-   if(tracksBEMC.size() == 0){
+   if(tracksBEMC.size() < 2){
       return;
    }
+   hAnalysisFlow->Fill(JPSI2BEMC);
 
    //vertex + parovanie(back to back condition)
    // outer track loop
@@ -58,15 +60,18 @@ void AnaJPsi::Make(){
 
       // inner track loop
       for (unsigned int jTrk = iTrk; jTrk < tracksBEMC.size(); ++jTrk){
+
+         // skip if pair created from 2 same tracks
          if(tracksBEMC[iTrk] == tracksBEMC[jTrk])
             continue;
+
          const StUPCTrack* trk2 = mUpcEvt->getTrack( tracksBEMC[jTrk] );
          if(!trk2)
             continue;
+
          if(!sameVertex(trk1, trk2))
             continue;
-         hAnalysisFlow->Fill(JPSI1VTX);
-
+         hAnalysisFlow->Fill(JPSI2SAMEVTX);
 
          //VtxZ - eta cut
          const StUPCVertex *vtx = mUpcEvt->getVertex(trk1->getVertexId());
@@ -74,30 +79,29 @@ void AnaJPsi::Make(){
             continue;
 
          fillEtaVtxPlotsBefore(trk1, trk2, vtx->getPosZ());
-         if(abs(vtx->getPosZ()) > vertexRangeForEVz )
+         if(abs(vtx->getPosZ()) > vertexRange )
             continue;
+
          SaveVertexInfo(vtx, 0);
 
          if( !( IsGoodEtaTrack(trk1, 0) && IsGoodEtaTrack(trk2, 0 ) ) )
             continue;
 
          fillEtaVtxPlotsAfter(trk1, trk2, vtx->getPosZ());
-         hAnalysisFlow->Fill(JPSIETAVTXZ);
-
 
          //PID
          fillNSigmaPlots(trk1);
          fillNSigmaPlots(trk2);
          if(!chiSquarePID(trk1,trk2))
             continue;
-         hAnalysisFlow->Fill(JPSIPID);
+         hAnalysisFlow->Fill(JPSI2PID);
 
          // back to back
-         Double_t deltaPhi = trk1->getBemcPhi() - trk2->getBemcPhi();
+         Double_t deltaPhi = abs(trk1->getBemcPhi() - trk2->getBemcPhi());
          if(deltaPhi > minBEMCPhi && deltaPhi < maxBEMCPhi ){
             track1 = trk1;
             track2 = trk2;
-            hAnalysisFlow->Fill(JPSIBACKTOBACK);
+            hAnalysisFlow->Fill(JPSI2BACKTOBACK);
             break;
          }else continue;
       }
@@ -108,14 +112,15 @@ void AnaJPsi::Make(){
       return;
 
    // save info about tracks
-   TLorentzVector hadron1, hadron2, state;
-   track1->getLorentzVector(hadron1, mUtil->mass(ELECTRON));
-   track2->getLorentzVector(hadron2, mUtil->mass(ELECTRON));
+   TLorentzVector electron1, electron2, state;
+   track1->getLorentzVector(electron1, mUtil->mass(ELECTRON));
+   track2->getLorentzVector(electron2, mUtil->mass(ELECTRON));
+   state = electron1 + electron2;
 
    SaveStateInfo(state,track1->getCharge() + track2->getCharge(),0 );
-   SaveTrackInfo(track1,hadron1, 0 );
-   SaveTrackInfo(track2,hadron2, 1);
-
+   SaveChiSquareInfo(track1, track2);
+   SaveTrackInfo(track1,electron1, 0 );
+   SaveTrackInfo(track2,electron2, 1);
 
    //1 RP track condition
    AnaRpTracks(mRpEvt);
@@ -140,21 +145,21 @@ void AnaJPsi::Make(){
    if(nRpTracksTotal != 1)
       return;
    
-   hAnalysisFlow->Fill(JPSI1RP);
+   hAnalysisFlow->Fill(JPSI21RP);
    SaveRPinfo(trackRP,side);
    
 
    //fiducial volume condition
    if( !RPInFidRange(trackRP->pVec().X(), trackRP->pVec().Y()) )
       return;
-   hAnalysisFlow->Fill(JPSIRPFIDCUT);
+   hAnalysisFlow->Fill(JPSI2RPFIDCUT);
 
 
    //Qtot
    double totQ = track1->getCharge() + track2->getCharge();
    hTotQ->Fill(totQ);
    if(totQ == 0){
-      hAnalysisFlow->Fill(JPSIQTOT);
+      hAnalysisFlow->Fill(JPSI2QTOT);
       mRecTree->FillRecTree();
       hInvMassJPsi->Fill(state.M());
    }else{
@@ -164,24 +169,24 @@ void AnaJPsi::Make(){
    }
 
    if(DEBUG){
-      cout << "Finished AnaJPsi::Make()" << endl;
+      cout << "Finished AnaJPSI::Make()" << endl;
    }
 }
 
 
 
-void AnaJPsi::Init(){
+void AnaJPSI::Init(){
 
    mUtil = new Util();
 
 
    if( DEBUG )
-     cout<<"AnaJPsi::Init() called"<<endl;
+     cout<<"AnaJPSI::Init() called"<<endl;
 
    mOutFile->cd();
-   hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nJPSISelectionCuts-1, 1, nJPSISelectionCuts);
-   for(int tb=1; tb<nJPSISelectionCuts; ++tb) {
-     hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->analysisJPSI(tb));
+   hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nJPSI2SelectionCuts-1, 1, nJPSI2SelectionCuts);
+   for(int tb=1; tb<nJPSI2SelectionCuts; ++tb) {
+     hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->analysisJPSI2(tb));
    }
 
    hTriggerBits = new TH1D("TriggerBits", "TriggerBits", nTriggers, -0.5, 16.5);
@@ -197,7 +202,7 @@ void AnaJPsi::Init(){
    hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("N^{dE/dx}_{hits} > %d", minNHitsDEdx));
    hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString("BEMC"));
 
-   mRecTree = new RecTree(nameOfAnaJPsiTree, AnaJPsiTreeBits, true); 
+   mRecTree = new RecTree(nameOfAnaJPSITree, AnaJPSITreeBits, true); 
 
    hEta = new TH1D("hEta", "Pseudorapidity; #eta; counts", 60, -2, 2);
    hEtaCut = new TH1D("hEtaCut", "Pseudorapidity; #eta [-]; counts", 60, -2, 2);
@@ -298,29 +303,37 @@ void AnaJPsi::Init(){
    hInvMassJPsi = new TH1D("hInvMassJPsi", "hInvMassJPsi; m_{e e} [GeV/c^{2}]; counts", 40,2, 4);
    hInvMassJPsiBcg = new TH1D("hInvMassJPsiBcg", "hInvMassJPsiBcg; m_{e e} [GeV/c^{2}]; counts", 40,2, 4);
 
+   hEtaDifference = new TH1D("hEtaDifference", "hEtaDifference; |#eta_{BEMC} - #eta_{TPC}| [-]; counts", 20, 0, 2);
+
 
 }
 
-bool AnaJPsi::goodQualityTrack(const StUPCTrack *trk){
+bool AnaJPSI::goodQualityTrack(const StUPCTrack *trk){
 
-   //pT
-   hTrackQualityFlow->Fill(1);
-   if(trk->getPt() < minPt)
-      return false;
-   hTrackQualityFlow->Fill(2);
-   if(trk->getNhitsFit() < minNHitsFit)
+   if( !(abs(trk->getBemcEta()) < maxEta) )
       return false;
    hTrackQualityFlow->Fill(3);
-   if(trk->getNhitsDEdx() < minNHitsDEdx)
+
+   if( !(trk->getDcaZ() > minDcaZ && trk->getDcaZ() < maxDcaZ) )
       return false;
    hTrackQualityFlow->Fill(4);
-   tpcCounter += 1;
+
+   if( !(trk->getDcaXY() < maxDcaXY) )
+      return false;
+   hTrackQualityFlow->Fill(5);
+
+   if( !(trk->getNhitsFit() > minNHitsFit) )
+      return false;
+   hTrackQualityFlow->Fill(6);
+
+   if( !(trk->getNhitsDEdx() > minNHitsDEdx) )
+      return false;
+   hTrackQualityFlow->Fill(7);
 
    return true;
-
 }
 
-bool AnaJPsi::sameVertex(const StUPCTrack *trk1,const StUPCTrack *trk2){
+bool AnaJPSI::sameVertex(const StUPCTrack *trk1,const StUPCTrack *trk2){
    int vtx1ID, vtx2ID;
    vtx1ID = trk1->getVertexId();
    vtx2ID = trk2->getVertexId();
@@ -344,21 +357,64 @@ bool AnaJPsi::sameVertex(const StUPCTrack *trk1,const StUPCTrack *trk2){
    return true;
 }
 
+void AnaJPSI::fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
 
-void AnaJPsi::fillTrackQualityCuts(const StUPCTrack* trk){
+   Double_t eta2 = trk2->getEta();
+   Double_t phi2 = trk2->getPhi();
+
+   Double_t eta1 = trk1->getEta();
+   Double_t phi1 = trk1->getPhi();
+
+   hPosZ->Fill(posZ);
+
+   hEtaVtxZ->Fill(eta1 , posZ );
+   hEtaVtxZ->Fill(eta2 , posZ );
+
+   hEtaPhi->Fill(eta1, phi1);
+   hEtaPhi->Fill(eta2, phi2);
+
+   hEta->Fill(eta1);
+   hEta->Fill(eta2);
+
+}
+
+void AnaJPSI::fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+
+   Double_t eta2 = trk2->getEta();
+   Double_t phi2 = trk2->getPhi();
+
+   Double_t eta1 = trk1->getEta();
+   Double_t phi1 = trk1->getPhi();
+
+   hPosZCut->Fill(posZ);
+
+   hEtaVtxZCut->Fill(eta1 , posZ );
+   hEtaVtxZCut->Fill(eta2 , posZ );
+
+   hEtaPhiCut->Fill(eta1, phi1);
+   hEtaPhiCut->Fill(eta2, phi2);
+
+   hEtaCut->Fill(eta1);
+   hEtaCut->Fill(eta2);
+}
+
+
+
+
+void AnaJPSI::fillTrackQualityCuts(const StUPCTrack* trk){
 
    hNfitHits->Fill(trk->getNhitsFit() );
    hNhitsDEdx->Fill(trk->getNhitsDEdx() );
    hPt->Fill(trk->getPt());
 }
 
-void AnaJPsi::fillTrackQualityCutsAfter(const StUPCTrack* trk){
+void AnaJPSI::fillTrackQualityCutsAfter(const StUPCTrack* trk){
 
    hNfitHits->Fill(trk->getNhitsFit() );
    hNhitsDEdx->Fill(trk->getNhitsDEdx() );
    hPt->Fill(trk->getPt());
 }
-bool AnaJPsi::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
+bool AnaJPSI::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
 
    Double_t chi_ee = pow(trk1->getNSigmasTPCElectron(),2) + pow(trk2->getNSigmasTPCElectron(),2);
    Double_t chi_pp = pow(trk1->getNSigmasTPCProton(),2) + pow(trk2->getNSigmasTPCProton(),2);
@@ -378,7 +434,7 @@ bool AnaJPsi::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
    return true;
 }
 
-void AnaJPsi::fillNSigmaPlots(const StUPCTrack *trk){
+void AnaJPSI::fillNSigmaPlots(const StUPCTrack *trk){
     Double_t nSigmaPion, nSigmaProton, nSigmaKaon, nSigmaElectron;
     nSigmaPion = trk->getNSigmasTPCPion();
     nSigmaProton = trk->getNSigmasTPCProton();

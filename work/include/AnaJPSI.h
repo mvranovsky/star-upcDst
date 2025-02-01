@@ -1,5 +1,5 @@
-#ifndef AnaJPsi_h
-#define AnaJPsi_h
+#ifndef AnaJPSI_h
+#define AnaJPSI_h
 
 #include "UpcDstLibreries.h"
 #include "Util.h"
@@ -9,10 +9,10 @@
 using namespace std;
 using namespace UTIL;
 
-class AnaJPsi : public Ana{
+class AnaJPSI : public Ana{
    public:
-      AnaJPsi(TFile *outfile);
-      ~AnaJPsi(); 
+      AnaJPSI(TFile *outfile);
+      ~AnaJPSI(); 
 
       void Init() override;
       void Make() override;
@@ -25,6 +25,10 @@ class AnaJPsi : public Ana{
       bool goodQualityTrack(const StUPCTrack *trk);
       bool sameVertex(const StUPCTrack *trk1,const StUPCTrack *trk2);
       bool chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2);
+      void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+      void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+
+
       // all control histograms
       TH2F *hRPcorr[2], *hRPcorrWest[2], *hRPcorrEast[2], *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;
       TH2D *hInvMassEta;
@@ -33,6 +37,7 @@ class AnaJPsi : public Ana{
       TH1D *hNSigmaPi, *hNSigmaP, *hNSigmaK, *hDEdxSignal;
       TH1D *hPt, *hPtCut;
       TH1D *hInvMassJPsi, *hInvMassJPsiBcg, *hTrackQualityFlow;
+      TH1D *hEtaDifference;
       Util* mUtil;
 
       TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut;

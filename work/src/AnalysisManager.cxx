@@ -63,6 +63,10 @@ int main(int argc, char** argv)
       mAnaVector.push_back(new AnaJPsi(outFile));
       cout << "Will run analysis of JPsi." << endl;       
    }
+      if( runAnaJPSI ){
+      mAnaVector.push_back(new AnaJPSI(outFile));
+      cout << "Will run analysis of JPSI tryout." << endl;       
+   }
 
    // Load RP off-sets with off-set corrections 
    if( !LoadOffsetFile(nameOfOffSetFile, mOffSet) )

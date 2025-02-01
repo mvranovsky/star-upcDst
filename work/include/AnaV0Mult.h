@@ -33,6 +33,9 @@ class AnaV0Mult : public Ana{
       TH1D *hTriggerBits;
       TH1D *hPIDStats[2];
 
+      TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut;
+      TH2F* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
+
 
       TH2F *hRPcorr[2], *hRPcorrWest[2], *hRPcorrEast[2], *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;
       TH1D *hPt, *hDcaZ, *hDcaXY, *hNfitHits, *hNhitsDEdx, *hTOFTracks, *hNVertices, *hTotQ, *hNumberRPTracks, *hGlobalTracks;
@@ -62,6 +65,9 @@ class AnaV0Mult : public Ana{
       void fillTopologyCutsAfter(const StUPCV0& V0);
       int hasGoodTPCnSigma(const StUPCTrack *trk);
       void fillFinalPlots();
+      void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+      void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+
 
       bool is2pions(const StUPCTrack *trk1, const StUPCTrack *trk2);
       bool isProtonPion(const StUPCTrack *trk1,const StUPCTrack *trk2);

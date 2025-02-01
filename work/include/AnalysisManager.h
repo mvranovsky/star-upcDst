@@ -11,6 +11,7 @@
 #include "TofEff.h"
 #include "TofEffMult.h"
 #include "AnaJPsi.h"
+#include "AnaJPSI.h"
 
 using namespace std;
 using namespace UTIL;

@@ -90,6 +90,16 @@ include/RecTree.h
 Ana.h
 include/Ana.h
 
+include/AnaJPSI.h
+UpcDstLibreries.h
+include/UpcDstLibreries.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
+
 include/AnaJPsi.h
 UpcDstLibreries.h
 include/UpcDstLibreries.h
@@ -161,6 +171,8 @@ TofEffMult.h
 include/TofEffMult.h
 AnaJPsi.h
 include/AnaJPsi.h
+AnaJPSI.h
+include/AnaJPSI.h
 
 include/Libreries.h
 iostream

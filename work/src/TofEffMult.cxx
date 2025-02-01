@@ -426,6 +426,49 @@ void TofEffMult::Init(){
 
 }
 
+void TofEffMult::fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+
+   Double_t eta2 = trk2->getEta();
+   Double_t phi2 = trk2->getPhi();
+
+   Double_t eta1 = trk1->getEta();
+   Double_t phi1 = trk1->getPhi();
+
+   hPosZ->Fill(posZ);
+
+   hEtaVtxZ->Fill(eta1 , posZ );
+   hEtaVtxZ->Fill(eta2 , posZ );
+
+   hEtaPhi->Fill(eta1, phi1);
+   hEtaPhi->Fill(eta2, phi2);
+
+   hEta->Fill(eta1);
+   hEta->Fill(eta2);
+
+}
+
+void TofEffMult::fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+
+   Double_t eta2 = trk2->getEta();
+   Double_t phi2 = trk2->getPhi();
+
+   Double_t eta1 = trk1->getEta();
+   Double_t phi1 = trk1->getPhi();
+
+   hPosZCut->Fill(posZ);
+
+   hEtaVtxZCut->Fill(eta1 , posZ );
+   hEtaVtxZCut->Fill(eta2 , posZ );
+
+   hEtaPhiCut->Fill(eta1, phi1);
+   hEtaPhiCut->Fill(eta2, phi2);
+
+   hEtaCut->Fill(eta1);
+   hEtaCut->Fill(eta2);
+}
+
+
+
 void TofEffMult::fillTopologyCutsBefore(const StUPCV0& V0){
 
     hDcaDaughters->Fill(V0.dcaDaughters());

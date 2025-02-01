@@ -25,6 +25,9 @@ class TofEff : public Ana{
       void fillTopologyCutsAfter(const StUPCV0& V0);
       void fillTrackQualityCuts(const StUPCTrack* trk);
       void fillNSigmaPlots(const StUPCTrack *trk);
+      void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+      void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+
 
 
       // all control histograms
@@ -40,6 +43,9 @@ class TofEff : public Ana{
       TH1D *hMultipleGoodV0;
 
       TH1D *hInvMassTof1, *hInvMassTof2;
+
+      TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut;
+      TH2F* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
 
 
 

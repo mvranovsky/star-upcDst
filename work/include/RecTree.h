@@ -65,6 +65,7 @@ class RecTree{
       Double_t getMSquared(unsigned int s) const { return mMSquared[s]; }
       Int_t getPairID(unsigned int s) const { return mPairID[s]; }
       Int_t getTotQ(unsigned int s) const { return mTotQ[s]; }
+      Double_t getPIDChiSquare(unsigned int s) { return mChiSquare[s]; }
       Double_t getMomentumInGeV(unsigned int s, UInt_t dataTag = RECO) const { return mMomentumInGev[s][dataTag]; }   
       Double_t getPtInGev(unsigned int s, UInt_t dataTag = RECO) const { return mPtInGev[s][dataTag]; }  
       Double_t getPxInGev(unsigned int s, UInt_t dataTag = RECO) const { return mPxInGev[s][dataTag]; }
@@ -82,6 +83,10 @@ class RecTree{
       Double_t getNHitsFit(unsigned int s) const { return mNHitsFit[s]; }   
       Double_t getNHitsDEdx(unsigned int s) const { return mNHitsDEdx[s]; } 
       Double_t getNSigmaTPC(unsigned int s, int p) const { return mNSigmaTPC[s][p]; }
+      Double_t getBemcEta(unsigned int s) { return mBemcEta[s]; }
+      Double_t getBemcE(unsigned int s) { return mBemcE[s]; }
+      Double_t getBemcPhi(unsigned int s) { return mBemcPhi[s]; }
+      Double_t getBemcPt(unsigned int s) { return mBemcPt[s]; }
       UInt_t   getQATruth(unsigned int s) const { return mQATruth[s]; }
       Double_t getThetaRp(unsigned int s) const { return mThetaRp[s]; }
       Double_t getPhiRp(unsigned int s) const { return mPhiRp[s]; }
@@ -133,6 +138,8 @@ class RecTree{
       bool getVertexStudySameVertex() const { return mSameVertex; }
       Double_t getVertexStudyDcaParticles() const { return mDcaParticles; }
       Double_t getVertexStudyDcaBeamline() const { return mDcaBeamline; }
+      
+
 
 
       //setters
@@ -176,6 +183,7 @@ class RecTree{
       void setMSquared(Double_t var, unsigned int s) { mMSquared[s] = var; }
       void setPairID(Int_t var, unsigned int s) { mPairID[s] = var; }
       void setTotQ(Int_t var, unsigned int s) { mTotQ[s] = var; }
+      void setPIDChiSquare(double var, unsigned int s) {mChiSquare[s] = var; }
       void setMomentumInGev(Double_t var, unsigned int s, UInt_t dataTag = RECO) { mMomentumInGev[s][dataTag] = var; }   
       void setPtInGev(Double_t var, unsigned int s, UInt_t dataTag = RECO) { mPtInGev[s][dataTag] = var; }  
       void setPxInGev(Double_t var, unsigned int s, UInt_t dataTag = RECO) { mPxInGev[s][dataTag] = var; }
@@ -193,6 +201,10 @@ class RecTree{
       void setNHitsFit(Double_t var, unsigned int s) { mNHitsFit[s] = var; }   
       void setNHitsDEdx(Double_t var, unsigned int s) { mNHitsDEdx[s] = var; } 
       void setNSigmaTPC(Double_t var, unsigned int s, int p) { mNSigmaTPC[s][p] = var; }
+      void setBemcEta(double var, unsigned int s) { mBemcEta[s] = var; }
+      void setBemcE(double var, unsigned int s) { mBemcE[s] = var; }
+      void setBemcPhi(double var, unsigned int s) { mBemcPhi[s] = var; }
+      void setBemcPt(double var, unsigned int s) { mBemcPt[s] = var; }
       void setQATruth(UInt_t var, unsigned int s) { mQATruth[s] = var; }
       void setThetaRp(Double_t var, unsigned int s) { mThetaRp[s] = var; }
       void setPhiRp(Double_t var, unsigned int s) { mPhiRp[s] = var; }
@@ -241,6 +253,8 @@ class RecTree{
       void setZdcWDsmBit(bool var) { mZdcWDsmBit = var; }
       void setRpTrigBits(bool var, unsigned int rp) { mRpTrigBits[rp] = var; }
 
+
+
       void setVertexStudyPrimary(bool var) { mPrimary = var; }
       void setVertexStudySameVertex(bool var) { mSameVertex = var; }
       void setVertexStudyDcaParticles(Double_t var) { mDcaParticles = var; }
@@ -268,11 +282,14 @@ class RecTree{
       Double_t mVertexZInCm[nStates][nDataTag], mVertexXInCm[nStates][nDataTag], mVertexYInCm[nStates][nDataTag];
       UInt_t mVertexIdTruth; // for MC vertecies
       Double_t mVertexDiffInCm[nStates][nDataTag], mDcaDaughtersInCm[nStates][nDataTag], mDcaBeamlineInCm[nStates][nDataTag], mPointingAngle[nStates][nDataTag], mDecayLengthInCm[nStates][nDataTag];
-       
+      
       // State info
       Double_t mInvMass[nStates], mMSquared[nStates];
       Double_t mTheta[nStates], mPhi[nStates], mP[nStates], mPt[nStates], mRap[nStates];
       Int_t mPairID[nStates], mTotQ[nStates];
+
+      // State PID chi square info
+      Double_t mChiSquare[nParticles];
 
       // Central hadrons info
       Double_t mEtaHadrons[nHadrons][nDataTag], mPhiHadrons[nHadrons][nDataTag], mPtInGev[nHadrons][nDataTag];
@@ -283,6 +300,9 @@ class RecTree{
       Double_t mDcaXYInCm[nHadrons], mDcaZInCm[nHadrons], mNHitsFit[nHadrons], mNHitsDEdx[nHadrons];
       UInt_t mQATruth[nHadrons]; // for true MC hadrons
       Int_t mTofHit[nHadrons];
+
+      // BEMC info
+      Double_t mBemcEta[nHadrons], mBemcPhi[nHadrons], mBemcPt[nHadrons], mBemcE[nHadrons];
       
       // RP track info
       Double_t mThetaRp[nSides], mPhiRp[nSides], mTimeRp[nSides], mT[nSides];

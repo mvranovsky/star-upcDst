@@ -50,6 +50,10 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       mRecTree->Branch("mSquared", &mMSquared[0]);
       mRecTree->Branch("pairID", &mPairID[0]);
       mRecTree->Branch("totQ", &mTotQ[0]);
+      if( treeVersion.test(11) ){ // 11 == add chi square for pid
+         for (int iPart = 0; iPart < nParticles; ++iPart)
+            mRecTree->Branch("chiSquare" + mUtil->particleName(iPart), &mChiSquare[iPart]);
+      }
    }
   // Central hadrons info
    if( treeVersion.test(3) )
@@ -70,6 +74,13 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
             mRecTree->Branch(Form("tofHit%i",i)+ tag, &mTofHit[i]);
             if( iTag == TRUEMC )
                mRecTree->Branch(Form("QAHadron%i",i) + tag, &mQATruth[i]);
+
+            if( treeVersion.test(12) ){ // 12 == BEMC info
+               mRecTree->Branch(Form("bemcEta%i", i), &mBemcEta[i]);
+               mRecTree->Branch(Form("bemcPt%i", i), &mBemcPt[i]);
+               mRecTree->Branch(Form("bemcPhi%i", i), &mBemcPhi[i]);
+               mRecTree->Branch(Form("bemcE%i", i), &mBemcE[i]);
+            }
          } 
 
          mRecTree->Branch(Form("dEdxInKevCm%i",i), &mDEdxInKevCm[i]);
@@ -248,9 +259,6 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       }      
    }
 
-   //treeVersion.test(11) bude dorobene pre sety RP informacii
-   //treeVersion.test(12) mozno pT missing
-
 
    // Setting background Tree
    if(isBcgTree){
@@ -302,6 +310,7 @@ RecTree::RecTree(TTree* tree, bitset<16> treeVersion) {
       tree->SetBranchAddress("pairRapidity", &mRap);
       tree->SetBranchAddress("mSquared", &mMSquared);
       tree->SetBranchAddress("pairID", &mPairID);
+
    }
 
    // Central hadrons info
@@ -331,9 +340,17 @@ RecTree::RecTree(TTree* tree, bitset<16> treeVersion) {
          tree->SetBranchAddress(Form("dcaZInCm%i",i), &mDcaZInCm[i]);
          tree->SetBranchAddress(Form("nHitsFit%i",i), &mNHitsFit[i]);
          tree->SetBranchAddress(Form("nHitsDEdx%i",i), &mNHitsDEdx[i]);
+
          for (int iPart = 0; iPart < nParticles; ++iPart)
             tree->SetBranchAddress("nSigmaTPC" + mUtil->particleName(iPart) + mUtil->signName(i), &mNSigmaTPC[i][iPart]);
-      }      
+         
+         if( treeVersion.test(12) ){ //BEMC info
+            tree->SetBranchAddress(Form("bemcEta%i", i), &mBemcEta[i]);
+            tree->SetBranchAddress(Form("bemcPt%i", i), &mBemcPt[i]);
+            tree->SetBranchAddress(Form("bemcPhi%i", i), &mBemcPhi[i]);
+            tree->SetBranchAddress(Form("bemcE%i", i), &mBemcE[i]);
+         }
+      }
    }
 
    // RP track info 
@@ -421,6 +438,7 @@ RecTree::RecTree(TTree* tree, bitset<16> treeVersion) {
          tree->SetBranchAddress("rp" + mUtil->rpName(iRp) + "DsmBit", &mRpTrigBits[iRp]); 
       }
    }
+
    mRecTree = tree;
 }//RecTree::LoadTTree
 
