@@ -9,23 +9,23 @@
     starver pro
     ./AnalysisManager ${FILELIST} 
     mv AnalysisOutput.root ${JOBID}.root
-    <!-- ./AnalysisManager <input URL="filelist:/star/u/mvranovsk/Misa_backup/sverami1/star-upcDst/build2/run17.list"/>  -->
+    <!-- ./AnalysisManager <input URL="filelist:/star/u/mvranovsk/star-upcDst/work/lists/run17_JPsi.list"/>  -->
     <!-- mv AnalysisOutput.root __DAYID__.root  -->
     ls
   </command>
 
-  <input URL="filelist:/star/u/mvranovsk/Misa_backup/sverami1/star-upcDst/build2/run17.list"/>
+  <input URL="filelist:/star/u/mvranovsk/star-upcDst/work/lists/run17_JPsi.list"/>
   
-  <!-- <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_31.1.25/logs/__DAYID__.out"/>  -->
-  <!-- <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_31.1.25/logs/__DAYID__.err"/>  -->
+  <!-- <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_13.2.25/logs/__DAYID__.out"/>  -->
+  <!-- <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_13.2.25/logs/__DAYID__.err"/>  -->
 
-  <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_31.1.25/logs/$JOBID.out"/>
-  <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_31.1.25/logs/$JOBID.err"/>
+  <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_13.2.25/logs/$JOBID.out"/>
+  <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_13.2.25/logs/$JOBID.err"/>
 
-  <output fromScratch="*.root" toURL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_31.1.25/" />
+  <output fromScratch="*.root" toURL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_13.2.25/" />
 
   <Generator>
-    <Location>/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_31.1.25/sched</Location>
+    <Location>/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_13.2.25/sched</Location>
   </Generator>
 
   <SandBox installer="ZIP">

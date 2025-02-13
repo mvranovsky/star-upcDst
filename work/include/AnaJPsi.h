@@ -27,17 +27,22 @@ class AnaJPsi : public Ana{
       bool chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2);
       // all control histograms
       TH2F *hRPcorr[2], *hRPcorrWest[2], *hRPcorrEast[2], *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;
-      TH2D *hInvMassEta;
+      TH2D *hInvMassEta, *hInvMassBemcEta;
+      TH1D *hBranchRP;
       TH1D *hDcaZ, *hDcaZCut, *hDcaXY, *hDcaXYCut, *hNfitHits, *hNfitHitsCut, *hNhitsDEdx, *hNhitsDEdxCut, *hNVertices, *hTotQ;
       TH1D *hSameTrackPair, *hNTracksTpc, *hNTracksTof, *hNTracksRP, *hNTracksBEMC;
       TH1D *hNSigmaPi, *hNSigmaP, *hNSigmaK, *hDEdxSignal;
+      TH1D *hPIDChiee, *hPIDChipp, *hPIDChipipi, *hPIDChikk;
+      TH2F *hPIDChiep, *hPIDChiek, *hPIDChiepi, *hPIDChipip;
       TH1D *hPt, *hPtCut;
       TH1D *hInvMassJPsi, *hInvMassJPsiBcg, *hTrackQualityFlow;
       Util* mUtil;
 
-      TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut;
+      TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut, *hEtaBemc, *hEtaBemcCut;
       TH2F* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
 
+      // virtual photon plots
+      TH1D* hPtMissing, *hPtMissingCut, *hPhotonMomX, *hPhotonMomY, *hPhotonMomXBcg, *hPhotonMomYBcg, *hPtMissingBcg, *hPtMissingBcgCut;
 
 
       vector<int> tracksBEMC;
