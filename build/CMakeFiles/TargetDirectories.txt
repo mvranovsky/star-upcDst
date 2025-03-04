@@ -1,3 +1,0 @@
-/star/u/mvranovsk/star-upcDst/build/CMakeFiles/rebuild_cache.dir
-/star/u/mvranovsk/star-upcDst/build/CMakeFiles/edit_cache.dir
-/star/u/mvranovsk/star-upcDst/build/CMakeFiles/star-upc.dir
