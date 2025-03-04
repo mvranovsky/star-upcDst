@@ -84,7 +84,7 @@ Int_t StUPCMakerFromPicoDst::Init() {
 
   //geometry for BEMC
   mBemcGeom = StEmcGeom::getEmcGeom("bemc");
-
+  
   // define histograms of cuts
   hDcaDaughters = new TH1D("hDcaDaughters", "hDcaDaughters; DCA_{daughters} [cm]; counts", 100, 0, 10);
   hists1D.push_back(hDcaDaughters);
@@ -100,7 +100,7 @@ Int_t StUPCMakerFromPicoDst::Init() {
   hists2D.push_back(hDecayLPointingA);
   hDcaBeamDaughters = new TH2D("hDcaBeamDaughters", "hDcaBeamDaughters; DCA_{beamline} [cm]; DCA_{daughters} [cm]", 100, 0, 10, 200, -1, 1);
   hists2D.push_back(hDcaBeamDaughters);
-
+  
 
   return kStOk;
 
@@ -218,7 +218,7 @@ Int_t StUPCMakerFromPicoDst::Finish() {
   //mUPCTree->Write();
   //mHistList->Write("HistList", TObject::kSingleKey);
 
-
+  /*
   // write output file with filled histograms of cuts
   for (int i = 0; i < hists1D.size(); ++i){
     hists1D[i]->Write();
@@ -226,7 +226,8 @@ Int_t StUPCMakerFromPicoDst::Finish() {
   for (int i = 0; i < hists2D.size(); ++i){
     hists2D[i]->Write();
   }
-
+  
+  */
 
   mOutFile->Close();
 

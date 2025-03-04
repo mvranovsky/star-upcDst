@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-ddf9a369419e2f0186cc8ab0d0fa0893 G__star-upc.cxx

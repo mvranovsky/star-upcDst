@@ -12,6 +12,8 @@ class St_db_Maker;
 
 #include "StMaker.h"
 #include "TVector3.h" // why there are no other root classes: TFile, TH1I...
+#include "TH1D.h"
+#include "TH2D.h"
 
 class StUPCMakerFromPicoDst: public StMaker {
 
@@ -57,13 +59,14 @@ class StUPCMakerFromPicoDst: public StMaker {
   StUPCSelectCEP *mSelectCEP; // selector for tracks from CEP candidates
 
   TFile *histFile;
-
+  
   // several histograms which will be saved to show the selection
   TH1D *hDcaBeamline, *hDcaDaughters, *hPointingAngle, *hDecayLength, *hEta;
   TH2D *hDecayLPointingA, *hDcaBeamDaughters;
-
+  
   vector<TH1D*> hists1D;
   vector<TH2D*> hists2D;
+  
 
   ClassDef(StUPCMakerFromPicoDst, 1);
 

@@ -153,7 +153,7 @@ void AnaV0Mult::Make()
        hadronPairV0.resize(5);
    }
    int j = 0;
-   for (int i = 0; i < hadronPairV0.size(); ++i){
+   for (unsigned int i = 0; i < hadronPairV0.size(); ++i){
         //checking for pair made of one track
        if (hadronPairV0[i].first == hadronPairV0[i].second){
           hSameTrackPair->Fill(1);

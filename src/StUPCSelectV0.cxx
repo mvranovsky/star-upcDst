@@ -3,11 +3,7 @@
 #include <vector>
 #include <iostream>
 
-//local classes
-#include "StUPCEvent.h"
-#include "StUPCTrack.h"
 #include "StUPCSelectV0.h"
-#include "StUPCV0.h"
 
 using namespace std;
 
@@ -72,7 +68,14 @@ int StUPCSelectV0::selectTracks(vector<StUPCTrack>& tracks, std::vector<UChar_t>
       StUPCV0 K0(&track1,&track2, massPion, massPion, itrk, jtrk, vertex, beamline, bField, false);
 
       //fill up histograms
-      fillHists(K0);
+      hists1D[0]->Fill( K0.dcaDaughters() );
+      hists1D[1]->Fill( K0.DCABeamLine() );
+      hists1D[2]->Fill( K0.pointingAngleHypo() );
+      hists1D[3]->Fill( K0.decayLengthHypo() );
+    
+      hists2D[0]->Fill( K0.decayLengthHypo() ,K0.pointingAngleHypo() );
+      hists2D[1]->Fill( K0.DCABeamLine(), K0.dcaDaughters() );
+
       // the same cut for K0 and Lambda
       if ( !(K0.dcaDaughters() < 3.0 && K0.DCABeamLine() < 2.5 && (K0.pointingAngleHypo()>0.9 || K0.decayLengthHypo()<3.0) ) )
         continue;
@@ -105,15 +108,3 @@ int StUPCSelectV0::selectTracks(vector<StUPCTrack>& tracks, std::vector<UChar_t>
   return nfound;
 
 }//selectTracks
-
-void StUPCSelectV0::fillHists(StUPCV0& K0){
-
-  hists1D[0]->Fill( K0.dcaDaughters() );
-  hists1D[1]->Fill( K0.DCABeamLine() );
-  hists1D[2]->Fill( K0.pointingAngleHypo() );
-  hists1D[3]->Fill( K0.decayLengthHypo() );
-
-  hists2D[0]->Fill( K0.decayLengthHypo() ,K0.pointingAngleHypo() );
-  hists2D[1]->Fill( K0.DCABeamLine(), K0.dcaDaughters() );
-
-}

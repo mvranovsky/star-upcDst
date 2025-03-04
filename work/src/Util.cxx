@@ -348,7 +348,7 @@ TH1D* Util::bkgdHistogram(const TH2* hMissPtVsX, Double_t ptMissCut, Double_t fi
    const double integralLimit_MAX = missingPtHist->GetXaxis()->GetBinUpEdge( missingPtHist->GetXaxis()->FindBin( fitLimitMax ) );
    if( mode==0 ){ // default mode
       TF1 *pTMissExtrapolationFunc = new TF1();
-      double bkgdFrac = bkgdFraction( missingPtHist, ptMissCut, fitLimitMin, fitLimitMax, pTMissExtrapolationFunc);
+      //double bkgdFrac = bkgdFraction( missingPtHist, ptMissCut, fitLimitMin, fitLimitMax, pTMissExtrapolationFunc);
       const double integralRatio_signalRegion_to_bkgdFreeRegion = pTMissExtrapolationFunc->Integral(0, ptMissCut) / pTMissExtrapolationFunc->Integral(integralLimit_MIN, integralLimit_MAX);
       //     double nBkgdEvents = bkgdFrac*integratePtMiss( missingPtHist, ptMissCut );
       for(int i=0; i<=(hBkgd->GetNbinsX()+1); ++i){
@@ -413,7 +413,7 @@ void Util::subtractBackground(TH1* hSignalPlusBkgd, const TH1* hBkgd) const{
       const double signalPlusBkgdError = hSignalPlusBkgd->GetBinError(i);
       const double backgroundContent = hBkgd->GetBinContent(i);
       const double bkgdFraction = backgroundContent / signalPlusBkgdContent;
-      const double bkgdFractionError = sqrt(bkgdFraction*(1.-bkgdFraction) / signalPlusBkgdContent ); //ALERT binomial error approximation
+      //const double bkgdFractionError = sqrt(bkgdFraction*(1.-bkgdFraction) / signalPlusBkgdContent ); //ALERT binomial error approximation
       
       const double pureSignalContent = signalPlusBkgdContent - backgroundContent;
       if( pureSignalContent<0 ) std::cerr << "WARNING in subtractBackground(): Background larger than signal" << std::endl;

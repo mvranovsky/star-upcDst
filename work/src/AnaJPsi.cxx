@@ -39,7 +39,7 @@ void AnaJPsi::Make(){
 
 
    hAnalysisFlow->Fill(JPSIVTXZ);
-   int vertexID = vtx->getId();
+   unsigned int vertexID = vtx->getId();
 
    tpcCounter = 0;
    tracksBEMC.clear();
