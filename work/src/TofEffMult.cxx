@@ -73,12 +73,12 @@ void TofEffMult::Make(){
    fillBeamlineInfo();
 
    int idx = 0;
-   for (int iTrack = 0; iTrack < (unsigned)tagID.size(); ++iTrack){   //outer track loop of tags
+   for (unsigned int iTrack = 0; iTrack < (unsigned)tagID.size(); ++iTrack){   //outer track loop of tags
       const StUPCTrack* trk1 = mUpcEvt->getTrack(tagID[iTrack]);
       
 
       //inner track loop of probes
-      for (int jTrack = 0; jTrack < (unsigned)hadronID.size(); ++jTrack){
+      for (unsigned int jTrack = 0; jTrack < (unsigned)hadronID.size(); ++jTrack){
 
          if(idx > 4)
             break;

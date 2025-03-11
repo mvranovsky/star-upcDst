@@ -138,7 +138,7 @@ void AnaV0::Make()
     //special eta-vtxZ cut with filling of control plots
     vector<pair<int, int>> hadronPairV0After;
 
-    for (int i = 0; i < hadronPairV0.size(); ++i){
+    for (unsigned int i = 0; i < hadronPairV0.size(); ++i){
         const StUPCTrack* trk1 = mUpcEvt->getTrack(hadronPairV0[0].first);
         const StUPCTrack* trk2 = mUpcEvt->getTrack(hadronPairV0[0].second);
 

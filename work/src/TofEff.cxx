@@ -73,11 +73,11 @@ void TofEff::Make(){
    StUPCV0 *bestV0;
    pair<int, int> bestPair;
    //outer track loop of tags
-   for (int iTrack = 0; iTrack < tagID.size(); ++iTrack){
+   for (unsigned int iTrack = 0; iTrack < tagID.size(); ++iTrack){
       const StUPCTrack* trk1 = mUpcEvt->getTrack(tagID[iTrack]);
       
       //inner track loop of probes
-      for (int jTrack = 0; jTrack < hadronID.size(); ++jTrack){
+      for (unsigned int jTrack = 0; jTrack < hadronID.size(); ++jTrack){
 
          if(tagID[iTrack] == hadronID[jTrack])
             continue;
