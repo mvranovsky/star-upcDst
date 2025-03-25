@@ -139,7 +139,24 @@ class RecTree{
       Double_t getVertexStudyDcaParticles() const { return mDcaParticles; }
       Double_t getVertexStudyDcaBeamline() const { return mDcaBeamline; }
       
-
+      // setters for good run list study
+      Int_t getRpOk() const { return mIsRpOk; }
+      Int_t getJPsiTrigger1() const { return mIsJPsiTrigger1; }
+      Int_t getJPsiTrigger2() const { return mIsJPsiTrigger2; }
+      Int_t getJPsiTrigger3() const { return mIsJPsiTrigger3; }
+      vector<Double_t> getTpcTrackPhi() const { return mTpcTrack_phi; }
+      vector<Double_t> getTpcTrackEta() const { return mTpcTrack_eta; }
+      vector<Double_t> getBemcTrackPhi() const { return mBemcTrack_phi; }
+      vector<Double_t> getBemcTrackEta() const { return mBemcTrack_eta; }
+      vector<Double_t> getTpcNHitsFit() const { return mTpcNHitsFit; }
+      vector<Double_t> getTpcNHitsDEdx() const { return mTpcNHitsDEdx; }
+      vector<Double_t> getTpcNSigmaElectron() const {return mTpcNSigmaElectron; }
+      vector<Double_t> getTpcNSigmaProton() const {return mTpcNSigmaProton; }
+      vector<Double_t> getTpcNSigmaKaon() const {return mTpcNSigmaKaon;}
+      vector<Double_t> getTpcNSigmaPion() const {return mTpcNSigmaPion; }
+      Int_t getNTracksBemc() { return nTracksBemc; }
+      Int_t getNTracksTof() { return nTracksTof; }
+      Int_t getNClustersBemc() { return nClustersBemc; }
 
 
       //setters
@@ -260,6 +277,25 @@ class RecTree{
       void setVertexStudyDcaParticles(Double_t var) { mDcaParticles = var; }
       void setVertexStudyDcaBeamline(Double_t var) { mDcaBeamline = var; }
 
+      // setters for good run list study
+      void setRpOk(Int_t var) {mIsRpOk = var; }
+      void setJPsiTrigger1(Int_t var) { mIsJPsiTrigger1 = var; }
+      void setJPsiTrigger2(Int_t var) { mIsJPsiTrigger2 = var; }
+      void setJPsiTrigger3(Int_t var) { mIsJPsiTrigger3 = var; }
+      void setTpcTrackPhi(vector<Double_t> var) { mTpcTrack_phi = var; }
+      void setTpcTrackEta(vector<Double_t> var) { mTpcTrack_eta = var; }
+      void setBemcTrackPhi(vector<Double_t> var) { mBemcTrack_phi = var; }
+      void setBemcTrackEta(vector<Double_t> var) { mBemcTrack_eta = var; }
+      void setTpcNHitsFit(vector<Double_t> var) { mTpcNHitsFit = var; }
+      void setTpcNHitsDEdx(vector<Double_t> var) { mTpcNHitsDEdx = var; }
+      void setTpcNSigmaElectron(vector<Double_t> var) { mTpcNSigmaElectron = var; }
+      void setTpcNSigmaProton(vector<Double_t> var) { mTpcNSigmaProton = var; }
+      void setTpcNSigmaKaon(vector<Double_t> var) { mTpcNSigmaKaon = var;}
+      void setTpcNSigmaPion(vector<Double_t> var) { mTpcNSigmaPion = var; }
+      void setNTracksBemc(Int_t var) { nTracksBemc = var; }
+      void setNTracksTof(Int_t var) { nTracksTof = var; }
+      void setNClustersBemc(Int_t var) { nClustersBemc = var; }
+
       //void CalculatePID();
 
    private:
@@ -325,6 +361,10 @@ class RecTree{
       // vertex eff part
       Double_t mDcaParticles, mDcaBeamline;
       bool mPrimary, mSameVertex;
+
+      // info about good run list
+      Int_t mIsRpOk , mIsJPsiTrigger1, mIsJPsiTrigger2, mIsJPsiTrigger3, nTracksBemc, nTracksTof, nClustersBemc;
+      vector<Double_t> mTpcTrack_phi, mTpcTrack_eta, mBemcTrack_eta, mBemcTrack_phi, mTpcNHitsFit, mTpcNHitsDEdx, mTpcNSigmaElectron, mTpcNSigmaPion, mTpcNSigmaProton, mTpcNSigmaKaon;
 
 };
 

@@ -1,19 +1,20 @@
-#ifndef AnaJPSI_h
-#define AnaJPSI_h
+#ifndef EmbeddingJPsi_h
+#define EmbeddingJPsi_h
 
 #include "Util.h"
 #include "RecTree.h"
 #include "Ana.h"
 #include "UpcDstLibreries.h"
+#include "RunDef.h"
 
 
 using namespace std;
 using namespace UTIL;
 
-class AnaJPSI : public Ana{
+class EmbeddingJPsi : public Ana{
    public:
-      AnaJPSI(TFile *outfile);
-      ~AnaJPSI(); 
+      EmbeddingJPsi(TFile *outfile);
+      ~EmbeddingJPsi(); 
 
       void Init() override;
       void Make() override;
@@ -26,24 +27,20 @@ class AnaJPSI : public Ana{
       bool goodQualityTrack(const StUPCTrack *trk);
       bool sameVertex(const StUPCTrack *trk1,const StUPCTrack *trk2);
       bool chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2);
-      void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
-      void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
-
-
       // all control histograms
       TH2F *hRPcorr[2], *hRPcorrWest[2], *hRPcorrEast[2], *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;
-      TH2D *hInvMassEta;
+      TH1D *hBranchRP;
       TH1D *hDcaZ, *hDcaZCut, *hDcaXY, *hDcaXYCut, *hNfitHits, *hNfitHitsCut, *hNhitsDEdx, *hNhitsDEdxCut, *hNVertices, *hTotQ;
-      TH1D *hSameTrackPair, *hNTracksTpc, *hNTracksTof, *hNTracksRP, *hNTracksBEMC;
+      TH1D *hSameTrackPair, *hNTracksTpc, *hNTracksTof, *hNTracksRP, *hNTracksBEMC, *hNClustersBEMC;
       TH1D *hNSigmaPi, *hNSigmaP, *hNSigmaK, *hDEdxSignal;
+      TH1D *hPIDChiee, *hPIDChipp, *hPIDChipipi, *hPIDChikk;
+      TH2F *hPIDChiep, *hPIDChiek, *hPIDChiepi, *hPIDChipip;
       TH1D *hPt, *hPtCut;
       TH1D *hInvMassJPsi, *hInvMassJPsiBcg, *hTrackQualityFlow;
-      TH1D *hEtaDifference;
       Util* mUtil;
 
-      TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut;
+      TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut, *hEtaBemc, *hEtaBemcCut;
       TH2F* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
-
 
 
       vector<int> tracksBEMC;

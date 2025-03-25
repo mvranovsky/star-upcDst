@@ -224,7 +224,7 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       }
    }
 
-   // Central hadrons info
+   // Central hadrons info for multiple states (5)
    if( treeVersion.test(10) )
    {
       int j;
@@ -257,6 +257,28 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
          for (int iPart = 0; iPart < nParticles; ++iPart)
             mRecTree->Branch("nSigmaTPC" + mUtil->particleName(iPart) + mUtil->signName(j), &mNSigmaTPC[i][iPart]);
       }      
+   }
+
+   // settings used for good run list
+   if( treeVersion.test(11) ){
+      mRecTree->Branch("isRpOk", &mIsRpOk);
+      mRecTree->Branch("isJPsiTrigger1", &mIsJPsiTrigger1);
+      mRecTree->Branch("isJPsiTrigger2", &mIsJPsiTrigger2);
+      mRecTree->Branch("isJPsiTrigger3", &mIsJPsiTrigger3);
+      mRecTree->Branch("tpcTrack_eta", &mTpcTrack_eta);
+      mRecTree->Branch("tpcTrack_phi", &mTpcTrack_phi);
+      mRecTree->Branch("bemcTrack_eta", &mBemcTrack_eta);
+      mRecTree->Branch("bemcTrack_phi", &mBemcTrack_phi);
+      mRecTree->Branch("nHitsFit", &mTpcNHitsFit);
+      mRecTree->Branch("nHitsDEdx", &mTpcNHitsDEdx);
+      mRecTree->Branch("nSigmaTpcProton", &mTpcNSigmaProton);
+      mRecTree->Branch("nSigmaTpcPion", &mTpcNSigmaPion);
+      mRecTree->Branch("nSigmaTpcKaon", &mTpcNSigmaKaon);
+      mRecTree->Branch("nSigmaTpcElectron", &mTpcNSigmaElectron);
+      mRecTree->Branch("nTracksBemc", &nTracksBemc);
+      mRecTree->Branch("nClustersBemc", &nClustersBemc);
+      mRecTree->Branch("nTracksTof", &nTracksTof);
+     
    }
 
 

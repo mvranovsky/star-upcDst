@@ -19,6 +19,25 @@ CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/RunDef.h
 CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/UpcDstLibreries.h
 CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/Util.h
 
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: src/AnaGoodRun.cxx
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/Ana.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/AnaGoodRun.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/RecTree.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/RunDef.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/Util.h
+
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
@@ -94,6 +113,25 @@ CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/RunDef.h
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/UpcDstLibreries.h
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/Util.h
+
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: src/EmbeddingJPsi.cxx
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Ana.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/EmbeddingJPsi.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/RecTree.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/RunDef.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Util.h
 
 CMakeFiles/upc-reader.dir/src/RecTree.cxx.o: include/Libreries.h
 CMakeFiles/upc-reader.dir/src/RecTree.cxx.o: include/RecTree.h

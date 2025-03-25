@@ -165,6 +165,15 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mJPSI2CutName[JPSI2RPFIDCUT] = TString("Fiducial RP condition");
    mJPSI2CutName[JPSI2QTOT] = TString("Q_{tot} = 0");
 
+
+   mGRCutName = new TString[nGRCuts];
+   mGRCutName[GRALL] = TString("All");
+   mGRCutName[GRTRIGGER] = TString("J/#psi Trigger");
+   mGRCutName[GRRP] = TString("RP working");
+   mGRCutName[GRGOODTRACKTPC] = TString("Good TPC track");
+   mGRCutName[GRGOODTRACKBEMC] = TString("Good BEMC track");
+
+
    mDataSetName = new TString[nDataSets];
    mDataSetName[MC] = TString("PureMc");
    mDataSetName[MCZB] = TString("MCZB");

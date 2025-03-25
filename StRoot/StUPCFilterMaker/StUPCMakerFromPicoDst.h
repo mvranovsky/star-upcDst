@@ -12,9 +12,6 @@ class St_db_Maker;
 
 #include "StMaker.h"
 #include "TVector3.h" // why there are no other root classes: TFile, TH1I...
-#include "TH1D.h"
-#include "TH2D.h"
-#include "TList.h"
 
 class StUPCMakerFromPicoDst: public StMaker {
 
@@ -47,9 +44,6 @@ class StUPCMakerFromPicoDst: public StMaker {
 
   TH1I *mCounter; // analysis counter
   enum EvtCount{ kAna=1, kWritten, kMaxCnt };
-
-  TH1D *hDcaDaughters, *hDcaBeamline, *hPointingAngle, *hDecayLength, *hEta, *hEtaAfter;
-  TH2D *hDecayLPointingA, *hDcaBeamDaughters;
 
   //table of trigger IDs
   vector<UInt_t> mTrgIDs; // trigger IDs

@@ -1,5 +1,4 @@
 #include "TofEff.h"
-#include "RunDef.h"
 
 //_____________________________________________________________________________
 TofEff::TofEff(TFile *outFile): Ana(outFile){}

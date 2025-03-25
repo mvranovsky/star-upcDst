@@ -8,6 +8,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o"
   "CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o"
   "CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o"
+  "CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o"
+  "CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o"
   "libupc-reader.pdb"
   "libupc-reader.so"
 )

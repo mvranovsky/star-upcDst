@@ -14,6 +14,8 @@ set (SRCS
   src/TofEffMult.cxx
   src/AnaJPsi.cxx
   src/AnaJPSI.cxx
+  src/AnaGoodRun.cxx
+  src/EmbeddingJPsi.cxx
   )
 
 #name of LIB_READER

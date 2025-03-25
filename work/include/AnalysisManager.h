@@ -12,6 +12,9 @@
 #include "TofEffMult.h"
 #include "AnaJPsi.h"
 #include "AnaJPSI.h"
+#include "RunDef.h"
+#include "EmbeddingJPsi.h"
+#include "AnaGoodRun.h"
 
 using namespace std;
 using namespace UTIL;

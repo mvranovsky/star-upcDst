@@ -1,5 +1,4 @@
 #include "AnaJPsi.h"
-#include "RunDef.h"
 
 //_____________________________________________________________________________
 AnaJPsi::AnaJPsi(TFile *outFile): Ana(outFile){}
@@ -13,17 +12,19 @@ void AnaJPsi::Make(){
 
    //trigger
    hAnalysisFlow->Fill(JPSIALL);
-   if(!CheckTriggers(&JPSItriggers, mUpcEvt, hTriggerBits))
+   if( !CheckTriggers(&JPSItriggers, mUpcEvt, hTriggerBits) ) 
       return;
    hAnalysisFlow->Fill(JPSITRIG);
 
    SaveEventInfo(mUpcEvt);
+
    SaveTriggerInfo(mUpcEvt, mRpEvt);
 
    // 1 vertex
    hNVertices->Fill(mUpcEvt->getNumberOfVertices());
-   if(mUpcEvt->getNumberOfVertices() != 1)
+   if(mUpcEvt->getNumberOfVertices() != 1){
       return;
+   }
    hAnalysisFlow->Fill(JPSI1VTX);
 
    const StUPCVertex *vtx = mUpcEvt->getVertex(0);
@@ -77,19 +78,14 @@ void AnaJPsi::Make(){
    if(tracksBEMC.size() != 2){
       return;
    }
+   
    hAnalysisFlow->Fill(JPSIBEMC);
    const StUPCTrack* track1 = mUpcEvt->getTrack( tracksBEMC[0] );
    const StUPCTrack* track2 = mUpcEvt->getTrack( tracksBEMC[1] );
 
    if(!track1 || !track2)
       return;
-   /*
-   // back to back
-   Double_t deltaPhi = abs(track1->getBemcPhi() - track2->getBemcPhi());
-   if( !(deltaPhi > minBEMCPhi && deltaPhi < maxBEMCPhi) )
-      return;
-   */
-   
+
    int sectionTrk1, sectionTrk2;
    for (int i = 0; i < 6; ++i){
       double lower, upper;
@@ -134,7 +130,7 @@ void AnaJPsi::Make(){
 
    //1 RP track condition  
    AnaRpTracks(mRpEvt);
-   
+
    unsigned int nRpTracksTotal = 0;
    StUPCRpsTrack *trackRP;
    int side = 0;
@@ -174,8 +170,9 @@ void AnaJPsi::Make(){
    }else{
       hRPcorrWest[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
    }
-   hAnalysisFlow->Fill(JPSIRPFIDCUT);
    hBranchRP->Fill( trackRP->branch() );
+
+   hAnalysisFlow->Fill(JPSIRPFIDCUT);
    //Qtot
    double totQ = track1->getCharge() + track2->getCharge();
    hTotQ->Fill(totQ);
@@ -228,12 +225,6 @@ void AnaJPsi::Make(){
 
    cout << "Finished AnaJPsi::Make()" << endl;
    if(DEBUG){
-      cout << "Charge of particle: " << totQ << endl;
-      cout << "Invariant mass: " << state.M() << ", total Charge: " << totQ << endl;
-      cout << "track1: " << tracksBEMC[0] << endl;
-      cout << "etaBEMC: " << track1->getBemcEta() << ", phiBEMC: " << track1->getBemcPhi() << ", delta phi sections: " << sectionTrk1 << ", DCAZ: " << track1->getDcaZ() << ", DCAXY: " << track1->getDcaXY() << ", NhitsDEdx: " << track1->getNhitsDEdx() << ", NfitHits: " << track1->getNhitsFit() << ", chi electron: " << (pow(track1->getNSigmasTPCElectron(),2) + pow(track2->getNSigmasTPCElectron(),2)) << endl;
-      cout << "track2: " << tracksBEMC[1] << endl;
-      cout << "etaBEMC: " << track2->getBemcEta() << ", phiBEMC: " << track2->getBemcPhi() << ", delta phi sections: " << sectionTrk2 << ", DCAZ: " << track2->getDcaZ() << ", DCAXY: " << track2->getDcaXY() << ", NhitsDEdx: " << track2->getNhitsDEdx() << ", NfitHits: " << track2->getNhitsFit() << ", chi electron: " << (pow(track1->getNSigmasTPCElectron(),2) + pow(track2->getNSigmasTPCElectron(),2)) << endl;      
    }
 }
 

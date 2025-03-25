@@ -63,20 +63,30 @@ int main(int argc, char** argv)
       mAnaVector.push_back(new AnaJPsi(outFile));
       cout << "Will run analysis of JPsi." << endl;       
    }
-      if( runAnaJPSI ){
+   if( runEmbeddingJPsi ){
+      mAnaVector.push_back(new EmbeddingJPsi(outFile));
+      cout << "Will run embedding of JPsi." << endl;
+   }
+   if( runAnaJPSI ){
       mAnaVector.push_back(new AnaJPSI(outFile));
       cout << "Will run analysis of JPSI tryout." << endl;       
    }
+   if( runAnaGoodRun ){
+      mAnaVector.push_back(new AnaGoodRun(outFile));
+      cout << "Will run analysis of good runs." << endl;
+   }
 
+   /*
    // Load RP off-sets with off-set corrections 
-   if( !LoadOffsetFile(nameOfOffSetFile, mOffSet) )
+   if( !LoadOffsetFile(offsetFilePath, mOffSet) )
       return 3;
    #if !defined ALIGNMENT
-      if( !LoadOffsetFile(nameOfOffSetCorrectionFile, mCorrection) )
+      if( !LoadOffsetFile(offsetCorrectionsFilePath, mCorrection) )
          return 3;
    #endif
    cout<<"RP offset loaded..."<<endl;
    // Initiate histograms
+   */
    Init();
 
 
@@ -84,7 +94,7 @@ int main(int argc, char** argv)
    nEvents = upcTree->GetEntries();
    if (DEBUG)
       nEvents = 30000; // use for debugging and testing
-   cout<<"Proccesing "<<nEvents<<" events"<<endl;
+   cout<<"Processing "<<nEvents<<" events"<<endl;
 
    for(Long64_t iev=0; iev<nEvents; ++iev) 
    { //get the event
@@ -92,8 +102,9 @@ int main(int argc, char** argv)
       //   cout<<"Analyzing "<<iev<<". event "<<endl;
       upcTree->GetEntry(iev);
       mRunNumber = upcEvt->getRunNumber();
-      if(!runMCAna)
+      if(!(runMCAna || runEmbeddingJPsi) ){
          SetRpEvent();
+      }
 
       Make();
 

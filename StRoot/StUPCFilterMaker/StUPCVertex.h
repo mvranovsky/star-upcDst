@@ -7,6 +7,7 @@
 //_____________________________________________________________________________
 
 #include "TObject.h"
+#include "TVector3.h"
 
 class StUPCVertex: public TObject
 {
@@ -34,6 +35,7 @@ public:
   Float_t getPosX() const { return mPosX; }
   Float_t getPosY() const { return mPosY; }
   Float_t getPosZ() const { return mPosZ; }
+  TVector3 getPosVtx() const { return {mPosX, mPosY, mPosZ}; }
 
   Float_t getErrX() const { return mErrX; }
   Float_t getErrY() const { return mErrY; }

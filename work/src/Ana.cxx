@@ -531,4 +531,24 @@ void Ana::resetInfo() {
    }
 
 
+   //good run info
+   mRecTree->setRpOk(-1);
+   mRecTree->setJPsiTrigger1(-1);
+   mRecTree->setJPsiTrigger2(-1);
+   mRecTree->setJPsiTrigger3(-1);
+   mRecTree->setTpcTrackPhi({});
+   mRecTree->setTpcTrackEta({});
+   mRecTree->setBemcTrackPhi({});
+   mRecTree->setBemcTrackEta({});
+   mRecTree->setTpcNHitsFit({});
+   mRecTree->setTpcNHitsDEdx({});
+   mRecTree->setTpcNSigmaProton({});
+   mRecTree->setTpcNSigmaPion({});
+   mRecTree->setTpcNSigmaElectron({});
+   mRecTree->setTpcNSigmaKaon({});
+   mRecTree->setNTracksBemc(0);
+   mRecTree->setNTracksTof(0);
+   mRecTree->setNClustersBemc(0);
+
+
 }

@@ -13,7 +13,6 @@
 #include "TTree.h"
 #include "TH1I.h"
 
-
 //StRoot
 #include "StPicoEvent/StPicoDst.h"
 #include "StPicoDstMaker/StPicoDstMaker.h"
@@ -86,25 +85,6 @@ Int_t StUPCMakerFromPicoDst::Init() {
   //geometry for BEMC
   mBemcGeom = StEmcGeom::getEmcGeom("bemc");
 
-  // define histograms of cuts
-  hDcaDaughters = new TH1D("hDcaDaughters", "hDcaDaughters; DCA_{daughters} [cm]; counts", 100, 0, 10);
-  mHistList->Add(hDcaDaughters);
-  hDcaBeamline = new TH1D("hDcaBeamline", "hDcaBeamline; DCA_{beamline} [cm]; counts", 100, 0, 10);
-  mHistList->Add(hDcaBeamline);
-  hPointingAngle = new TH1D("hPointingAngle", "hPointingAngle; cos #varphi [-]; counts", 220, -1.1, 1.1);
-  mHistList->Add(hPointingAngle);
-  hDecayLength = new TH1D("hDecayLength", "hDecayLength; Decay length [cm]; counts", 100, 0, 10);
-  mHistList->Add(hDecayLength);
-  hEta = new TH1D("hEta", "hEta; #eta [-]; counts", 30, -1.5, 1.5);
-  mHistList->Add(hEta);
-  hEtaAfter = new TH1D("hEtaAfter", "hEtaAfter; #eta [-]; counts", 30, -1.5, 1.5);
-  mHistList->Add(hEtaAfter);
-  hDecayLPointingA = new TH2D("hDecayLPointingA", "hDecayLPointingA; Decay length [cm]; cos #varphi [-]", 100, 0, 10, 200, -1, 1);
-  mHistList->Add(hDecayLPointingA);
-  hDcaBeamDaughters = new TH2D("hDcaBeamDaughters", "hDcaBeamDaughters; DCA_{beamline} [cm]; DCA_{daughters} [cm]", 100, 0, 10, 100, 0, 10);
-  mHistList->Add(hDcaBeamDaughters);
-
-
   return kStOk;
 
 }//Init
@@ -168,7 +148,7 @@ Int_t StUPCMakerFromPicoDst::Make() {
 
   //select tracks from V0 candidates
   TVector3 vertex = mPicoEvent->primaryVertex();
-  int nsel = mSelectV0->selectTracks(upcTracks, trackFilter, mUPCEvent, vertex, mHistList);
+  int nsel = mSelectV0->selectTracks(upcTracks, trackFilter, mUPCEvent, vertex);
   nsel += mSelectCEP->selectTracks(mPicoDst, trackFilter);
   
   //other selections for J/psi and CEP to go here
@@ -200,9 +180,9 @@ Int_t StUPCMakerFromPicoDst::Make() {
   }//tracks loop
 
 
-  //mCounter->Fill( kWritten ); // events with written upcDst output
+  mCounter->Fill( kWritten ); // events with written upcDst output
 
-  //mUPCTree->Fill();
+  mUPCTree->Fill();
 
   return kStOk;
 
@@ -218,15 +198,10 @@ Int_t StUPCMakerFromPicoDst::Finish() {
   //write the output file
   mOutFile->cd();
 
-  //mUPCTree->Write();
+  mUPCTree->Write();
   mHistList->Write("HistList", TObject::kSingleKey);
 
-
-
   mOutFile->Close();
-
-
-
 
   return kStOk;
 

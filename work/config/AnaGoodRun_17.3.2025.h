@@ -14,8 +14,8 @@ const bool runTofEff = false;
 const bool runTofEffMult = false;
 const bool runAnaJPsi = false;
 const bool runAnaJPSI = false;
-const bool runAnaGoodRun = false;
-const bool runEmbeddingJPsi = true;
+const bool runAnaGoodRun = true;
+const bool runEmbeddingJPsi = false;
 
 const unsigned int nAligIteration = 4;
 const bool runMCAna = false;

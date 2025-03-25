@@ -56,17 +56,7 @@ class StUPCMakerFromPicoDst: public StMaker {
   StUPCSelectV0 *mSelectV0; // selector for tracks from V0 candidates
   StUPCSelectCEP *mSelectCEP; // selector for tracks from CEP candidates
 
-  TFile *histFile;
-
-  // several histograms which will be saved to show the selection
-  TH1D *hDcaBeamline, *hDcaDaughters, *hPointingAngle, *hDecayLength, *hEta;
-  TH2D *hDecayLPointingA, *hDcaBeamDaughters;
-
-  vector<TH1D*> hists1D;
-  vector<TH2D*> hists2D;
-
   ClassDef(StUPCMakerFromPicoDst, 1);
-
 
 };
 

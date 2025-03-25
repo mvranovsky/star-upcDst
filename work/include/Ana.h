@@ -6,6 +6,8 @@
 #include "Util.h"
 #include "RecTree.h"
 #include "StUPCV0.h"
+#include "RunDef.h"
+
 
 using namespace std;
 using namespace UTIL;

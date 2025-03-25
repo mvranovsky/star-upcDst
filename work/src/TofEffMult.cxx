@@ -1,5 +1,4 @@
 #include "TofEffMult.h"
-#include "RunDef.h"
 
 //_____________________________________________________________________________
 TofEffMult::TofEffMult(TFile *outFile): Ana(outFile){}

@@ -163,6 +163,33 @@ src/Ana.cxx.s:
 	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/Ana.cxx.s
 .PHONY : src/Ana.cxx.s
 
+src/AnaGoodRun.o: src/AnaGoodRun.cxx.o
+
+.PHONY : src/AnaGoodRun.o
+
+# target to build an object file
+src/AnaGoodRun.cxx.o:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o
+.PHONY : src/AnaGoodRun.cxx.o
+
+src/AnaGoodRun.i: src/AnaGoodRun.cxx.i
+
+.PHONY : src/AnaGoodRun.i
+
+# target to preprocess a source file
+src/AnaGoodRun.cxx.i:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.i
+.PHONY : src/AnaGoodRun.cxx.i
+
+src/AnaGoodRun.s: src/AnaGoodRun.cxx.s
+
+.PHONY : src/AnaGoodRun.s
+
+# target to generate assembly for a file
+src/AnaGoodRun.cxx.s:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.s
+.PHONY : src/AnaGoodRun.cxx.s
+
 src/AnaJPSI.o: src/AnaJPSI.cxx.o
 
 .PHONY : src/AnaJPSI.o
@@ -298,6 +325,33 @@ src/AnalysisManager.cxx.s:
 	$(MAKE) -f CMakeFiles/AnalysisManager.dir/build.make CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.s
 .PHONY : src/AnalysisManager.cxx.s
 
+src/EmbeddingJPsi.o: src/EmbeddingJPsi.cxx.o
+
+.PHONY : src/EmbeddingJPsi.o
+
+# target to build an object file
+src/EmbeddingJPsi.cxx.o:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o
+.PHONY : src/EmbeddingJPsi.cxx.o
+
+src/EmbeddingJPsi.i: src/EmbeddingJPsi.cxx.i
+
+.PHONY : src/EmbeddingJPsi.i
+
+# target to preprocess a source file
+src/EmbeddingJPsi.cxx.i:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.i
+.PHONY : src/EmbeddingJPsi.cxx.i
+
+src/EmbeddingJPsi.s: src/EmbeddingJPsi.cxx.s
+
+.PHONY : src/EmbeddingJPsi.s
+
+# target to generate assembly for a file
+src/EmbeddingJPsi.cxx.s:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.s
+.PHONY : src/EmbeddingJPsi.cxx.s
+
 src/RecTree.o: src/RecTree.cxx.o
 
 .PHONY : src/RecTree.o
@@ -419,6 +473,9 @@ help:
 	@echo "... src/Ana.o"
 	@echo "... src/Ana.i"
 	@echo "... src/Ana.s"
+	@echo "... src/AnaGoodRun.o"
+	@echo "... src/AnaGoodRun.i"
+	@echo "... src/AnaGoodRun.s"
 	@echo "... src/AnaJPSI.o"
 	@echo "... src/AnaJPSI.i"
 	@echo "... src/AnaJPSI.s"
@@ -434,6 +491,9 @@ help:
 	@echo "... src/AnalysisManager.o"
 	@echo "... src/AnalysisManager.i"
 	@echo "... src/AnalysisManager.s"
+	@echo "... src/EmbeddingJPsi.o"
+	@echo "... src/EmbeddingJPsi.i"
+	@echo "... src/EmbeddingJPsi.s"
 	@echo "... src/RecTree.o"
 	@echo "... src/RecTree.i"
 	@echo "... src/RecTree.s"

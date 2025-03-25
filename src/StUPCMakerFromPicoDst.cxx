@@ -85,23 +85,6 @@ Int_t StUPCMakerFromPicoDst::Init() {
   //geometry for BEMC
   mBemcGeom = StEmcGeom::getEmcGeom("bemc");
 
-  // define histograms of cuts
-  hDcaDaughters = new TH1D("hDcaDaughters", "hDcaDaughters; DCA_{daughters} [cm]; counts", 100, 0, 10);
-  hists1D.push_back(hDcaDaughters);
-  hDcaBeamline = new TH1D("hDcaBeamline", "hDcaBeamline; DCA_{beamline} [cm]; counts", 100, 0, 10);
-  hists1D.push_back(hDcaBeamline);
-  hPointingAngle = new TH1D("hPointingAngle", "hPointingAngle; cos #varphi [-]; counts", 200, -1, 1);
-  hists1D.push_back(hPointingAngle);
-  hDecayLength = new TH1D("hDecayLength", "hDecayLength; Decay length [cm]; counts", 100, 0, 10);
-  hists1D.push_back(hDecayLength);
-  hEta = new TH1D("hEta", "hEta; #eta [-]; counts", 30, -1.5, 1.5);
-  hists1D.push_back(hEta);
-  hDecayLPointingA = new TH2D("hDecayLPointingA", "hDecayLPointingA; Decay length [cm]; cos #varphi [-]", 100, 0, 10, 200, -1, 1);
-  hists2D.push_back(hDecayLPointingA);
-  hDcaBeamDaughters = new TH2D("hDcaBeamDaughters", "hDcaBeamDaughters; DCA_{beamline} [cm]; DCA_{daughters} [cm]", 100, 0, 10, 200, -1, 1);
-  hists2D.push_back(hDcaBeamDaughters);
-
-
   return kStOk;
 
 }//Init
@@ -165,8 +148,8 @@ Int_t StUPCMakerFromPicoDst::Make() {
 
   //select tracks from V0 candidates
   TVector3 vertex = mPicoEvent->primaryVertex();
-  int nsel = mSelectV0->selectTracks(upcTracks, trackFilter, mUPCEvent, vertex, hists1D, hists2D);
-  //nsel += mSelectCEP->selectTracks(mPicoDst, trackFilter);
+  int nsel = mSelectV0->selectTracks(upcTracks, trackFilter, mUPCEvent, vertex);
+  nsel += mSelectCEP->selectTracks(mPicoDst, trackFilter);
   
   //other selections for J/psi and CEP to go here
 
@@ -197,9 +180,9 @@ Int_t StUPCMakerFromPicoDst::Make() {
   }//tracks loop
 
 
-  //mCounter->Fill( kWritten ); // events with written upcDst output
+  mCounter->Fill( kWritten ); // events with written upcDst output
 
-  //mUPCTree->Fill();
+  mUPCTree->Fill();
 
   return kStOk;
 
@@ -215,23 +198,10 @@ Int_t StUPCMakerFromPicoDst::Finish() {
   //write the output file
   mOutFile->cd();
 
-  //mUPCTree->Write();
-  //mHistList->Write("HistList", TObject::kSingleKey);
-
-
-  // write output file with filled histograms of cuts
-  for (int i = 0; i < hists1D.size(); ++i){
-    hists1D[i]->Write();
-  }
-  for (int i = 0; i < hists2D.size(); ++i){
-    hists2D[i]->Write();
-  }
-
+  mUPCTree->Write();
+  mHistList->Write("HistList", TObject::kSingleKey);
 
   mOutFile->Close();
-
-
-
 
   return kStOk;
 

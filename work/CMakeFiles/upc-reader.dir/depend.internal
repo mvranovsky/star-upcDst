@@ -19,6 +19,25 @@ CMakeFiles/upc-reader.dir/src/Ana.cxx.o
  include/RunDef.h
  include/UpcDstLibreries.h
  include/Util.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o
+ /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
+ /star/u/mvranovsk/star-upcDst/work/src/AnaGoodRun.cxx
+ include/Ana.h
+ include/AnaGoodRun.h
+ include/Libreries.h
+ include/RecTree.h
+ include/RunDef.h
+ include/UpcDstLibreries.h
+ include/Util.h
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o
  /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
  /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
@@ -90,6 +109,25 @@ CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o
  /star/u/mvranovsk/star-upcDst/work/src/AnaV0Mult.cxx
  include/Ana.h
  include/AnaV0Mult.h
+ include/Libreries.h
+ include/RecTree.h
+ include/RunDef.h
+ include/UpcDstLibreries.h
+ include/Util.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o
+ /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
+ /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
+ /star/u/mvranovsk/star-upcDst/work/src/EmbeddingJPsi.cxx
+ include/Ana.h
+ include/EmbeddingJPsi.h
  include/Libreries.h
  include/RecTree.h
  include/RunDef.h
