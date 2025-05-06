@@ -22,21 +22,22 @@ void AnaJPSI::Make(){
    //central system good quality tracks + BEMC
    for (int iTrk = 0; iTrk < mUpcEvt->getNumberOfTracks(); ++iTrk){
       const StUPCTrack *trk = mUpcEvt->getTrack(iTrk);
-      if(!trk)
-         continue;
+
+      if(!trk)  continue;
       // only original star-upcDst
-      if(!trk->getFlag(StUPCTrack::kPrimary))
-         continue;
+      if(!trk->getFlag(StUPCTrack::kPrimary))  continue;
+      
       hTrackQualityFlow->Fill(1);
 
       // hit in BEMC
-      if(!trk->getFlag(StUPCTrack::kBemc))
-         continue;
+      if(!trk->getFlag(StUPCTrack::kBemc))  continue;
+      
       hTrackQualityFlow->Fill(2);
 
       fillTrackQualityCuts(trk);
-      if(!goodQualityTrack(trk))
-         continue;
+
+      if(!goodQualityTrack(trk))  continue;
+
       fillTrackQualityCutsAfter(trk);
 
       hEtaDifference->Fill( abs( trk->getBemcEta() - trk->getEta() ) ); 
@@ -47,68 +48,98 @@ void AnaJPSI::Make(){
    if(tracksBEMC.size() < 2){
       return;
    }
+
    hAnalysisFlow->Fill(JPSI2BEMC);
 
    //vertex + parovanie(back to back condition)
    // outer track loop
-   const StUPCTrack *track1, *track2;
+   Int_t trackIndices[2] = {0,0};
    for (unsigned int iTrk = 0; iTrk < tracksBEMC.size() ; ++iTrk){
       const StUPCTrack* trk1 = mUpcEvt->getTrack( tracksBEMC[iTrk] );
-      if(!trk1)
-         continue;
+
+      if(!trk1)  continue;
 
       // inner track loop
-      for (unsigned int jTrk = iTrk; jTrk < tracksBEMC.size(); ++jTrk){
-
-         // skip if pair created from 2 same tracks
-         if(tracksBEMC[iTrk] == tracksBEMC[jTrk])
-            continue;
+      for (unsigned int jTrk = iTrk + 1; jTrk < tracksBEMC.size(); ++jTrk){
 
          const StUPCTrack* trk2 = mUpcEvt->getTrack( tracksBEMC[jTrk] );
-         if(!trk2)
-            continue;
 
-         if(!sameVertex(trk1, trk2))
-            continue;
+         if(!trk2)  continue;
+
+         if(!sameVertex(trk1, trk2))  continue;
+
          hAnalysisFlow->Fill(JPSI2SAMEVTX);
+         
+         if(!backToBack(trk1, trk2))  continue;
 
-         //VtxZ - eta cut
-         const StUPCVertex *vtx = mUpcEvt->getVertex(trk1->getVertexId());
-         if(!vtx)
-            continue;
+         hAnalysisFlow->Fill(JPSI2BACKTOBACK);
 
-         fillEtaVtxPlotsBefore(trk1, trk2, vtx->getPosZ());
-         if(abs(vtx->getPosZ()) > vertexRange )
-            continue;
-
-         SaveVertexInfo(vtx, 0);
-
-         if( !( IsGoodEtaTrack(trk1, 0) && IsGoodEtaTrack(trk2, 0 ) ) )
-            continue;
-
-         fillEtaVtxPlotsAfter(trk1, trk2, vtx->getPosZ());
-
-         //PID
-         fillNSigmaPlots(trk1);
-         fillNSigmaPlots(trk2);
-         if(!chiSquarePID(trk1,trk2))
-            continue;
-         hAnalysisFlow->Fill(JPSI2PID);
-
-         // back to back
-         Double_t deltaPhi = abs(trk1->getBemcPhi() - trk2->getBemcPhi());
-         if(deltaPhi > 5*TMath::Pi()/6 && deltaPhi < 7*TMath::Pi()/6 ){
-            track1 = trk1;
-            track2 = trk2;
-            hAnalysisFlow->Fill(JPSI2BACKTOBACK);
-            break;
-         }else continue;
-      }
-      if(track1 && track2)
+         trackIndices[0] = iTrk;
+         trackIndices[1] = jTrk;
          break;
+         
+      }
+      if(trackIndices[0] != 0 && trackIndices[1] != 0)
+      break;
    }
+
+   const StUPCTrack* track1 = mUpcEvt->getTrack( tracksBEMC[trackIndices[0]] );
+   const StUPCTrack* track2 = mUpcEvt->getTrack( tracksBEMC[trackIndices[1]] );
    if(!track1 || !track2)
       return;
+   //VtxZ - eta cut
+   const StUPCVertex *vtx = mUpcEvt->getVertex(track1->getVertexId());
+   if(!vtx)
+      return;
+
+   fillEtaVtxPlotsBefore(track1, track2, vtx->getPosZ());
+   if(abs(vtx->getPosZ()) > vertexRange )
+      return;
+
+   SaveVertexInfo(vtx, 0);
+
+   if( !( IsGoodEtaTrack(track1, 0) && IsGoodEtaTrack(track2, 0 ) ) )
+      return;
+
+   fillEtaVtxPlotsAfter(track1, track2, vtx->getPosZ());
+
+   //PID
+   fillNSigmaPlots(track1);
+   fillNSigmaPlots(track2);
+   if(!chiSquarePID(track1,track2))
+      return;
+   hAnalysisFlow->Fill(JPSI2PID);
+
+   int side = 0;
+   if(analysisWithRPs){
+      
+      if(!exactly1RPTrack(side)){
+         return;
+      }
+
+      const StUPCRpsTrack *trackRP = mRpEvt->getTrack(0);
+      if(!trackRP){
+         cout << "No RP track found. Leaving event." << endl;
+         return;
+      }
+      
+      hAnalysisFlow->Fill(JPSI1RP);
+
+      SaveRPinfo(trackRP,side);
+
+      if(!fiducialVolume(trackRP, side)){   
+         return;
+      }
+
+      hAnalysisFlow->Fill(JPSIRPFIDCUT);
+
+      SaveMissingPtInfo(track1, track2, trackRP);
+
+   }else{
+      hAnalysisFlow->Fill(JPSI1RP);
+      hAnalysisFlow->Fill(JPSIRPFIDCUT);
+   }
+   
 
    // save info about tracks
    TLorentzVector electron1, electron2, state;
@@ -121,51 +152,16 @@ void AnaJPSI::Make(){
    SaveTrackInfo(track1,electron1, 0 );
    SaveTrackInfo(track2,electron2, 1);
 
-   //1 RP track condition
-   AnaRpTracks(mRpEvt);
-
-   unsigned int nRpTracksTotal = 0;
-   StUPCRpsTrack *trackRP;
-   int side = 0;
-   for (unsigned int iSide = 0; iSide < nSides; ++iSide)
-   {
-      for (unsigned int iTrck = 0; iTrck < mRpTrackIdVec_perSide[iSide].size(); ++iTrck)
-      {
-         StUPCRpsTrack* trkRP = mRpEvt->getTrack(mRpTrackIdVec_perSide[iSide][iTrck]);
-         if(!trkRP){
-            cout << "Incorrect RP track. Leaving this event." << endl;
-            return;
-         }
-         nRpTracksTotal++;
-         trackRP = trkRP;
-         side = iSide;
-      }
-   }
-   if(nRpTracksTotal != 1)
-      return;
-   
-   hAnalysisFlow->Fill(JPSI21RP);
-   SaveRPinfo(trackRP,side);
-   
-
-   //fiducial volume condition
-   if( !RPInFidRange(trackRP->pVec().X(), trackRP->pVec().Y()) )
-      return;
-   hAnalysisFlow->Fill(JPSI2RPFIDCUT);
-
-
    //Qtot
    double totQ = track1->getCharge() + track2->getCharge();
    hTotQ->Fill(totQ);
    if(totQ == 0){
       hAnalysisFlow->Fill(JPSI2QTOT);
       mRecTree->FillRecTree();
-      hInvMassJPsi->Fill(state.M());
    }else{
       mRecTree->FillBcgTree();
-      hInvMassJPsiBcg->Fill(state.M());
-
    }
+
 
    if(DEBUG){
       cout << "Finished AnaJPSI::Make()" << endl;
@@ -268,6 +264,13 @@ void AnaJPSI::Init(){
    hNTracksRP->GetYaxis()->SetTitle(YAxisDescription);
    hNTracksRP->SetTitle("Number of tracks in RPs per event");
 
+   hBranchRP = new TH1D("hBranchRP", "hBranchRP; detector branch; counts", 4,-0.5,3.5);
+   //detectors branch, EU=0, ED=1, WU=2, WD=3
+   hBranchRP->GetXaxis()->SetBinLabel(1, "East Up");
+   hBranchRP->GetXaxis()->SetBinLabel(2, "East Down");
+   hBranchRP->GetXaxis()->SetBinLabel(3, "West Up");
+   hBranchRP->GetXaxis()->SetBinLabel(4, "West Down");
+
    hNTracksBEMC = new TH1D("hNTracksBEMC", "Number of Tracks in BEMC per event; Number of tracks in BEMC; counts", 21, -0.5, 20.5);
 
    hPt = new TH1D("hPt", "Transverse momentum of hadrons", 30, 0, 3);
@@ -292,16 +295,10 @@ void AnaJPSI::Init(){
    hTotQ->GetXaxis()->SetTitle("Charge of pair");
    hTotQ->GetYaxis()->SetTitle(YAxisDescription);
 
-   hInvMassEta = new TH2D("hInvMassEta", "hInvMassEta; m_{#pi^{+} #pi^{-}} [GeV/c^{2}]; #eta [-]", 80, 2,4, 200, -1.,1. );
-   hInvMassEta->SetTitle("correlation plot of invMass and eta");
-
    hNTracksTof = new TH1D("hNTracksTof", "hNTracksTof; Number of ToF tracks [-]; counts", 11, -0.5, 10.5);
 
    hNTracksTpc = new TH1D("hNTracksTpc", "hNTracksTpc; Number of TPC tracks [-]; counts", 26, -0.5, 25.5);
   
-   hInvMassJPsi = new TH1D("hInvMassJPsi", "hInvMassJPsi; m_{e e} [GeV/c^{2}]; counts", 40,2, 4);
-   hInvMassJPsiBcg = new TH1D("hInvMassJPsiBcg", "hInvMassJPsiBcg; m_{e e} [GeV/c^{2}]; counts", 40,2, 4);
-
    hEtaDifference = new TH1D("hEtaDifference", "hEtaDifference; |#eta_{BEMC} - #eta_{TPC}| [-]; counts", 20, 0, 2);
 
 
@@ -453,6 +450,60 @@ void AnaJPSI::fillNSigmaPlots(const StUPCTrack *trk){
     hNSigmaKecorr->Fill(nSigmaKaon, nSigmaElectron);
     hNSigmaKPcorr->Fill(nSigmaKaon, nSigmaProton);
     hNSigmaKPicorr->Fill(nSigmaKaon, nSigmaPion);
+}
+
+
+bool AnaJPSI::exactly1RPTrack(int &side){
+   //1 RP track condition  
+   AnaRpTracks(mRpEvt);
+
+   unsigned int nRpTracksTotal = 0;
+   side = 0;
+   for (unsigned int iSide = 0; iSide < nSides; ++iSide)
+   {
+      for (unsigned int iTrck = 0; iTrck < mRpTrackIdVec_perSide[iSide].size(); ++iTrck)
+      {
+         StUPCRpsTrack* trkRP = mRpEvt->getTrack(mRpTrackIdVec_perSide[iSide][iTrck]);
+         if(!trkRP){
+            cout << "Incorrect RP track. Leaving this event." << endl;
+            return false;
+         }
+         nRpTracksTotal++;
+         side = iSide;
+      }
+   }
+
+   hNTracksRP->Fill(nRpTracksTotal);
+   if(nRpTracksTotal == 1){
+      return true;
+   }else {
+      return false;
+   }
+
+}
+
+bool AnaJPSI::fiducialVolume(const StUPCRpsTrack* trackRP, int side){
+   hRPcorr[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   if(side == East){
+      hRPcorrEast[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }else{
+      hRPcorrWest[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }
+
+   //fiducial volume condition
+   if( !RPInFidRange(trackRP->pVec().X(), trackRP->pVec().Y()) )
+      return false;
+   
+   hRPcorr[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   if(side == East){
+      hRPcorrEast[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }else{
+      hRPcorrWest[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }
+   hBranchRP->Fill( trackRP->branch() );
+
+   return true;
+
 }
 
 

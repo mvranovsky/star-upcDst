@@ -50,10 +50,9 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       mRecTree->Branch("mSquared", &mMSquared[0]);
       mRecTree->Branch("pairID", &mPairID[0]);
       mRecTree->Branch("totQ", &mTotQ[0]);
-      if( treeVersion.test(11) ){ // 11 == add chi square for pid
-         for (int iPart = 0; iPart < nParticles; ++iPart)
-            mRecTree->Branch("chiSquare" + mUtil->particleName(iPart), &mChiSquare[iPart]);
-      }
+      for (int iPart = 0; iPart < nParticles; ++iPart)
+         mRecTree->Branch("chiSquare" + mUtil->particleName(iPart), &mChiSquare[iPart]);
+   
    }
   // Central hadrons info
    if( treeVersion.test(3) )
@@ -75,12 +74,6 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
             if( iTag == TRUEMC )
                mRecTree->Branch(Form("QAHadron%i",i) + tag, &mQATruth[i]);
 
-            if( treeVersion.test(12) ){ // 12 == BEMC info
-               mRecTree->Branch(Form("bemcEta%i", i), &mBemcEta[i]);
-               mRecTree->Branch(Form("bemcPt%i", i), &mBemcPt[i]);
-               mRecTree->Branch(Form("bemcPhi%i", i), &mBemcPhi[i]);
-               mRecTree->Branch(Form("bemcE%i", i), &mBemcE[i]);
-            }
          } 
 
          mRecTree->Branch(Form("dEdxInKevCm%i",i), &mDEdxInKevCm[i]);
@@ -117,6 +110,7 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       }
    }
 
+   
 
    // pT Missing info (if cental hadrons and RP track info)
    if( treeVersion.test(3) && treeVersion.test(4) )
@@ -279,6 +273,25 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       mRecTree->Branch("nClustersBemc", &nClustersBemc);
       mRecTree->Branch("nTracksTof", &nTracksTof);
      
+   }
+
+   //BEMC info
+   if( treeVersion.test(13) ){ 
+      for (int i = 0; i < nSigns; ++i)
+      {
+         mRecTree->Branch(Form("bemcTrackEta%i", i), &mBemcEta[i]);
+         mRecTree->Branch(Form("bemcTrackPt%i", i), &mBemcPt[i]);
+         mRecTree->Branch(Form("bemcTrackPhi%i", i), &mBemcPhi[i]);
+         mRecTree->Branch(Form("bemcTrackE%i", i), &mBemcE[i]);
+         mRecTree->Branch(Form("bemcClusterHTE%i", i), &mBemcClusterHTE[i]);
+         mRecTree->Branch(Form("bemcClusterSigmaEta%i", i), &mBemcClusterSigmaEta[i]);
+         mRecTree->Branch(Form("bemcClusterSigmaPhi%i", i), &mBemcClusterSigmaPhi[i]);
+         mRecTree->Branch(Form("bemcClusterEta%i", i), &mBemcClusterEta[i]);
+         mRecTree->Branch(Form("bemcClusterPhi%i", i), &mBemcClusterPhi[i]);
+         mRecTree->Branch(Form("bemcClusterE%i", i), &mBemcClusterE[i]);
+      }
+      mRecTree->Branch("nTracksBemc", &nTracksBemc);
+      mRecTree->Branch("nClustersBemc", &nClustersBemc);
    }
 
 

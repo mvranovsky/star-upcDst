@@ -84,6 +84,7 @@ if __name__ == "__main__":
         if job in running or job in donelist:
             continue
         missing.append(job)
+	#print job
 
     print "Errors:", len(missing)
     #print missing

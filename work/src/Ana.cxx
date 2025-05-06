@@ -22,6 +22,33 @@ void Ana::SetEvent(StUPCEvent *upcEvt, StRPEvent *rpEvt, StRPEvent *mcEvt){
 //           570709, 570711, 570712, 570719, 590701, 590703, 590705, 590708, 590709};
 
 
+bool Ana::backToBack(const StUPCTrack *trk1, const StUPCTrack *trk2){
+   //back to back condition
+   int sectionTrk1, sectionTrk2;
+   for (int i = 0; i < 6; ++i){
+      double lower, upper;
+      lower = -TMath::Pi() + i*TMath::Pi()/3;
+      upper = -TMath::Pi() + (i+1)*TMath::Pi()/3;
+
+      if(trk1->getBemcPhi() >= lower && trk1->getBemcPhi() < upper){
+         sectionTrk1 = i;
+      }
+      if(trk2->getBemcPhi() >= lower && trk2->getBemcPhi() < upper){
+         sectionTrk2 = i;
+      }
+   }
+   double phiDelta = abs(trk1->getPhi() - trk2->getPhi());
+   if(phiDelta <= 2.6)
+      return false;
+      
+   int deltaSections = abs(sectionTrk1 - sectionTrk2);
+   if(deltaSections != 3)
+      return false;
+   
+   return true;
+}
+
+
 
 bool Ana::RPInFidRange(double x, double y) const{
    return (abs(y) < 0.8 && abs(y) > 0.4 && x > -0.27 && (x + 0.6)*(x + 0.6) + y*y < 1.25) ? true : false;
@@ -48,6 +75,7 @@ bool Ana::CheckTriggers(const vector<int> *triggerArray, StUPCEvent *mUpcEvt, TH
    }
    return triggered;
 }
+
 
 
 int Ana::hasGoodTPCnSigma(const StUPCTrack *trk){ //zmiernit podmienku na proton, skusit prebehnut aj na K0, Lambda 
@@ -197,28 +225,30 @@ void Ana::SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned i
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kPion) , iTrack, PION );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kKaon) , iTrack, KAON );
    mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kProton) , iTrack, PROTON );
+   mRecTree->setNSigmaTPC( trk->getNSigmasTPC(StUPCTrack::kElectron) , iTrack, ELECTRON );
    if( trk->getFlag( StUPCTrack::kTof ) && (IsGoodTofTrack(trk) || runMCAna ) ){
       mRecTree->setTofHit(1, iTrack);
    } else {
       mRecTree->setTofHit(-1, iTrack);
    }
-   if(trk->getFlag(StUPCTrack::kBemc ) ){
-      mRecTree->setBemcEta( trk->getBemcEta(), iTrack );
-      mRecTree->setBemcE( trk->getBemcHitE(), iTrack );
-      mRecTree->setBemcPt( trk->getBemcPt(), iTrack );
-      mRecTree->setBemcPhi( trk->getBemcPhi(), iTrack );
-   }else{
-      mRecTree->setBemcEta( -999, iTrack );
-      mRecTree->setBemcE( -999 , iTrack );
-      mRecTree->setBemcPt( -999 , iTrack );
-      mRecTree->setBemcPhi( -999 , iTrack );
-   }
+
 }
 
 
 void Ana::SaveRPinfo(const StUPCRpsTrack *trackRP, unsigned int iSide)
 {
+
+   if(!trackRP) {
+      cout << "No RP track in SaveRPinfo. Leaving event." << endl;
+      return;
+   }
+
    const StUPCRpsTrackPoint* trackPoint = trackRP->getTrackPoint(RP1);
+
+   if(!trackPoint) {
+      cout << "No RP track point in SaveRPinfo. Leaving event." << endl;
+      return;
+   }
 
    mRecTree->setRpX( trackPoint->x() , iSide );
    mRecTree->setRpZ( trackPoint->y() , iSide );
@@ -235,18 +265,31 @@ void Ana::SaveRPinfo(const StUPCRpsTrack *trackRP, unsigned int iSide)
    mRecTree->setPy( trackRP->pVec().Y() , iSide );
    mRecTree->setPz( trackRP->pVec().Z() , iSide );
 
-/*
-   // subtract offset
-   int rnNumber, day, run, rpID;
-   rpID = trackPoint->rpId();
-   rnNumber = upcEvt->getRunNumber() - 18000000;
-   day = rnNumber / 1000 - 55;
-   run = rnNumber % 1000;
-   rpYinner[iSide] = rpY[iSide] - mOffSet[rpID][day][run]; 
-*/
 }
 
+void Ana::SaveMissingPtInfo(const StUPCTrack *trk1, const StUPCTrack *trk2, const StUPCRpsTrack *trackRP){
 
+   TVector3 sum, trk1Mom, trk2Mom;
+   trk1->getMomentum(trk1Mom);
+   trk2->getMomentum(trk2Mom);
+   sum = trk1Mom + trk2Mom + trackRP->pVec();
+   double pTMissing = sqrt( pow(sum.X(), 2) + pow(sum.Y(), 2) );
+   mRecTree->setPtMissing( pTMissing );
+   mRecTree->setPxMissing( sum.X() );
+   mRecTree->setPyMissing( sum.Y() );
+}
+void Ana::SaveMissingPtInfo(const StUPCTrack *trk1, const StUPCTrack *trk2, const StUPCRpsTrack *trkRP1, const StUPCRpsTrack *trkRP2){
+
+   TVector3 sum, trk1Mom, trk2Mom;
+   trk1->getMomentum(trk1Mom);
+   trk2->getMomentum(trk2Mom);
+   sum = trk1Mom + trk2Mom + trkRP1->pVec() + trkRP2->pVec();
+   double pTMissing = sqrt( pow(sum.X(), 2) + pow(sum.Y(), 2) );
+
+   mRecTree->setPtMissing( pTMissing );
+   mRecTree->setPxMissing( sum.X() );
+   mRecTree->setPyMissing( sum.Y() );
+}
 
 
 void Ana::SaveStateInfo(TLorentzVector state, int totQ, unsigned int iState){
@@ -321,6 +364,29 @@ void Ana::SaveBbcInfo(const StUPCEvent *upcEvt)
    mRecTree->setBbcSmallWest( upcEvt->getBBCSmallWest());
    mRecTree->setBbcLargeEast( upcEvt->getBBCLargeEast());
    mRecTree->setBbcLargeWest( upcEvt->getBBCLargeWest());
+}
+
+void Ana::SaveBemcInfo(const StUPCTrack *trk, unsigned int iTrack)
+{
+   mRecTree->setNTracksBemc(mUpcEvt->getBEMCMultiplicity());
+   mRecTree->setNClustersBemc(mUpcEvt->getNumberOfClusters());
+
+   mRecTree->setBemcTrackE( trk->getBemcHitE(), iTrack );
+   mRecTree->setBemcTrackEta( trk->getBemcEta(), iTrack );
+   mRecTree->setBemcTrackPhi( trk->getBemcPhi(), iTrack );
+   mRecTree->setBemcTrackPt( trk->getBemcPt(), iTrack );
+   
+   StUPCBemcCluster* cluster = trk->getBemcCluster();
+   if(!cluster){
+      cout << "No cluster loaded for track" << endl;
+      return;
+   }
+   mRecTree->setBemcClusterE( cluster->getEnergy(), iTrack );
+   mRecTree->setBemcClusterEta( cluster->getEta(), iTrack );
+   mRecTree->setBemcClusterPhi( cluster->getPhi(), iTrack );
+   mRecTree->setBemcClusterSigmaEta( cluster->getSigmaEta(), iTrack );
+   mRecTree->setBemcClusterSigmaPhi( cluster->getSigmaPhi(), iTrack );
+   mRecTree->setBemcClusterHTE( cluster->getHTEnergy(), iTrack );
 }
 
 
@@ -549,6 +615,30 @@ void Ana::resetInfo() {
    mRecTree->setNTracksBemc(0);
    mRecTree->setNTracksTof(0);
    mRecTree->setNClustersBemc(0);
+
+
+   // BEMC info
+   mRecTree->setBemcTrackE( -999, 0 );
+   mRecTree->setBemcTrackEta( -999, 0 );
+   mRecTree->setBemcTrackPhi( -999, 0 );
+   mRecTree->setBemcTrackPt( -999, 0 );
+   mRecTree->setBemcClusterE( -999, 0 );
+   mRecTree->setBemcClusterEta( -999, 0 );
+   mRecTree->setBemcClusterPhi( -999, 0 );
+   mRecTree->setBemcClusterSigmaEta( -999, 0 );
+   mRecTree->setBemcClusterSigmaPhi( -999, 0 );
+   mRecTree->setBemcClusterHTE( -999, 0 );
+
+   mRecTree->setBemcClusterE( -999, 1 );
+   mRecTree->setBemcClusterEta( -999, 1 );
+   mRecTree->setBemcClusterPhi( -999, 1 );
+   mRecTree->setBemcClusterSigmaEta( -999, 1 );
+   mRecTree->setBemcClusterSigmaPhi( -999, 1 );
+   mRecTree->setBemcClusterHTE( -999, 1 );
+   mRecTree->setBemcTrackE( -999, 1 );
+   mRecTree->setBemcTrackEta( -999, 1 );
+   mRecTree->setBemcTrackPhi( -999, 1 );
+   mRecTree->setBemcTrackPt( -999, 1 );
 
 
 }

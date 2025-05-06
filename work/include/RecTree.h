@@ -7,6 +7,7 @@
 using namespace std;
 using namespace UTIL;
 
+
 class RecTree{
    public: 
       RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree);
@@ -83,10 +84,6 @@ class RecTree{
       Double_t getNHitsFit(unsigned int s) const { return mNHitsFit[s]; }   
       Double_t getNHitsDEdx(unsigned int s) const { return mNHitsDEdx[s]; } 
       Double_t getNSigmaTPC(unsigned int s, int p) const { return mNSigmaTPC[s][p]; }
-      Double_t getBemcEta(unsigned int s) { return mBemcEta[s]; }
-      Double_t getBemcE(unsigned int s) { return mBemcE[s]; }
-      Double_t getBemcPhi(unsigned int s) { return mBemcPhi[s]; }
-      Double_t getBemcPt(unsigned int s) { return mBemcPt[s]; }
       UInt_t   getQATruth(unsigned int s) const { return mQATruth[s]; }
       Double_t getThetaRp(unsigned int s) const { return mThetaRp[s]; }
       Double_t getPhiRp(unsigned int s) const { return mPhiRp[s]; }
@@ -138,7 +135,17 @@ class RecTree{
       bool getVertexStudySameVertex() const { return mSameVertex; }
       Double_t getVertexStudyDcaParticles() const { return mDcaParticles; }
       Double_t getVertexStudyDcaBeamline() const { return mDcaBeamline; }
-      
+      Double_t getBemcTrackE(unsigned int s) { return mBemcE[s]; }
+      Double_t getBemcTrackEta(unsigned int s) { return mBemcEta[s]; }
+      Double_t getBemcTrackPhi(unsigned int s) { return mBemcPhi[s]; }
+      Double_t getBemcTrackPt(unsigned int s) { return mBemcPt[s]; }
+      Double_t getBemcClusterE(unsigned int s) { return mBemcClusterE[s]; }
+      Double_t getBemcClusterEta(unsigned int s) { return mBemcClusterEta[s]; }
+      Double_t getBemcClusterPhi(unsigned int s) { return mBemcClusterPhi[s]; }
+      Double_t getBemcClusterHTE(unsigned int s) { return mBemcClusterHTE[s]; }
+      Double_t getBemcClusterSigmaEta(unsigned int s) { return mBemcClusterSigmaEta[s]; }
+      Double_t getBemcClusterSigmaPhi(unsigned int s) { return mBemcClusterSigmaPhi[s]; }
+
       // setters for good run list study
       Int_t getRpOk() const { return mIsRpOk; }
       Int_t getJPsiTrigger1() const { return mIsJPsiTrigger1; }
@@ -218,10 +225,6 @@ class RecTree{
       void setNHitsFit(Double_t var, unsigned int s) { mNHitsFit[s] = var; }   
       void setNHitsDEdx(Double_t var, unsigned int s) { mNHitsDEdx[s] = var; } 
       void setNSigmaTPC(Double_t var, unsigned int s, int p) { mNSigmaTPC[s][p] = var; }
-      void setBemcEta(double var, unsigned int s) { mBemcEta[s] = var; }
-      void setBemcE(double var, unsigned int s) { mBemcE[s] = var; }
-      void setBemcPhi(double var, unsigned int s) { mBemcPhi[s] = var; }
-      void setBemcPt(double var, unsigned int s) { mBemcPt[s] = var; }
       void setQATruth(UInt_t var, unsigned int s) { mQATruth[s] = var; }
       void setThetaRp(Double_t var, unsigned int s) { mThetaRp[s] = var; }
       void setPhiRp(Double_t var, unsigned int s) { mPhiRp[s] = var; }
@@ -269,8 +272,16 @@ class RecTree{
       void setZdcEDsmBit(bool var) { mZdcEDsmBit = var; }
       void setZdcWDsmBit(bool var) { mZdcWDsmBit = var; }
       void setRpTrigBits(bool var, unsigned int rp) { mRpTrigBits[rp] = var; }
-
-
+      void setBemcTrackE(Double_t var, unsigned int s) { mBemcE[s] = var; }
+      void setBemcTrackEta(Double_t var, unsigned int s) { mBemcEta[s] = var; }
+      void setBemcTrackPhi(Double_t var, unsigned int s) { mBemcPhi[s] = var; }
+      void setBemcTrackPt(Double_t var, unsigned int s) { mBemcPt[s] = var; }
+      void setBemcClusterE(Double_t var, unsigned int s) { mBemcClusterE[s] = var; }
+      void setBemcClusterEta(Double_t var, unsigned int s) { mBemcClusterEta[s] = var; }
+      void setBemcClusterPhi(Double_t var, unsigned int s) { mBemcClusterPhi[s] = var; }
+      void setBemcClusterHTE(Double_t var, unsigned int s) { mBemcClusterHTE[s] = var; }
+      void setBemcClusterSigmaEta(Double_t var, unsigned int s) { mBemcClusterSigmaEta[s] = var; }
+      void setBemcClusterSigmaPhi(Double_t var, unsigned int s) { mBemcClusterSigmaPhi[s] = var; }
 
       void setVertexStudyPrimary(bool var) { mPrimary = var; }
       void setVertexStudySameVertex(bool var) { mSameVertex = var; }
@@ -302,7 +313,8 @@ class RecTree{
       Util* mUtil;
       TTree *mRecTree, *mBcgTree;
       // event info
-      UInt_t mRunNumber, mEventNumber, mFillNumber, mBunchCrossId, mBunchCrossId7bit;
+      Double_t mRunNumber;
+      UInt_t mEventNumber, mFillNumber, mBunchCrossId, mBunchCrossId7bit;
       UShort_t mTofMult;
       UInt_t mNVertecies, mNGoodTpcTrks;
       
@@ -316,7 +328,7 @@ class RecTree{
 
       // Vertex info
       Double_t mVertexZInCm[nStates][nDataTag], mVertexXInCm[nStates][nDataTag], mVertexYInCm[nStates][nDataTag];
-      UInt_t mVertexIdTruth; // for MC vertecies
+      UInt_t mVertexIdTruth; // for MC vertices
       Double_t mVertexDiffInCm[nStates][nDataTag], mDcaDaughtersInCm[nStates][nDataTag], mDcaBeamlineInCm[nStates][nDataTag], mPointingAngle[nStates][nDataTag], mDecayLengthInCm[nStates][nDataTag];
       
       // State info
@@ -337,9 +349,6 @@ class RecTree{
       UInt_t mQATruth[nHadrons]; // for true MC hadrons
       Int_t mTofHit[nHadrons];
 
-      // BEMC info
-      Double_t mBemcEta[nHadrons], mBemcPhi[nHadrons], mBemcPt[nHadrons], mBemcE[nHadrons];
-      
       // RP track info
       Double_t mThetaRp[nSides], mPhiRp[nSides], mTimeRp[nSides], mT[nSides];
       Double_t mPRp[nSides], mPtRp[nSides], mEtaRp[nSides], mRpX[nSides], mRpZ[nSides], mRpY[nSides];
@@ -362,9 +371,17 @@ class RecTree{
       Double_t mDcaParticles, mDcaBeamline;
       bool mPrimary, mSameVertex;
 
+      // BEMC info
+      Double_t mBemcEta[nSigns], mBemcPhi[nSigns], mBemcPt[nSigns], mBemcE[nSigns];
+      Double_t mBemcClusterEta[nSigns], mBemcClusterPhi[nSigns], mBemcClusterE[nSigns];
+      Double_t mBemcClusterHTE[nSigns], mBemcClusterSigmaEta[nSigns], mBemcClusterSigmaPhi[nSigns];
+      Int_t  nTracksBemc, nClustersBemc;
+
       // info about good run list
-      Int_t mIsRpOk , mIsJPsiTrigger1, mIsJPsiTrigger2, mIsJPsiTrigger3, nTracksBemc, nTracksTof, nClustersBemc;
+      Int_t mIsRpOk , mIsJPsiTrigger1, mIsJPsiTrigger2, mIsJPsiTrigger3, nTracksTof;
       vector<Double_t> mTpcTrack_phi, mTpcTrack_eta, mBemcTrack_eta, mBemcTrack_phi, mTpcNHitsFit, mTpcNHitsDEdx, mTpcNSigmaElectron, mTpcNSigmaPion, mTpcNSigmaProton, mTpcNSigmaKaon;
+
+
 
 };
 

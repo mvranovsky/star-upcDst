@@ -32,6 +32,7 @@ class Ana{
       inline bool IsGoodEtaTrack(const StUPCTrack *trk, int idx) const { return (abs(trk->getEta()) < maxEta && trk->getEta() > vertexEtaRange(0,idx) && trk->getEta() < vertexEtaRange(1, idx) );}
       int hasGoodTPCnSigma(const StUPCTrack *trk); 
       bool CheckTriggers(const vector<int> *triggerArray, StUPCEvent *mUpcEvt, TH1D *hTriggerBits) const;
+      bool backToBack(const StUPCTrack *trk1, const StUPCTrack *trk2);
 
 
 
@@ -48,6 +49,9 @@ class Ana{
       void fillNSigmaPlots(const StUPCTrack *trk);
       void SaveEventInfo(const StUPCEvent *upcEvt);
       void SaveRPinfo(const StUPCRpsTrack *trackRP, unsigned int iSide);
+      void SaveMissingPtInfo(const StUPCTrack *trk1, const StUPCTrack *trk2, const StUPCRpsTrack *trackRP);
+      void SaveMissingPtInfo(const StUPCTrack *trk1, const StUPCTrack *trk2, const StUPCRpsTrack *trkRP1, const StUPCRpsTrack *trkRP2);
+
       //void SaveTrackInfo(const StUPCTrack *trk, unsigned int iTrack);
       void SaveTrackInfo(const StUPCTrack *trk, TLorentzVector hadron ,unsigned int iTrack);
       void SaveChiSquareInfo(const StUPCTrack* trk1, const StUPCTrack *trk2 );
@@ -56,6 +60,7 @@ class Ana{
       void SaveVertexInfo(const StUPCVertex* vtx, unsigned int iVtx);
       void SaveZdcInfo(const StUPCEvent *upcEvt);
       void SaveBbcInfo(const StUPCEvent *upcEvt);
+      void SaveBemcInfo(const StUPCTrack *trk, unsigned int iTrack);
       void SaveTriggerInfo(const StUPCEvent *upcEvt, const StRPEvent *rpEvt);
       void saveRpTrigBit(const StRPEvent *rpEvt);
       bool IsRpTrigBit(const StRPEvent *rpEvt, unsigned int iRp);

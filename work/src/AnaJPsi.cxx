@@ -86,25 +86,7 @@ void AnaJPsi::Make(){
    if(!track1 || !track2)
       return;
 
-   int sectionTrk1, sectionTrk2;
-   for (int i = 0; i < 6; ++i){
-      double lower, upper;
-      lower = -TMath::Pi() + i*TMath::Pi()/3;
-      upper = -TMath::Pi() + (i+1)*TMath::Pi()/3;
 
-      if(track1->getBemcPhi() >= lower && track1->getBemcPhi() < upper){
-         sectionTrk1 = i;
-      }
-      if(track2->getBemcPhi() >= lower && track2->getBemcPhi() < upper){
-         sectionTrk2 = i;
-      }
-   }
-   double phiDelta = abs(track1->getPhi() - track2->getPhi());
-   if(phiDelta <= 2.6)
-      return;
-   int deltaSections = abs(sectionTrk1 - sectionTrk2);
-   if(deltaSections != 3)
-      return;
    hAnalysisFlow->Fill(JPSIBACKTOBACK);
 
 
@@ -127,104 +109,52 @@ void AnaJPsi::Make(){
    SaveTrackInfo(track1,electron1, 0 );
    SaveTrackInfo(track2,electron2, 1);
 
-
-   //1 RP track condition  
-   AnaRpTracks(mRpEvt);
-
-   unsigned int nRpTracksTotal = 0;
-   StUPCRpsTrack *trackRP;
    int side = 0;
-   for (unsigned int iSide = 0; iSide < nSides; ++iSide)
-   {
-      for (unsigned int iTrck = 0; iTrck < mRpTrackIdVec_perSide[iSide].size(); ++iTrck)
-      {
-         StUPCRpsTrack* trkRP = mRpEvt->getTrack(mRpTrackIdVec_perSide[iSide][iTrck]);
-         if(!trkRP){
-            cout << "Incorrect RP track. Leaving this event." << endl;
-            return;
-         }
-         nRpTracksTotal++;
-         trackRP = trkRP;
-         side = iSide;
+   if(analysisWithRPs){
+      
+      
+      if(!exactly1RPTrack(side)){
+         return;
       }
-   }
-   hNTracksRP->Fill(nRpTracksTotal);
-   if(nRpTracksTotal != 1)
-      return;
-   
-   hAnalysisFlow->Fill(JPSI1RP);
-   SaveRPinfo(trackRP,side);
-   
-   hRPcorr[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
-   if(side == East){
-      hRPcorrEast[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
-   }else{
-      hRPcorrWest[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
-   }
-   //fiducial volume condition
-   if( !RPInFidRange(trackRP->pVec().X(), trackRP->pVec().Y()) )
-      return;
-   hRPcorr[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
-   if(side == East){
-      hRPcorrEast[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
-   }else{
-      hRPcorrWest[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
-   }
-   hBranchRP->Fill( trackRP->branch() );
 
-   hAnalysisFlow->Fill(JPSIRPFIDCUT);
+      const StUPCRpsTrack *trackRP = mRpEvt->getTrack(0);
+      if(!trackRP){
+         cout << "No RP track found. Leaving event." << endl;
+         return;
+      }
+      
+      hAnalysisFlow->Fill(JPSI1RP);
+
+      SaveRPinfo(trackRP,side);
+
+      if(!fiducialVolume(trackRP, side)){   
+         return;
+      }
+
+      hAnalysisFlow->Fill(JPSIRPFIDCUT);
+      
+      SaveMissingPtInfo(track1, track2, trackRP);
+
+   }else{
+      hAnalysisFlow->Fill(JPSI1RP);
+      hAnalysisFlow->Fill(JPSIRPFIDCUT);
+   }
+   
+   
    //Qtot
    double totQ = track1->getCharge() + track2->getCharge();
    hTotQ->Fill(totQ);
 
-   hAnalysisFlow->Fill(JPSIQTOT);
-
+   
    if(totQ == 0){
       mRecTree->FillRecTree();
-      hInvMassJPsi->Fill(state.M());
-      hInvMassEta->Fill(state.M(), track1->getEta());
-      hInvMassEta->Fill(state.M(), track2->getEta());
-      hInvMassBemcEta->Fill(state.M(), track1->getBemcEta());
-      hInvMassBemcEta->Fill(state.M(), track2->getBemcEta());
+      hAnalysisFlow->Fill(JPSIQTOT);
    }else{
       mRecTree->FillBcgTree();
-      hInvMassJPsiBcg->Fill(state.M());
    }
 
-   //missing pT of virtual photon
-   TVector3 momRPTrack, momElectron1, momElectron2, momTotal;
-   momRPTrack = trackRP->pVec();
-   track1->getMomentum(momElectron1);
-   track2->getMomentum(momElectron2);
-
-   momTotal = momRPTrack + momElectron1 + momElectron2;
-
-   Double_t pTMissing = sqrt( pow(momTotal.X(), 2) + pow(momTotal.Y(), 2) );
-
-   if(totQ == 0 ){
-      hPtMissing->Fill(pTMissing);
-   }else{
-      hPtMissingBcg->Fill(pTMissing);
-   }
-
-   if(pTMissing > 0.3){
-      return;
-   }
-
-   if(hTotQ == 0){
-      hPtMissingCut->Fill(pTMissing);
-      hPhotonMomX->Fill(momTotal.X());
-      hPhotonMomY->Fill(momTotal.Y());
-   }else{
-      hPtMissingBcgCut->Fill(pTMissing);
-      hPhotonMomXBcg->Fill(momTotal.X());
-      hPhotonMomYBcg->Fill(momTotal.Y());
-   }
-
-
-
-   cout << "Finished AnaJPsi::Make()" << endl;
    if(DEBUG){
+      cout << "Finished AnaJPsi::Make()" << endl;
    }
 }
 
@@ -297,38 +227,33 @@ void AnaJPsi::Init(){
    hPIDChipipi = new TH1D("hPIDChipipi", "hPIDChipipi; #chi_{#pi #pi} [-]; counts", 50, 0, 50);
    hPIDChikk = new TH1D("hPIDChikk", "hPIDChikk; #chi_{kk} [-]; counts", 50, 0, 50);
 
-   hPIDChiep = new TH2F("hPIDChiep", "hPIDChiep; #chi_{ee} [-]; #chi_{pp}", 50, 0, 50, 50, 0, 50);
-   hPIDChiek = new TH2F("hPIDChiek", "hPIDChiek; #chi_{ee} [-]; #chi_{kk}", 50, 0, 50, 50, 0, 50);
-   hPIDChiepi = new TH2F("hPIDChiepi", "hPIDChiepi; #chi_{ee} [-]; #chi_{#pi #pi}", 50, 0, 50, 50, 0, 50);
-   hPIDChipip = new TH2F("hPIDChipip", "hPIDChipip; #chi_{#pi #pi} [-]; #chi_{pp}", 50, 0, 50, 50, 0, 50);
+   hNSigmaEE1 = new TH2F("hNSigmaEE1","n_{#sigma} e against e;n#sigma_{e} [-];n#sigma_{e} [-]", 40, -10, 10, 40, -10, 10);
+   hNSigmaEE2 = new TH2F("hNSigmaEE2","n_{#sigma} e against e;n#sigma_{e} [-];n#sigma_{e} [-]", 40, -10, 10, 40, -10, 10);
 
+   hNSigmaPP1 = new TH2F("hNSigmaPP1","n_{#sigma} p against p;n#sigma_{p} [-];n#sigma_{p} [-]", 40, -10, 10, 40, -10, 10);
+   hNSigmaPP2 = new TH2F("hNSigmaPP2","n_{#sigma} p against p;n#sigma_{p} [-];n#sigma_{p} [-]", 40, -10, 10, 40, -10, 10);
+
+   hNSigmaKK1 = new TH2F("hNSigmaKK1","n_{#sigma} K against K;n#sigma_{K} [-];n#sigma_{K} [-]", 40, -10, 10, 40, -10, 10);
+   hNSigmaKK2 = new TH2F("hNSigmaKK2","n_{#sigma} K against K;n#sigma_{K} [-];n#sigma_{K} [-]", 40, -10, 10, 40, -10, 10);
+
+   hNSigmaPiPi1 = new TH2F("hNSigmaPiPi1","n_{#sigma} #pi against #pi;n#sigma_{#pi} [-];n#sigma_{#pi} [-]", 40, -10, 10, 40, -10, 10);
+   hNSigmaPiPi2 = new TH2F("hNSigmaPiPi2","n_{#sigma} #pi against #pi;n#sigma_{#pi} [-];n#sigma_{#pi} [-]", 40, -10, 10, 40, -10, 10);
 
    //initialize 2D graphs of before and after fiducial RP cut
-   hRPcorr[0] = new TH2F("hRPcorr","p_{y} vs p_{x} of protons in RP", 200, -0.7, 0.8, 150, -1, 1);
-   hRPcorr[0]->GetXaxis()->SetTitle("p_{x} [GeV]");
-   hRPcorr[0]->GetYaxis()->SetTitle("p_{y} [GeV]");
-   hRPcorr[1] = new TH2F("hRPcorr_fid","p_{y} vs p_{x} of proton in RP fiducial region", 200, -0.7, 0.8, 150, -1, 1);
-   hRPcorr[1]->GetXaxis()->SetTitle("p_{x} [GeV]");
-   hRPcorr[1]->GetYaxis()->SetTitle("p_{y} [GeV]");
+   hRPcorr[0] = new TH2F("hRPcorr","p_{y} vs p_{x} of protons in RP;p_{x} [GeV];p_{y} [GeV]", 200, -0.7, 0.8, 150, -1, 1);
 
-   hRPcorrWest[0] = new TH2F("hRPcorrWest","p_{y} vs p_{x} of protons in RP (west)", 200, -0.7, 0.8, 150, -1, 1);
-   hRPcorrWest[0]->GetXaxis()->SetTitle("p_{x} [GeV]");
-   hRPcorrWest[0]->GetYaxis()->SetTitle("p_{y} [GeV]");
-   hRPcorrWest[1] = new TH2F("hRPcorrWest_fid","p_{y} vs p_{x} of proton in RP fiducial region (west)", 200, -0.7, 0.8, 150, -1, 1);
-   hRPcorrWest[1]->GetXaxis()->SetTitle("p_{x} [GeV]");
-   hRPcorrWest[1]->GetYaxis()->SetTitle("p_{y} [GeV]");
+   hRPcorr[1] = new TH2F("hRPcorr_fid","p_{y} vs p_{x} of proton in RP fiducial region;p_{x} [GeV];p_{y} [GeV]", 200, -0.7, 0.8, 150, -1, 1);
 
-   hRPcorrEast[0] = new TH2F("hRPcorrEast","p_{y} vs p_{x} of protons in RP (east)", 200, -0.7, 0.8, 150, -1, 1);
-   hRPcorrEast[0]->GetXaxis()->SetTitle("p_{x} [GeV]");
-   hRPcorrEast[0]->GetYaxis()->SetTitle("p_{y} [GeV]");
-   hRPcorrEast[1] = new TH2F("hRPcorrEast_fid","p_{y} vs p_{x} of proton in RP fiducial region (east)",  200, -0.7, 0.8, 150, -1, 1);
-   hRPcorrEast[1]->GetXaxis()->SetTitle("p_{x} [GeV]");
-   hRPcorrEast[1]->GetYaxis()->SetTitle("p_{y} [GeV]");
+   hRPcorrWest[0] = new TH2F("hRPcorrWest","p_{y} vs p_{x} of protons in RP (west);p_{x} [GeV];p_{y} [GeV]", 200, -0.7, 0.8, 150, -1, 1);
 
-   hNTracksRP = new TH1D("hNTracksRP", "Number of Tracks in RPs per event", 400, 0, 40);
-   hNTracksRP->GetXaxis()->SetTitle("Number of tracks in RPs");
-   hNTracksRP->GetYaxis()->SetTitle(YAxisDescription);
-   hNTracksRP->SetTitle("Number of tracks in RPs per event");
+   hRPcorrWest[1] = new TH2F("hRPcorrWest_fid","p_{y} vs p_{x} of proton in RP fiducial region (west);p_{x} [GeV];p_{y} [GeV]", 200, -0.7, 0.8, 150, -1, 1);
+
+   hRPcorrEast[0] = new TH2F("hRPcorrEast","p_{y} vs p_{x} of protons in RP (east);p_{x} [GeV];p_{y} [GeV]", 200, -0.7, 0.8, 150, -1, 1);
+
+   hRPcorrEast[1] = new TH2F("hRPcorrEast_fid","p_{y} vs p_{x} of proton in RP fiducial region (east);p_{x} [GeV];p_{y} [GeV]",  200, -0.7, 0.8, 150, -1, 1);
+
+
+   hNTracksRP = new TH1D("hNTracksRP", "Number of Tracks in RPs per event; n_{tracks}^{RP} [-]; counts", 30, -0.5, 29.5);
 
    hBranchRP = new TH1D("hBranchRP", "hBranchRP; detector branch; counts", 4,-0.5,3.5);
    //detectors branch, EU=0, ED=1, WU=2, WD=3
@@ -339,10 +264,7 @@ void AnaJPsi::Init(){
 
    hNTracksBEMC = new TH1D("hNTracksBEMC", "Number of Tracks in BEMC per event; Number of tracks in BEMC; counts", 21, -0.5, 20.5);
 
-   hPt = new TH1D("hPt", "Transverse momentum of hadrons", 30, 0, 3);
-   hPt->SetTitle("Distribution of p_{T}");
-   hPt->GetXaxis()->SetTitle("p_{T} [GeV]");
-   hPt->GetYaxis()->SetTitle(YAxisDescription);
+   hPt = new TH1D("hPt", "Transverse momentum of hadrons; p_{T} [GeV/c^{2}]; counts", 30, 0, 3);
 
    hPtCut = new TH1D("hPtCut", "hPtCut;p_{T} [GeV/c]; counts", 30, 0, 3);
 
@@ -359,41 +281,14 @@ void AnaJPsi::Init(){
    hNhitsDEdx = new TH1D("hNhitsDEdx", "NhitsDEdx; N^{dEdx}_{hits} [-]; counts", 50, 0, 50);
    hNhitsDEdxCut = new TH1D("hNhitsDEdxCut", "NhitsDEdxCut; N^{dEdx}_{hits} [-]; counts", 50, 0, 50);
 
-   hNVertices = new TH1D("hNVertices", "Number of vertices before cut", 11, -0.5, 10.5);
-   hNVertices->SetTitle("Number of vertices");
-   hNVertices->GetXaxis()->SetTitle("Number of vertices");
-   hNVertices->GetYaxis()->SetTitle(YAxisDescription);
+   hNVertices = new TH1D("hNVertices", "Number of vertices before cut; n_{vertices} [-]; counts", 11, -0.5, 10.5);
 
-   hTotQ = new TH1D("hTotQ", "Total charge of pair", 3, -1.5, 1.5);
-   hTotQ->SetTitle("Total charge of pair");
-   hTotQ->GetXaxis()->SetTitle("Charge of pair");
-   hTotQ->GetYaxis()->SetTitle(YAxisDescription);
-
-   hInvMassEta = new TH2D("hInvMassEta", "hInvMassEta; m_{#pi^{+} #pi^{-}} [GeV/c^{2}]; #eta [-]", 80, 2,4, 200, -1.,1. );
-   hInvMassEta->SetTitle("correlation plot of invMass and eta");
-
-   hInvMassBemcEta = new TH2D("hInvMassBemcEta", "hInvMassEta; m_{#pi^{+} #pi^{-}} [GeV/c^{2}]; #eta_{BEMC} [-]", 80, 2,4, 200, -1.,1. );
-   hInvMassBemcEta->SetTitle("correlation plot of invMass and bemc eta");
+   hTotQ = new TH1D("hTotQ", "Total charge of pair; Q_{tot} [-]; counts", 3, -1.5, 1.5);
 
    hNTracksTof = new TH1D("hNTracksTof", "hNTracksTof; Number of ToF tracks [-]; counts", 11, -0.5, 10.5);
 
    hNTracksTpc = new TH1D("hNTracksTpc", "hNTracksTpc; Number of TPC tracks [-]; counts", 26, -0.5, 25.5);
   
-   hInvMassJPsi = new TH1D("hInvMassJPsi", "hInvMassJPsi; m_{e e} [GeV/c^{2}]; counts", 40,2, 4);
-   hInvMassJPsiBcg = new TH1D("hInvMassJPsiBcg", "hInvMassJPsiBcg; m_{e e} [GeV/c^{2}]; counts", 40,2, 4);
-
-   hPtMissing = new TH1D("hPtMissing", "hPtMissing; p_{T} [GeV/c];counts", 40,0,2);
-   hPtMissingCut = new TH1D("hPtMissingCut", "hPtMissingCut; p_{T} [GeV/c];counts", 40,0,2);
-
-   hPtMissingBcg = new TH1D("hPtMissingBcg", "hPtMissingBcg; p_{T} [GeV/c];counts", 40,0,2);
-   hPtMissingBcgCut = new TH1D("hPtMissingBcgCut", "hPtMissingBcgCut; p_{T} [GeV/c];counts", 40,0,2);
-
-   hPhotonMomX = new TH1D("hPhotonMomX", "hPhotonMomX; p_{x}^{#gamma} [GeV/c];counts", 30, -3, 3);
-   hPhotonMomY = new TH1D("hPhotonMomY", "hPhotonMomY; p_{y}^{#gamma} [GeV/c];counts", 30, -3, 3);
-
-   hPhotonMomXBcg = new TH1D("hPhotonMomXBcg", "hPhotonMomXBcg; p_{x}^{#gamma} [GeV/c];counts", 30, -3, 3);
-   hPhotonMomYBcg = new TH1D("hPhotonMomYBcg", "hPhotonMomYBcg; p_{y}^{#gamma} [GeV/c];counts", 30, -3, 3);
-
    cout << "Finished AnaJPsi::Init()" << endl;
 }
 
@@ -474,30 +369,36 @@ void AnaJPsi::fillTrackQualityCutsAfter(const StUPCTrack* trk){
    hDcaXYCut->Fill(trk->getDcaXY());
 
 }
+
 bool AnaJPsi::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
 
-   Double_t chi_ee = pow(trk1->getNSigmasTPCElectron(),2) + pow(trk2->getNSigmasTPCElectron(),2);
    Double_t chi_pp = pow(trk1->getNSigmasTPCProton(),2) + pow(trk2->getNSigmasTPCProton(),2);
+   Double_t chi_ee = pow(trk1->getNSigmasTPCElectron(),2) + pow(trk2->getNSigmasTPCElectron(),2);
    Double_t chi_kk = pow(trk1->getNSigmasTPCKaon(),2) + pow(trk2->getNSigmasTPCKaon(),2);
    Double_t chi_pipi = pow(trk1->getNSigmasTPCPion(),2) + pow(trk2->getNSigmasTPCPion(),2);
-
+   
+   hPIDChipipi->Fill(chi_pipi);
    hPIDChiee->Fill(chi_ee);
    hPIDChipp->Fill(chi_pp);
-   hPIDChipipi->Fill(chi_pipi);
    hPIDChikk->Fill(chi_kk);
-   hPIDChiep->Fill(chi_ee, chi_pp);
-   hPIDChiek->Fill(chi_ee, chi_kk);
-   hPIDChiepi->Fill(chi_ee, chi_pipi);
-   hPIDChipip->Fill(chi_pipi, chi_pp);
+   
+   hNSigmaEE1->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());
+   hNSigmaPP1->Fill(trk1->getNSigmasTPCProton(), trk2->getNSigmasTPCProton());
+   hNSigmaKK1->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
+   hNSigmaPiPi1->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
 
-   if(chi_ee > maxPIDChiEE)
-      return false;
-   if(chi_pp < minPIDChiPP)
-      return false;
-   if(chi_pipi < minPIDChiPiPi)
-      return false;
-   if(chi_kk < minPIDChiKK)
-      return false;
+   if(chi_pp < minPIDChiPP)  return false;
+
+   if(chi_pipi < minPIDChiPiPi)  return false;
+
+   if(chi_kk < minPIDChiKK)  return false;
+   
+   hNSigmaEE2->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());
+   hNSigmaPP2->Fill(trk1->getNSigmasTPCProton(), trk2->getNSigmasTPCProton());
+   hNSigmaKK2->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
+   hNSigmaPiPi2->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
+
+   if(chi_ee > maxPIDChiEE)  return false;
 
    return true;
 }
@@ -522,5 +423,59 @@ void AnaJPsi::fillNSigmaPlots(const StUPCTrack *trk){
     hNSigmaKecorr->Fill(nSigmaKaon, nSigmaElectron);
     hNSigmaKPcorr->Fill(nSigmaKaon, nSigmaProton);
     hNSigmaKPicorr->Fill(nSigmaKaon, nSigmaPion);
+
+}
+
+
+bool AnaJPsi::exactly1RPTrack(int &side){
+   //1 RP track condition  
+   AnaRpTracks(mRpEvt);
+
+   unsigned int nRpTracksTotal = 0;
+   side = 0;
+   for (unsigned int iSide = 0; iSide < nSides; ++iSide)
+   {
+      for (unsigned int iTrck = 0; iTrck < mRpTrackIdVec_perSide[iSide].size(); ++iTrck)
+      {
+         StUPCRpsTrack* trkRP = mRpEvt->getTrack(mRpTrackIdVec_perSide[iSide][iTrck]);
+         if(!trkRP){
+            cout << "Incorrect RP track. Leaving this event." << endl;
+            return false;
+         }
+         nRpTracksTotal++;
+         side = iSide;
+      }
+   }
+
+   hNTracksRP->Fill(nRpTracksTotal);
+   if(nRpTracksTotal == 1){
+      return true;
+   }else {
+      return false;
+   }
+
+}
+
+bool AnaJPsi::fiducialVolume(const StUPCRpsTrack* trackRP, int side){
+   hRPcorr[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   if(side == East){
+      hRPcorrEast[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }else{
+      hRPcorrWest[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }
+
+   //fiducial volume condition
+   if( !RPInFidRange(trackRP->pVec().X(), trackRP->pVec().Y()) )
+      return false;
+   
+   hRPcorr[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   if(side == East){
+      hRPcorrEast[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }else{
+      hRPcorrWest[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }
+   hBranchRP->Fill( trackRP->branch() );
+
+   return true;
 
 }

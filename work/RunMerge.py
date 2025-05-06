@@ -14,6 +14,12 @@ if __name__ == "__main__":
 
     args = sys.argv
     args.pop(0) # cut first input from terminal = ./"macro".py
+    deleteFiles = False
+    for arg in args:
+        if arg == "-del":
+            deleteFiles = True
+
+
             
     defaultdir = "/gpfs01/star/pwg/mvranovsk/Run17_P20ic/"
 
@@ -82,16 +88,24 @@ if __name__ == "__main__":
             chunk_list.write(chunkout+"\n")
             #show the merged file
             os.system("ls -alh "+chunkout)
+            #delete the original files
+            if deleteFiles:
+                print "Deleting original files..."
+                tmp = open(tmpnam, "r")
+                lines = tmp.xreadlines()
+                for line in lines:
+                    del_cmd = "rm " + line
+                    del_out = Popen(del_cmd.split(), stdout=PIPE, stderr=PIPE).communicate()
             #reset the temporary and indices
-            tmp = open(tmpnam, "w")
             totsiz = 0
             nchunk = 0
+            tmp = open(tmpnam, "w")
             #increment the chunk index
             ichunk += 1
     #list loop end
 
     #clean-up the list temporary file
     tmp.close()
-    os.remove(tmpnam)
+    #os.remove(tmpnam)
 
     print "All done."

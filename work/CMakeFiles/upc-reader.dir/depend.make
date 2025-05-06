@@ -124,7 +124,6 @@ CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
-CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: src/EmbeddingJPsi.cxx
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Ana.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/EmbeddingJPsi.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Libreries.h
@@ -132,6 +131,7 @@ CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/RunDef.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/UpcDstLibreries.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Util.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: src/EmbeddingJPsi.cxx
 
 CMakeFiles/upc-reader.dir/src/RecTree.cxx.o: include/Libreries.h
 CMakeFiles/upc-reader.dir/src/RecTree.cxx.o: include/RecTree.h

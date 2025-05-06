@@ -45,14 +45,18 @@ void Init();
 
 
 bool LoadOffsetFile(TString fileName, map<unsigned int, TVector3> (&offsets)[nRomanPots]);
+bool areRPsCloseEnough(int mRunNumber);
 void runAfterburner(StRPEvent *event, StRPEvent *newRpEvent);
 TVector3 CalculateMomentumVector(double TPx, double TPy, double TPz, StUPCRpsTrack *track);
 void SetRpEvent();
 void ReleaseTheMemoryOfCorrRpEvt();
 //void RunRpMcAna();
 void CleanMemory();
+void fillRunTree(AnaGoodRun *Ana, string inputPath);
 //void RunAlignment();
 //void SaveAlignment();
+void analysisOfTracks(int RUNNUMBER, int nEvents, string inputPath);
+
 
 bool ConnectInput(int argc, char** argv);
 TFile *CreateOutputFile(const string& out);
@@ -83,7 +87,28 @@ bool LoadOffsetFile(TString fileName, map<unsigned int, TVector3> (&offsets)[nRo
    file.close();
    return true;
 }
+//_____________________________________________________________________________
+bool areRPsCloseEnough(int mRunNumber)
+{
 
+   // check if mRunNumber is in mOffset
+   if(mOffSet[0].find(mRunNumber) == mOffSet[0].end()){
+      //cout << "RunNumber: " << mRunNumber << " not found in offsets file!" << endl;
+      return false;
+   }
+
+   for(int iRP = 0; iRP < nRomanPots; iRP++){
+
+      double offsetY = mOffSet[iRP][mRunNumber].Y() + mCorrection[iRP][mRunNumber].Y();
+      if( offsetY > 0.04){
+         //cout << "Offset Y is too big for this run: " << offsetY << endl;
+         return false;
+      }
+   }
+   return true;
+}
+
+//_____________________________________________________________________________
 void runAfterburner(StRPEvent *event, StRPEvent *newRpEvent)
 {
    for(unsigned int iCl = 0; iCl < event->getNumberOfClusters(); ++iCl){

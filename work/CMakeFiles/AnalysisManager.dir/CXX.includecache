@@ -203,6 +203,14 @@ UpcDstLibreries.h
 include/UpcDstLibreries.h
 RunDef.h
 include/RunDef.h
+StUPCV0.h
+include/StUPCV0.h
+TParticle.h
+include/TParticle.h
+TVector3.h
+include/TVector3.h
+TLorentzVector.h
+include/TLorentzVector.h
 
 include/Libreries.h
 iostream

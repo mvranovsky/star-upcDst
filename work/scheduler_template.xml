@@ -9,6 +9,7 @@
     starver pro
     ./__EXE__ ${FILELIST} 
     mv AnalysisOutput.root ${JOBID}.root
+    mv RunInfo.txt ${JOBID}.txt
     <!-- ./__EXE__ __INPUT__  -->
     <!-- mv AnalysisOutput.root __DAYID__.root  -->
     ls
@@ -23,6 +24,7 @@
   <stderr URL="file:__BASEDIR__/logs/$JOBID.err"/>
 
   <output fromScratch="*.root" toURL="file:__BASEDIR__/" />
+  <output fromScratch="*.txt" toURL="file:__BASEDIR__/" />
 
   <Generator>
     <Location>__BASEDIR__/sched</Location>

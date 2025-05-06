@@ -36,7 +36,8 @@ namespace UTIL {
    enum ANALYSIS_CUT { ALL = 1, TRIG, TWORPTRKS, INFID, ONETOFVX, ZVERTEX, TWOTOFTRKS, ETA, OPPOSITE, PIPI, PPI, PIPBAR, nAnalysisCuts };
    enum V0SELECTION_CUT {V0ALL = 1, V0TRIG,V0FLAG, V0PID, V0PAIR, V0ETAVTXZ, V0OPPOSITE, V0PIPI, V0PPI, V0PIPBAR , nV0SelectionCuts };
    enum JPSISELECTION_CUT {JPSIALL = 1, JPSITRIG, JPSI1VTX, JPSIVTXZ,JPSIBEMC , JPSIBACKTOBACK,JPSIPID, JPSI1RP, JPSIRPFIDCUT,JPSIQTOT, nJPSISelectionCuts };
-   enum JPSISELECTION_CUT2 {JPSI2ALL = 1, JPSI2TRIG,JPSI2BEMC, JPSI2SAMEVTX, JPSI2BACKTOBACK,JPSI2PID, JPSI21RP, JPSI2RPFIDCUT, JPSI2QTOT,nJPSI2SelectionCuts };
+   enum JPSISELECTION_CUT2 {JPSI2ALL = 1, JPSI2TRIG,JPSI2BEMC, JPSI2SAMEVTX,JPSI2VTXZ, JPSI2BACKTOBACK,JPSI2PID, JPSI21RP, JPSI2RPFIDCUT,JPSI2QTOT,nJPSI2SelectionCuts };
+   enum EMBEDDING{ EMBEDDINGALL = 1, EMBEDDING2BEMC, EMBEDDINGBACKTOBACK, EMBEDDINGPID, EMBEDDINGQTOT, nEmbeddingCuts };
    enum GOODRUN_CUT {GRALL = 1, GRTRIGGER , GRRP, GRGOODTRACKTPC, GRGOODTRACKBEMC, nGRCuts };
    enum TOFEFF_CUT {TOFALL = 1, TOFTRIG, TOFTRACKQUALITY, TOFETAVTXZ, TOFPAIR, TOFOPPOSITE , nTOFEFFCuts};
    enum RANGE_LIMIT { MIN, MAX };
@@ -74,6 +75,7 @@ class UTIL::Util{
       inline TString analysisV0SelectionName(UInt_t id) const { if(id<nV0SelectionCuts) return mV0CutName[id]; else{ std::cerr << "ERROR in Util::AnaV0CutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisJPSI(UInt_t id) const { if(id<nJPSISelectionCuts) return mJPSICutName[id]; else{ std::cerr << "ERROR in Util::JPsiCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisJPSI2(UInt_t id) const { if(id<nJPSI2SelectionCuts) return mJPSI2CutName[id]; else{ std::cerr << "ERROR in Util::JPSI2CutName(UInt_t id): id out of range" << std::endl; return TString("");} }
+      inline TString embeddingName(UInt_t id) const { if(id<nEmbeddingCuts) return mEmbeddingName[id]; else{ std::cerr << "ERROR in Util::embeddingName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisGoodRun(UInt_t id) const { if(id<nGRCuts) return mGRCutName[id]; else{ std::cerr << "ERROR in Util::GRCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisTofEff(UInt_t id) const { if(id<nTOFEFFCuts) return mTOFEFFName[id]; else{ std::cerr << "ERROR in Util::analysisTofEff(UInt_t id): id out of range" << std::endl; return TString("");} }      
       inline TString dataSetName(UInt_t id) const { if(id<nDataSets) return mDataSetName[id]; else{ std::cerr << "ERROR in Util::dataSetName(UInt_t id): id out of range" << std::endl; return TString("");} }
@@ -134,6 +136,7 @@ class UTIL::Util{
       TString* mDataTagName;
       TString* mTOFEFFName;
       TString* mGRCutName;
+      TString* mEmbeddingName;
           
       Double_t mParticleMass[nParticles]; // GeV/c^2
       const Double_t mSpeedOfLight; // m/s
