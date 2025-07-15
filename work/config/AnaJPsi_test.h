@@ -12,8 +12,8 @@ const bool runAnaV0 = false;
 const bool runAnaV0Mult = false;
 const bool runTofEff = false;
 const bool runTofEffMult = false;
-const bool runAnaJPsi = false;
-const bool runAnaJPSI = true;
+const bool runAnaJPsi = true;
+const bool runAnaJPSI = false;
 const bool runAnaGoodRun = false;
 const bool runEmbeddingJPsi = false;
 
@@ -22,7 +22,7 @@ const unsigned int nAligIteration = 4;
 const bool runMCAna = false;
 const bool DEBUG = false;
 const bool V0Control = false; 
-const bool analysisWithRPs = false;
+const bool analysisWithRPs = true;
 // 570702 RP_UPC // 570712 RP_UPC // 570703 RP_SDT // 570709 RP_ET // 570719 RP_ET // 570701 RP_CPT2 // 570711 RP_CPT2 
 // 570705 RP_CPT2noBBCL // 570704 RP_Zerobias // 590703 RP_SDT // 590709 RP_ET // 590701 RP_CPT2 // 590705 RP_CPT2noBBCL 
 // 590708 RP_CPTnoBBCL // 570209 JPsi*HTTP // 570219 JPsi*HTTP // 570229 JPsi*HTTP
@@ -59,7 +59,7 @@ const TString nameOfAnaJPsiTree = "recTreeAnaJPsi";
 const std::bitset<16> AnaJPsiTreeBits = std::bitset<16>(std::string("0011000000011111")); 
 
 const TString nameOfAnaJPSITree = "recTreeAnaJPSI";
-const std::bitset<16> AnaJPSITreeBits = std::bitset<16>(std::string("0011010000010111")); 
+const std::bitset<16> AnaJPSITreeBits = std::bitset<16>(std::string("0011000000011111")); 
 
 const TString nameOfAnaGoodRunTree = "recAnaGoodRun";
 const std::bitset<16> AnaGoodRunTreeBits = std::bitset<16>(std::string("0000100000000001")); 
@@ -74,12 +74,12 @@ const TString YAxisDescription = "counts";
 
 
 // TPC good track quality cuts
-const int minNHitsFit = 12;
-const int minNHitsDEdx = 12;
+const int minNHitsFit = 15;
+const int minNHitsDEdx = 15;
 const double minPt = 0.2;
-const double maxDcaXY = 1.8;
-const double minDcaZ = -1.2;
-const double maxDcaZ = 1.2;
+const double maxDcaXY = 1.5;
+const double minDcaZ = -1.0;
+const double maxDcaZ = 1.0;
 const bool TOF2Tracks = false;  // condition whether both tracks are to be matched to ToF or not
 const bool usePrimVtx = false;  // condition whether to use or not to use primary vertex in the analysis
 

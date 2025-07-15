@@ -2,6 +2,7 @@
 <!DOCTYPE job>
 
 <job maxFilesPerProcess="1" fileListSyntax="xrootd" simulateSubmission="false">
+  <shell>singularity exec -e -B /direct -B /star -B /afs -B /gpfs -B /sdcc/lustre02 /cvmfs/star.sdcc.bnl.gov/containers/rhic_sl7.sif</shell>
   <command>
     echo "Starting the job"
     ls

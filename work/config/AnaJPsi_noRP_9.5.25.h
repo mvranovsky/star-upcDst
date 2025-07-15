@@ -12,8 +12,8 @@ const bool runAnaV0 = false;
 const bool runAnaV0Mult = false;
 const bool runTofEff = false;
 const bool runTofEffMult = false;
-const bool runAnaJPsi = false;
-const bool runAnaJPSI = true;
+const bool runAnaJPsi = true;
+const bool runAnaJPSI = false;
 const bool runAnaGoodRun = false;
 const bool runEmbeddingJPsi = false;
 
@@ -59,7 +59,7 @@ const TString nameOfAnaJPsiTree = "recTreeAnaJPsi";
 const std::bitset<16> AnaJPsiTreeBits = std::bitset<16>(std::string("0011000000011111")); 
 
 const TString nameOfAnaJPSITree = "recTreeAnaJPSI";
-const std::bitset<16> AnaJPSITreeBits = std::bitset<16>(std::string("0011010000010111")); 
+const std::bitset<16> AnaJPSITreeBits = std::bitset<16>(std::string("0011000000011111")); 
 
 const TString nameOfAnaGoodRunTree = "recAnaGoodRun";
 const std::bitset<16> AnaGoodRunTreeBits = std::bitset<16>(std::string("0000100000000001")); 
@@ -74,12 +74,12 @@ const TString YAxisDescription = "counts";
 
 
 // TPC good track quality cuts
-const int minNHitsFit = 12;
-const int minNHitsDEdx = 12;
+const int minNHitsFit = 15;
+const int minNHitsDEdx = 15;
 const double minPt = 0.2;
-const double maxDcaXY = 1.8;
-const double minDcaZ = -1.2;
-const double maxDcaZ = 1.2;
+const double maxDcaXY = 1.5;
+const double minDcaZ = -1.0;
+const double maxDcaZ = 1.0;
 const bool TOF2Tracks = false;  // condition whether both tracks are to be matched to ToF or not
 const bool usePrimVtx = false;  // condition whether to use or not to use primary vertex in the analysis
 

@@ -192,21 +192,21 @@ void AnaJPsi::Init(){
    
    mRecTree = new RecTree(nameOfAnaJPsiTree, AnaJPsiTreeBits, true); 
 
-   hEta = new TH1D("hEta", "Pseudorapidity; #eta; counts", 60, -2, 2);
-   hEtaCut = new TH1D("hEtaCut", "Pseudorapidity; #eta [-]; counts", 60, -2, 2);
+   hEta = new TH1D("hEta", "Pseudorapidity; #eta_{e}; counts", 60, -2, 2);
+   hEtaCut = new TH1D("hEtaCut", "Pseudorapidity; #eta_{e} [-]; counts", 60, -2, 2);
 
-   hEtaBemc = new TH1D("hEtaBemc", "Pseudorapidity BEMC; #eta_{BEMC}; counts", 60, -2, 2);
-   hEtaBemcCut = new TH1D("hEtaBemcCut", "Pseudorapidity BEMC; #eta_{BEMC} [-]; counts", 60, -2, 2);
+   hEtaBemc = new TH1D("hEtaBemc", "Pseudorapidity BEMC; #eta^{e}_{BEMC}; counts", 60, -2, 2);
+   hEtaBemcCut = new TH1D("hEtaBemcCut", "Pseudorapidity BEMC; #eta^{e}_{BEMC} [-]; counts", 60, -2, 2);
 
 
-   hEtaPhi = new TH2F("hEtaPhi","Phi vs eta of TOF tracks; #eta; #varphi",100,-2,2,100,-4,4);
-   hEtaPhiCut = new TH2F("hEtaPhiCut","Phi vs eta of TOF tracks; #eta ; #varphi",100,-2,2,100,-4,4);
+   hEtaPhi = new TH2F("hEtaPhi","Phi vs eta of TOF tracks; #eta_{e}; #varphi",100,-2,2,100,-4,4);
+   hEtaPhiCut = new TH2F("hEtaPhiCut","Phi vs eta of TOF tracks; #eta_{e} ; #varphi",100,-2,2,100,-4,4);
 
    hPosZ =  new TH1D("hPosZ", "Position of z_{vertex}; Vertex_{Z} [cm]; counts", 60, -150, 150); 
    hPosZCut =  new TH1D("hPosZCut", "Position of z_{vertex}; Vertex_{Z} [cm]; counts", 60, -150, 150); 
 
-   hEtaVtxZ = new TH2F("hEtaVtxZ", "hEtaVtxZ; #eta [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
-   hEtaVtxZCut = new TH2F("hEtaVtxZCut", "hEtaVtxZCut; #eta [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
+   hEtaVtxZ = new TH2F("hEtaVtxZ", "hEtaVtxZ; #eta_{e} [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
+   hEtaVtxZCut = new TH2F("hEtaVtxZCut", "hEtaVtxZCut; #eta_{e} [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
 
    hNSigmaPiPcorr = new TH2F("hNSigmaPiPcorr","n_{#sigma} pions against protons;n#sigma_{#pi};n#sigma_{p}", 100, -25, 25, 100, -25, 25);
    hNSigmaPiKcorr = new TH2F("hNSigmaPiKcorr","n_{#sigma} pions against kaons;n#sigma_{#pi};n#sigma_{K}", 100, -25, 25, 100, -25, 25);
@@ -264,9 +264,9 @@ void AnaJPsi::Init(){
 
    hNTracksBEMC = new TH1D("hNTracksBEMC", "Number of Tracks in BEMC per event; Number of tracks in BEMC; counts", 21, -0.5, 20.5);
 
-   hPt = new TH1D("hPt", "Transverse momentum of hadrons; p_{T} [GeV/c^{2}]; counts", 30, 0, 3);
+   hPt = new TH1D("hPt", "Transverse momentum of hadrons; p^{e}_{T} [GeV/c^{2}]; counts", 30, 0, 3);
 
-   hPtCut = new TH1D("hPtCut", "hPtCut;p_{T} [GeV/c]; counts", 30, 0, 3);
+   hPtCut = new TH1D("hPtCut", "hPtCut;p^{e}_{T} [GeV/c]; counts", 30, 0, 3);
 
 
    hDcaZ = new TH1D("hDcaZ", "hDcaZ; DCA_{Z} [cm]; counts", 40, -2, 2);

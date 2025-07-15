@@ -25,7 +25,7 @@ class AnaJPSI : public Ana{
       void fillNSigmaPlots(const StUPCTrack *trk);
       bool goodQualityTrack(const StUPCTrack *trk);
       bool sameVertex(const StUPCTrack *trk1,const StUPCTrack *trk2);
-      bool chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2);
+      bool chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2, int pair);
       void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
       void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
       bool exactly1RPTrack(int &side);
@@ -36,13 +36,14 @@ class AnaJPSI : public Ana{
       // all control histograms
       TH2F *hRPcorr[2], *hRPcorrWest[2], *hRPcorrEast[2], *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;
       TH1D *hDcaZ, *hDcaZCut, *hDcaXY, *hDcaXYCut, *hNfitHits, *hNfitHitsCut, *hNhitsDEdx, *hNhitsDEdxCut, *hNVertices, *hTotQ;
-      TH1D *hSameTrackPair, *hNTracksTpc, *hNTracksTof, *hNTracksRP, *hNTracksBEMC;
+      TH1D *hSameTrackPair, *hNTracksTpc, *hNTracksTof, *hNTracksRP, *hNTracksBEMC, *hNTracksNoBEMC;
       TH1D *hNSigmaPi, *hNSigmaP, *hNSigmaK, *hDEdxSignal;
       TH1D *hPt, *hPtCut;
       TH1D *hTrackQualityFlow;
       TH1D *hEtaDifference;
       Util* mUtil;
       TH1D *hBranchRP;
+      //TH1D *hDcaZ, *hDcaZCut, *hDcaXY, *hDcaXYCut;
 
       TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut;
       TH2F* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
@@ -50,6 +51,7 @@ class AnaJPSI : public Ana{
 
 
       vector<int> tracksBEMC;
+      vector<int> pions;
 
       int tpcCounter;
       TH1D *hTriggerBits;

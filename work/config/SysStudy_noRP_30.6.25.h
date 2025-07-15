@@ -12,8 +12,8 @@ const bool runAnaV0 = false;
 const bool runAnaV0Mult = false;
 const bool runTofEff = false;
 const bool runTofEffMult = false;
-const bool runAnaJPsi = false;
-const bool runAnaJPSI = true;
+const bool runAnaJPsi = true;
+const bool runAnaJPSI = false;
 const bool runAnaGoodRun = false;
 const bool runEmbeddingJPsi = false;
 
@@ -59,7 +59,7 @@ const TString nameOfAnaJPsiTree = "recTreeAnaJPsi";
 const std::bitset<16> AnaJPsiTreeBits = std::bitset<16>(std::string("0011000000011111")); 
 
 const TString nameOfAnaJPSITree = "recTreeAnaJPSI";
-const std::bitset<16> AnaJPSITreeBits = std::bitset<16>(std::string("0011010000010111")); 
+const std::bitset<16> AnaJPSITreeBits = std::bitset<16>(std::string("0011000000011111")); 
 
 const TString nameOfAnaGoodRunTree = "recAnaGoodRun";
 const std::bitset<16> AnaGoodRunTreeBits = std::bitset<16>(std::string("0000100000000001")); 

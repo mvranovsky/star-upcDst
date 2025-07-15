@@ -34,10 +34,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /afs/rhic.bnl.gov/@sys/opt/star/sl73_gcc485/bin/cmake
+CMAKE_COMMAND = /direct/star+nfs4/AFS/opt/star/sl73_gcc485/bin/cmake
 
 # The command to remove a file.
-RM = /afs/rhic.bnl.gov/@sys/opt/star/sl73_gcc485/bin/cmake -E remove -f
+RM = /direct/star+nfs4/AFS/opt/star/sl73_gcc485/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =

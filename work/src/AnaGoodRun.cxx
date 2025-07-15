@@ -18,6 +18,7 @@ void AnaGoodRun::Make(){
    hAnalysisFlow->Fill(GRALL);
 
    
+   //zero bias trigger
    if(CheckTriggers(&ZBtriggers,mUpcEvt,hTriggerBits)){
 
       nEventsAll++;
@@ -37,6 +38,7 @@ void AnaGoodRun::Make(){
    if(CheckTriggers(&JPSItriggers, mUpcEvt, hTriggerBits)){
       JPsiTrigger = true;
       addJPsiTriggerEvent();
+      hAnalysisFlow->Fill(GRTRIGGER);
    }
 
    

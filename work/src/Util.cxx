@@ -157,13 +157,10 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mJPSI2CutName = new TString[nJPSI2SelectionCuts];
    mJPSI2CutName[JPSI2ALL] = TString("All");
    mJPSI2CutName[JPSI2TRIG] = TString("J/#Psi trigger");
-   mJPSI2CutName[JPSI2BEMC] = TString("BEMC + good track quality");
-   mJPSI2CutName[JPSI2SAMEVTX] = TString("Same vertex");
-   mJPSI2CutName[JPSI2VTXZ] = TString("|V_{Z}| < 100 cm");
-   mJPSI2CutName[JPSI2BACKTOBACK] = TString("Back-to-back");
+   mJPSI2CutName[JPSI21VTX] = TString("1 vertex");
+   mJPSI2CutName[JPSI24TRACKS] = TString("4 good tracks");
+   mJPSI2CutName[JPSI2VTXZETA] = TString("V_{Z} - #eta cut");
    mJPSI2CutName[JPSI2PID] = TString("PID");
-   mJPSI2CutName[JPSI21RP] = TString("1 RP track");
-   mJPSI2CutName[JPSI2RPFIDCUT] = TString("Fiducial RP cut");
    mJPSI2CutName[JPSI2QTOT] = TString("Q_{tot} = 0");
 
 

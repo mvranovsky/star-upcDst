@@ -15,24 +15,32 @@ void AnaJPSI::Make(){
       return;
    hAnalysisFlow->Fill(JPSI2TRIG);
 
+
+   // 1 vertex
+   int nVtx = mUpcEvt->getNumberOfVertices();
+
+   if(nVtx != 1)  return;
+
+   hAnalysisFlow->Fill(JPSI21VTX);
+
+
    SaveEventInfo(mUpcEvt);
+
    SaveTriggerInfo(mUpcEvt, mRpEvt);
 
    tpcCounter = 0;
    //central system good quality tracks + BEMC
+   tracksBEMC.clear();
+   pions.clear();
    for (int iTrk = 0; iTrk < mUpcEvt->getNumberOfTracks(); ++iTrk){
       const StUPCTrack *trk = mUpcEvt->getTrack(iTrk);
 
       if(!trk)  continue;
+
       // only original star-upcDst
       if(!trk->getFlag(StUPCTrack::kPrimary))  continue;
       
       hTrackQualityFlow->Fill(1);
-
-      // hit in BEMC
-      if(!trk->getFlag(StUPCTrack::kBemc))  continue;
-      
-      hTrackQualityFlow->Fill(2);
 
       fillTrackQualityCuts(trk);
 
@@ -40,120 +48,88 @@ void AnaJPSI::Make(){
 
       fillTrackQualityCutsAfter(trk);
 
-      hEtaDifference->Fill( abs( trk->getBemcEta() - trk->getEta() ) ); 
-      tracksBEMC.push_back(iTrk);
+
+      if(trk->getFlag(StUPCTrack::kBemc))  {
+         tracksBEMC.push_back(iTrk);
+         hTrackQualityFlow->Fill(7);
+      }else{
+         pions.push_back(iTrk);
+      }
+
    }
+
    hNTracksBEMC->Fill( tracksBEMC.size() );
 
-   if(tracksBEMC.size() < 2){
+   if(tracksBEMC.size() != 2 || pions.size() != 2)  return;
+
+   hAnalysisFlow->Fill(JPSI24TRACKS);
+
+   const StUPCTrack* e1 = mUpcEvt->getTrack( tracksBEMC[0] );
+   const StUPCTrack* e2 = mUpcEvt->getTrack( tracksBEMC[1] );
+   if(!e1 || !e2){
+      cerr << "Could not load electrons." << endl;
       return;
    }
 
-   hAnalysisFlow->Fill(JPSI2BEMC);
-
-   //vertex + parovanie(back to back condition)
-   // outer track loop
-   Int_t trackIndices[2] = {0,0};
-   for (unsigned int iTrk = 0; iTrk < tracksBEMC.size() ; ++iTrk){
-      const StUPCTrack* trk1 = mUpcEvt->getTrack( tracksBEMC[iTrk] );
-
-      if(!trk1)  continue;
-
-      // inner track loop
-      for (unsigned int jTrk = iTrk + 1; jTrk < tracksBEMC.size(); ++jTrk){
-
-         const StUPCTrack* trk2 = mUpcEvt->getTrack( tracksBEMC[jTrk] );
-
-         if(!trk2)  continue;
-
-         if(!sameVertex(trk1, trk2))  continue;
-
-         hAnalysisFlow->Fill(JPSI2SAMEVTX);
-         
-         if(!backToBack(trk1, trk2))  continue;
-
-         hAnalysisFlow->Fill(JPSI2BACKTOBACK);
-
-         trackIndices[0] = iTrk;
-         trackIndices[1] = jTrk;
-         break;
-         
-      }
-      if(trackIndices[0] != 0 && trackIndices[1] != 0)
-      break;
+   const StUPCTrack* pi1 = mUpcEvt->getTrack( pions[0] );
+   const StUPCTrack* pi2 = mUpcEvt->getTrack( pions[1] );
+   if(!pi1 || !pi2){
+      cerr << "Could not load pions." << endl;
+      return;
    }
 
-   const StUPCTrack* track1 = mUpcEvt->getTrack( tracksBEMC[trackIndices[0]] );
-   const StUPCTrack* track2 = mUpcEvt->getTrack( tracksBEMC[trackIndices[1]] );
-   if(!track1 || !track2)
-      return;
+
+   const StUPCVertex *vtx = mUpcEvt->getVertex(0);
+
+   if(!vtx)  return;
+   
    //VtxZ - eta cut
-   const StUPCVertex *vtx = mUpcEvt->getVertex(track1->getVertexId());
-   if(!vtx)
-      return;
+   fillEtaVtxPlotsBefore(e1, e2, vtx->getPosZ());
+   fillEtaVtxPlotsBefore(pi1, pi2, vtx->getPosZ());
 
-   fillEtaVtxPlotsBefore(track1, track2, vtx->getPosZ());
-   if(abs(vtx->getPosZ()) > vertexRange )
-      return;
+   if(abs(vtx->getPosZ()) > vertexRange )  return;
 
    SaveVertexInfo(vtx, 0);
 
-   if( !( IsGoodEtaTrack(track1, 0) && IsGoodEtaTrack(track2, 0 ) ) )
-      return;
+   if( !( IsGoodEtaTrack(e1, 0) && IsGoodEtaTrack(e2, 0 ) && IsGoodEtaTrack(pi1, 0) && IsGoodEtaTrack(pi2, 0 ) ) )  return;
 
-   fillEtaVtxPlotsAfter(track1, track2, vtx->getPosZ());
+   hAnalysisFlow->Fill(JPSI2VTXZETA);
+
+   fillEtaVtxPlotsAfter(e1, e2, vtx->getPosZ());
+   fillEtaVtxPlotsAfter(pi1, pi2, vtx->getPosZ());
 
    //PID
-   fillNSigmaPlots(track1);
-   fillNSigmaPlots(track2);
-   if(!chiSquarePID(track1,track2))
-      return;
+   fillNSigmaPlots(e1);
+   fillNSigmaPlots(e2);
+   fillNSigmaPlots(pi1);
+   fillNSigmaPlots(pi2);
+
+   //if(!chiSquarePID(e1,e2, 0))   return;
+
+   //if(!chiSquarePID(pi1, pi2, 1))   return;
+
    hAnalysisFlow->Fill(JPSI2PID);
-
-   int side = 0;
-   if(analysisWithRPs){
-      
-      if(!exactly1RPTrack(side)){
-         return;
-      }
-
-      const StUPCRpsTrack *trackRP = mRpEvt->getTrack(0);
-      if(!trackRP){
-         cout << "No RP track found. Leaving event." << endl;
-         return;
-      }
-      
-      hAnalysisFlow->Fill(JPSI1RP);
-
-      SaveRPinfo(trackRP,side);
-
-      if(!fiducialVolume(trackRP, side)){   
-         return;
-      }
-
-      hAnalysisFlow->Fill(JPSIRPFIDCUT);
-
-      SaveMissingPtInfo(track1, track2, trackRP);
-
-   }else{
-      hAnalysisFlow->Fill(JPSI1RP);
-      hAnalysisFlow->Fill(JPSIRPFIDCUT);
-   }
    
 
    // save info about tracks
-   TLorentzVector electron1, electron2, state;
-   track1->getLorentzVector(electron1, mUtil->mass(ELECTRON));
-   track2->getLorentzVector(electron2, mUtil->mass(ELECTRON));
-   state = electron1 + electron2;
+   TLorentzVector electron1, electron2, state, pion1, pion2;
+   e1->getLorentzVector(electron1, mUtil->mass(ELECTRON));
+   e2->getLorentzVector(electron2, mUtil->mass(ELECTRON));
+   pi1->getLorentzVector(pion1, mUtil->mass(PION));
+   pi2->getLorentzVector(pion2, mUtil->mass(PION));
 
-   SaveStateInfo(state,track1->getCharge() + track2->getCharge(),0 );
-   SaveChiSquareInfo(track1, track2);
-   SaveTrackInfo(track1,electron1, 0 );
-   SaveTrackInfo(track2,electron2, 1);
+   state = electron1 + electron2 + pion1 + pion2;
+
+   int totQ = e1->getCharge() + e2->getCharge() + pi1->getCharge() + pi2->getCharge();
+
+   SaveStateInfo(state, totQ, 0 );
+   SaveChiSquareInfo(e1, e2);
+   SaveTrackInfo(e1,electron1, 0 );
+   SaveTrackInfo(e2,electron2, 1 );
+   SaveTrackInfo(pi1, pion1, 2);
+   SaveTrackInfo(pi2, pion2, 3);
 
    //Qtot
-   double totQ = track1->getCharge() + track2->getCharge();
    hTotQ->Fill(totQ);
    if(totQ == 0){
       hAnalysisFlow->Fill(JPSI2QTOT);
@@ -190,12 +166,14 @@ void AnaJPSI::Init(){
      hTriggerBits->GetXaxis()->SetBinLabel(tb+1, label);
    }
 
-   hTrackQualityFlow = new TH1D("hTrackQualityFlow", "hTrackQualityFlow", 5,1,6);
+   hTrackQualityFlow = new TH1D("hTrackQualityFlow", "hTrackQualityFlow", 7,1,8);
    hTrackQualityFlow->GetXaxis()->SetBinLabel(1, TString("all"));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(2, TString("p_{T} > 0.2 GeV/c"));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(3, TString::Format("N^{fit}_{hits} > %d", minNHitsFit));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("N^{dE/dx}_{hits} > %d", minNHitsDEdx));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString("BEMC"));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(2, TString("|#eta | < 1"));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(3, Form("|DCA_{z}| < %.1f", maxDcaZ));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(4, Form("DCA_{XY} < %.1f", maxDcaXY));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString::Format("N^{fit}_{hits} > %d", minNHitsFit));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(6, TString::Format("N^{dE/dx}_{hits} > %d", minNHitsDEdx));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(7, TString("BEMC"));
 
    mRecTree = new RecTree(nameOfAnaJPSITree, AnaJPSITreeBits, true); 
 
@@ -272,12 +250,10 @@ void AnaJPSI::Init(){
    hBranchRP->GetXaxis()->SetBinLabel(4, "West Down");
 
    hNTracksBEMC = new TH1D("hNTracksBEMC", "Number of Tracks in BEMC per event; Number of tracks in BEMC; counts", 21, -0.5, 20.5);
+   hNTracksNoBEMC = new TH1D("hNTracksNoBEMC", "Number of tracks without BEMC hit; Number of tracks without BEMC hit;counts", 21,-0.5,20.5);
 
-   hPt = new TH1D("hPt", "Transverse momentum of hadrons", 30, 0, 3);
-   hPt->SetTitle("Distribution of p_{T}");
-   hPt->GetXaxis()->SetTitle("p_{T} [GeV]");
-   hPt->GetYaxis()->SetTitle(YAxisDescription);
-
+   hPt = new TH1D("hPt", "Transverse momentum of hadrons; p_{T} [GeV/c];counts", 30, 0, 3);
+   hPtCut = new TH1D("hPtCut", "Transverse momentum of hadrons; p_{T} [GeV/c];counts", 30, 0, 3);
 
    hNfitHits = new TH1D("hNfitHits", "NfitHits; N^{fit}_{hits} [-]; counts", 50, 0, 50);
    hNfitHitsCut = new TH1D("hNfitHitsCut", "NfitHitsCut; N^{fit}_{hits} [-]; counts", 50, 0, 50);
@@ -285,10 +261,7 @@ void AnaJPSI::Init(){
    hNhitsDEdx = new TH1D("hNhitsDEdx", "NhitsDEdx; N^{dEdx}_{hits} [-]; counts", 50, 0, 50);
    hNhitsDEdxCut = new TH1D("hNhitsDEdxCut", "NhitsDEdxCut; N^{dEdx}_{hits} [-]; counts", 50, 0, 50);
 
-   hNVertices = new TH1D("hNVertices", "Number of vertices before cut", 100, 0, 10);
-   hNVertices->SetTitle("Number of vertices");
-   hNVertices->GetXaxis()->SetTitle("Number of vertices");
-   hNVertices->GetYaxis()->SetTitle(YAxisDescription);
+   hNVertices = new TH1D("hNVertices", "Number of vertices before cut; nVertices; counts", 100, 0, 10);
 
    hTotQ = new TH1D("hTotQ", "Total charge of pair", 3, -1.5, 1.5);
    hTotQ->SetTitle("Total charge of pair");
@@ -301,30 +274,37 @@ void AnaJPSI::Init(){
   
    hEtaDifference = new TH1D("hEtaDifference", "hEtaDifference; |#eta_{BEMC} - #eta_{TPC}| [-]; counts", 20, 0, 2);
 
+   hDcaZ = new TH1D("hDcaZ", "hDcaZ; DCA_{Z} [cm];counts", 40, -2, 2);
+   hDcaZCut = new TH1D("hDcaZCut", "hDcaZCut; DCA_{Z} [cm];counts", 40, -2, 2);
+
+   hDcaXY = new TH1D("hDcaXY", "hDcaXY; DCA_{XY} [cm];counts", 30, 0, 3);
+   hDcaXYCut = new TH1D("hDcaXYCut", "hDcaXYCut; DCA_{XY} [cm];counts", 30, 0, 3);
+
+
 
 }
 
 bool AnaJPSI::goodQualityTrack(const StUPCTrack *trk){
 
-   if( !(abs(trk->getBemcEta()) < maxEta) )
+   if( !(abs(trk->getEta()) < maxEta) )
       return false;
-   hTrackQualityFlow->Fill(3);
+   hTrackQualityFlow->Fill(2);
 
    if( !(trk->getDcaZ() > minDcaZ && trk->getDcaZ() < maxDcaZ) )
       return false;
-   hTrackQualityFlow->Fill(4);
+   hTrackQualityFlow->Fill(3);
 
    if( !(trk->getDcaXY() < maxDcaXY) )
       return false;
-   hTrackQualityFlow->Fill(5);
+   hTrackQualityFlow->Fill(4);
 
    if( !(trk->getNhitsFit() > minNHitsFit) )
       return false;
-   hTrackQualityFlow->Fill(6);
+   hTrackQualityFlow->Fill(5);
 
    if( !(trk->getNhitsDEdx() > minNHitsDEdx) )
       return false;
-   hTrackQualityFlow->Fill(7);
+   hTrackQualityFlow->Fill(6);
 
    return true;
 }
@@ -402,15 +382,20 @@ void AnaJPSI::fillTrackQualityCuts(const StUPCTrack* trk){
    hNfitHits->Fill(trk->getNhitsFit() );
    hNhitsDEdx->Fill(trk->getNhitsDEdx() );
    hPt->Fill(trk->getPt());
+   hDcaZ->Fill(trk->getDcaZ());
+   hDcaXY->Fill(trk->getDcaXY());
+
 }
 
 void AnaJPSI::fillTrackQualityCutsAfter(const StUPCTrack* trk){
 
-   hNfitHits->Fill(trk->getNhitsFit() );
-   hNhitsDEdx->Fill(trk->getNhitsDEdx() );
-   hPt->Fill(trk->getPt());
+   hNfitHitsCut->Fill(trk->getNhitsFit() );
+   hNhitsDEdxCut->Fill(trk->getNhitsDEdx() );
+   hPtCut->Fill(trk->getPt());
+   hDcaZCut->Fill(trk->getDcaZ());
+   hDcaXYCut->Fill(trk->getDcaXY());
 }
-bool AnaJPSI::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
+bool AnaJPSI::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2, int pair){
 
    Double_t chi_ee = pow(trk1->getNSigmasTPCElectron(),2) + pow(trk2->getNSigmasTPCElectron(),2);
    Double_t chi_pp = pow(trk1->getNSigmasTPCProton(),2) + pow(trk2->getNSigmasTPCProton(),2);
@@ -418,14 +403,37 @@ bool AnaJPSI::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
    Double_t chi_pipi = pow(trk1->getNSigmasTPCPion(),2) + pow(trk2->getNSigmasTPCPion(),2);
 
 
-   if(chi_ee > maxPIDChiEE)
-      return false;
-   if(chi_pp < minPIDChiPP)
-      return false;
-   if(chi_pipi < minPIDChiPiPi)
-      return false;
-   if(chi_kk < minPIDChiKK)
-      return false;
+   if(pair == 0){  //pair of electrons
+      if(chi_ee > maxPIDChiEE)
+         return false;
+      if(chi_pp < minPIDChiPP)
+         return false;
+      if(chi_pipi < minPIDChiPiPi)
+         return false;
+      if(chi_kk < minPIDChiKK)
+         return false;  
+   }else if(pair == 1){  // pair of pions
+      if(chi_pipi > minPIDChiPiPi)
+         return false;
+   }else if(pair == 2){  // pair of kaons
+      if(chi_ee < maxPIDChiEE)
+         return false;
+      if(chi_pp < minPIDChiPP)
+         return false;
+      if(chi_pipi < minPIDChiPiPi)
+         return false;
+      if(chi_kk > minPIDChiKK)
+         return false; 
+   }else{               // pair of protons
+      if(chi_ee < maxPIDChiEE)
+         return false;
+      if(chi_pp > minPIDChiPP)
+         return false;
+      if(chi_pipi < minPIDChiPiPi)
+         return false;
+      if(chi_kk < minPIDChiKK)
+         return false; 
+   }
 
    return true;
 }

@@ -18,7 +18,7 @@ if __name__ == "__main__":
             
     defaultdir = "/gpfs01/star/pwg/mvranovsk/Run17_P20ic/"
 
-    for line in open("submit.xml").xreadlines(): 
+    for line in open("submit.xml").readlines(): 
         if "Location" in line:
             basedir = line.lstrip().split(">")[1].split("/sched")[0]
             location = basedir + "/merged/"
@@ -36,39 +36,40 @@ if __name__ == "__main__":
         location = basedir + "/merged/"
         resubmit = True
 
-    print basedir 
+    print(basedir) 
     #submitted jobs
     joblist = []
     for job in glob(basedir +"/sched/*_*.csh"):
         joblist.append( job.split("sched/sched")[1].split(".csh")[0] )
 
-    print "Submitted:", len(joblist)
+    print("Submitted:", len(joblist))
 
     #running jobs
     running = []
     cmd = "condor_q "+os.getlogin()
-    out = Popen(cmd.split(), stdout=PIPE).communicate()[0].split("\n")
+    out = Popen(cmd.split(), stderr=PIPE ,stdout=PIPE).communicate()
+    out = out[0].split(b"\n")
     for i in out:
-        i1 = i.find("sched/sched")+len("sched/sched")
-        i2 = i.find(".csh")
+        i1 = i.find(b"sched/sched")+len(b"sched/sched")
+        i2 = i.find(b".csh")
         if i2 < 0: continue
         jobid = i[i1:i2]
         #select jobs belonging to this production
         if jobid not in joblist: continue
         running.append(jobid)
 
-    print "Running:", len(running)
+    print("Running:", len(running))
 
     #done jobs
     donelist = []
     totsiz = 0
     #list all root files with size
     cmd = "ls -s " + basedir + "/*.root"
-    out = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE).communicate()[0].split("\n")
+    out = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE).communicate()[0].split(b"\n")
     for fline in out:
         if len(fline) == 0: continue
         #get name and size for each file
-        siznam = fline.lstrip().split(" ")
+        siznam = fline.lstrip().split(b" ")
         size = int(siznam[0])
         name = siznam[1]
         #test for zero-sized outputs
@@ -76,7 +77,9 @@ if __name__ == "__main__":
             continue
         totsiz += size
         #job id from file name
-        donelist.append(name.split("/")[-1][:-len(".root")])
+        donelist.append(name.split(b"/")[-1][:-len(".root")].decode("utf-8"))
+    
+
 
     #missing jobs
     missing = []
@@ -84,33 +87,36 @@ if __name__ == "__main__":
         if job in running or job in donelist:
             continue
         missing.append(job)
-	#print job
+        print(job)
+        
 
-    print "Errors:", len(missing)
+    print("Errors:", len(missing))
     #print missing
-    print "Done:", len(donelist)
-    print "Output total size:", totsiz
+    print("Done:", len(donelist))
+    print("Output total size:", totsiz)
 
     #resubmit missing jobs if requested
     if resubmit is True and len(missing) > 0:
-        print "Resubmitting the missing jobs"
+        print("Resubmitting the missing jobs")
         ijob = 0
         os.chdir("sched")
+        print(os.getcwd())
         for job in missing:
-            print "Clearing the log files"
+            print("Clearing the log files")
             log_path = basedir + "/logs/"
             cmd = "rm " + log_path + job + ".out"
             out = Popen(cmd.split(), stdout=PIPE, stderr=PIPE).communicate()
             cmd = "rm " + log_path + job + ".err"
             out = Popen(cmd.split(), stdout=PIPE, stderr=PIPE).communicate()
-            print "Job to resubmit:", job, "idx in list:", ijob
+            print("Job to resubmit:", job, "idx in list:", ijob)
             session_num = job.split("_")
-            cmd = "star-submit -r " + session_num[1] + " sched" + session_num[0] + ".session.xml"
+            cmd = "star-submit-beta -r " + session_num[1] + " sched" + session_num[0] + ".session.xml"
+            print(cmd)
             out = Popen(cmd.split(), stdout=PIPE, stderr=PIPE).communicate()
-            print out[0]
-            print out[1] 
+            print(out[0].decode("utf-8"))
+            print(out[1].decode("utf-8"))
             ijob += 1
-        print "Resubmittion done."
+        print("Resubmittion done.")
 
 
 
