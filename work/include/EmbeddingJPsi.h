@@ -32,8 +32,8 @@ class EmbeddingJPsi : public Ana{
       bool chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2);
       void fillBemcInfo(const StUPCTrack *trk);
       void fillBemcInfoAll();
-      void fillBeamlineInfo(const StUPCEvent *mUpcEvt);
       void trueMCPeak();
+      void loadCuts(bool runSysStudy);
       // all control histograms
       TH2F *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;
       TH1D *hBranchRP;
@@ -65,6 +65,11 @@ class EmbeddingJPsi : public Ana{
       int tpcCounter;
       TH1D *hTriggerBits;
       TH1D *hPIDStats[2];
+
+      // cuts
+      double MAXETA, MINPIDCHIPP, MINPIDCHIPIPI, MINPIDCHIKK, MAXPIDCHIEE;
+      int MINNHITSFIT, MINNHITSDEDX;
+
 
 };
 

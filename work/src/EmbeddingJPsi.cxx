@@ -30,6 +30,7 @@ void EmbeddingJPsi::Make(){
       const StUPCTrack *trk = mUpcEvt->getTrack(iTrk);
       
       if(!trk)  continue;
+
       ++tpcCounter;
       
       if(!(trk->getIdTruth() == 1 || trk->getIdTruth() == 2) )  continue;
@@ -66,12 +67,15 @@ void EmbeddingJPsi::Make(){
    SaveBemcInfo(track1, 0);
    SaveBemcInfo(track2, 1);
 
+   // eta condition
+   if( !(abs(track1->getEta()) < MAXETA && abs(track2->getEta()) < MAXETA ) )   return;
+
+   hAnalysisFlow->Fill(EMBEDDINGETA);
+
    if(!backToBack(track1, track2))  return;
    
-
    hAnalysisFlow->Fill(EMBEDDINGBACKTOBACK);
 
-   
    //PID
    fillNSigmaPlots(track1);
    fillNSigmaPlots(track2);
@@ -80,10 +84,6 @@ void EmbeddingJPsi::Make(){
    
    hAnalysisFlow->Fill(EMBEDDINGPID);
    
-   
-
-   fillBeamlineInfo(mUpcEvt);
-
 
    TLorentzVector electron1, electron2, state;   
    track1->getLorentzVector(electron1, mUtil->mass(ELECTRON));
@@ -120,10 +120,18 @@ void EmbeddingJPsi::Init(){
      cout<<"EmbeddingJPsi::Init() called"<<endl;
 
    mOutFile->cd();
+
+   mRecTree = new RecTree(nameOfEmbeddingJPsiTree, EmbeddingJPsiTreeBits, true);
+
+   mOutFile->mkdir(nameOfEmbeddingJPsiDir);
+   mOutFile->cd(nameOfEmbeddingJPsiDir);
+   loadCuts(runSysStudyEmbedding);  // if running sys study, will include loose cuts 
+   
    hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nEmbeddingCuts-1, 1, nEmbeddingCuts);
    for(int tb=1; tb<nEmbeddingCuts; ++tb) {
      hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->embeddingName(tb));
    }
+
 
    hTrackQualityFlow = new TH1D("hTrackQualityFlow", "hTrackQualityFlow", 5,1,6);
    hTrackQualityFlow->GetXaxis()->SetBinLabel(1, TString("all"));
@@ -132,8 +140,6 @@ void EmbeddingJPsi::Init(){
    hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("N^{fit}_{hits} > %d", minNHitsFit));
    hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString::Format("N^{dE/dx}_{hits} > %d", minNHitsDEdx));
    
-   mRecTree = new RecTree(nameOfEmbeddingJPsiTree, EmbeddingJPsiTreeBits, true); 
-
    hEta = new TH1D("hEta", "Pseudorapidity; #eta; counts", 60, -2, 2);
    hEtaCut = new TH1D("hEtaCut", "Pseudorapidity; #eta [-]; counts", 60, -2, 2);
 
@@ -196,9 +202,6 @@ void EmbeddingJPsi::Init(){
    hBemcClusterPhiAll = new TH1D("hBemcClusterPhiAll", "BEMC cluster phi; #varphi_{BEMC} [rad]; counts", 100, -4, 4);
    hClusterMatched = new TH1D("hClusterMatched", "Cluster matched; Cluster matching (0 == all, 1 == matched with track); counts", 2, -0.5, 1.5);
 
-
-
-
    hPt = new TH1D("hPt", "Transverse momentum of hadrons", 30, 0, 3);
    hPt->SetTitle("Distribution of p_{T}");
    hPt->GetXaxis()->SetTitle("p_{T} [GeV]");
@@ -237,6 +240,31 @@ void EmbeddingJPsi::Init(){
    cout << "Finished EmbeddingJPsi::Init()" << endl;
 }
 
+
+void EmbeddingJPsi::loadCuts(bool isSysStudy){
+
+   if(isSysStudy){
+      MINNHITSFIT = minNHitsFitLoose;
+      MINNHITSDEDX = minNHitsDEdxLoose;
+      MAXETA = maxEtaLoose;
+      MINPIDCHIPP = minPidChiPPLoose;
+      MINPIDCHIPIPI = minPidChiPiPiLoose;
+      MINPIDCHIKK = minPidChiKKLoose;
+      MAXPIDCHIEE = maxPidChiEELoose; // no cut
+   }else{
+      MINNHITSFIT = minNHitsFit;
+      MINNHITSDEDX = minNHitsDEdx;
+      MAXETA = maxEta;
+      MINPIDCHIPP = minPidChiPP;
+      MINPIDCHIPIPI = minPidChiPiPi;
+      MINPIDCHIKK = minPidChiKK;
+      MAXPIDCHIEE = maxPidChiEE; // no cut
+   }
+}
+
+
+
+
 void EmbeddingJPsi::trueMCPeak(){
 
 
@@ -265,9 +293,6 @@ void EmbeddingJPsi::trueMCPeak(){
 
 
 }
-
-
-
 
 void EmbeddingJPsi::fillBemcInfo(const StUPCTrack *trk){
 
@@ -304,13 +329,13 @@ void EmbeddingJPsi::fillBemcInfoAll(){
 bool EmbeddingJPsi::goodQualityTrack(const StUPCTrack *trk){
 
 
-   if( !(abs(trk->getBemcEta()) < maxEta))  // eta
+   if( !(abs(trk->getBemcEta()) < MAXETA))  // eta
       return false;
    hTrackQualityFlow->Fill(3);   
-   if( !(trk->getNhitsFit() > minNHitsFit) )  //NhitsFit
+   if( !(trk->getNhitsFit() > MINNHITSFIT) )  //NhitsFit
       return false;
    hTrackQualityFlow->Fill(4);
-   if( !(trk->getNhitsDEdx() > minNHitsDEdx) ) //NhitsdEdx
+   if( !(trk->getNhitsDEdx() > MINNHITSDEDX) ) //NhitsdEdx
       return false;
    hTrackQualityFlow->Fill(5);
 
@@ -385,18 +410,18 @@ bool EmbeddingJPsi::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2)
    hNSigmaKK1->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
    hNSigmaPiPi1->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
 
-   if(chi_pp < minPIDChiPP)  return false;
+   if(chi_pp < MINPIDCHIPP)  return false;
 
-   if(chi_pipi < minPIDChiPiPi)  return false;
+   if(chi_pipi < MINPIDCHIPIPI)  return false;
 
-   if(chi_kk < minPIDChiKK)  return false;
-   
+   if(chi_kk < MINPIDCHIKK)  return false;
+
    hNSigmaEE2->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());
    hNSigmaPP2->Fill(trk1->getNSigmasTPCProton(), trk2->getNSigmasTPCProton());
    hNSigmaKK2->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
    hNSigmaPiPi2->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
 
-   if(chi_ee > maxPIDChiEE)  return false;
+   if(chi_ee > MAXPIDCHIEE)  return false;
 
    return true;
 }
@@ -424,24 +449,7 @@ void EmbeddingJPsi::fillNSigmaPlots(const StUPCTrack *trk){
 
 }
 
-void EmbeddingJPsi::fillBeamlineInfo(const StUPCEvent *mUpcEvt){
 
-   if(!runMCAna){
-       bField = mUpcEvt->getMagneticField();
-       beamline[0] = mUpcEvt->getBeamXPosition();
-       beamline[2] = mUpcEvt->getBeamXSlope();
-       beamline[1] = mUpcEvt->getBeamYPosition();
-       beamline[3] = mUpcEvt->getBeamYSlope();
-   }else {
-       bField = -4.991; // guess based on real runs
-       beamline[0] = 0;
-       beamline[2] = 0;
-       beamline[1] = 0;
-       beamline[3] = 0;
-   }
-
-   return;
-}
 
 /*
 // maximizing yield by disregarding pileup

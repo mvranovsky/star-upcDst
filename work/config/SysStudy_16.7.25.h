@@ -4,6 +4,7 @@
 #include <vector>
 #include <bitset>
 #include "TString.h"
+#include "TMath.h"
 
 
 const bool runAnaBP = false;
@@ -15,14 +16,12 @@ const bool runAnaJPsi = true;
 const bool runAnaJPSI = false;
 const bool runAnaGoodRun = false;
 const bool runEmbeddingJPsi = false;
-const bool runSysStudy = false;
-const bool runSysStudyEmbedding = false;
 
 
 const unsigned int nAligIteration = 4;
 const bool runMCAna = false;
 const bool DEBUG = false;
-const bool V0Control = false;
+const bool V0Control = false; 
 const bool analysisWithRPs = false;
 // 570702 RP_UPC // 570712 RP_UPC // 570703 RP_SDT // 570709 RP_ET // 570719 RP_ET // 570701 RP_CPT2 // 570711 RP_CPT2 
 // 570705 RP_CPT2noBBCL // 570704 RP_Zerobias // 590703 RP_SDT // 590709 RP_ET // 590701 RP_CPT2 // 590705 RP_CPT2noBBCL 
@@ -43,72 +42,46 @@ const bool AFTERBURNER = true;
 
 const TString nameOfAnaBPTree = "recTreeBP";
 const std::bitset<16> AnaBPTreeBits = std::bitset<16>(std::string("0000011100010001"));
-const TString nameOfAnaBPDir = "AnaBPPlots";
 
 const TString nameOfAnaV0Tree = "recTreeAnaV0";
 const std::bitset<16> AnaV0TreeBits = std::bitset<16>(std::string("0000000000001111")); //RPs info turned off
-const TString nameOfAnaV0Dir = "AnaV0Plots";
 
 const TString nameOfAnaV0MultTree = "recTreeAnaV0Mult";
 const std::bitset<16> AnaV0MultTreeBits = std::bitset<16>(std::string("0000011100010001")); 
-const TString nameOfAnaV0MultDir = "AnaV0MultPlots";
 
 const TString nameOfTofEffTree = "recTreeTofEff";
 const std::bitset<16> TofEffTreeBits = std::bitset<16>(std::string("0000000000001111")); //RPs info turned off
-const TString nameOfTofEffDir = "TofEffPlots";
 
 const TString nameOfTofEffMultTree = "recTreeTofEffMult";
 const std::bitset<16> TofEffMultTreeBits = std::bitset<16>(std::string("0000011100010001")); 
-const TString nameOfTofEffMultDir = "TofEffMultPlots";
 
 const TString nameOfAnaJPsiTree = "recTreeAnaJPsi";
 const std::bitset<16> AnaJPsiTreeBits = std::bitset<16>(std::string("0011000000011111")); 
-const TString nameOfAnaJPsiDir = "AnaJPsiPlots";
 
 const TString nameOfAnaJPSITree = "recTreeAnaJPSI";
 const std::bitset<16> AnaJPSITreeBits = std::bitset<16>(std::string("0011010000010111")); 
-const TString nameOfAnaJPSIDir = "AnaJPSIPlots";
 
 const TString nameOfAnaGoodRunTree = "recAnaGoodRun";
-const std::bitset<16> AnaGoodRunTreeBits = std::bitset<16>(std::string("0100000000000000")); 
-const TString nameOfAnaGoodRunDir = "AnaGoodRunPlots";
+const std::bitset<16> AnaGoodRunTreeBits = std::bitset<16>(std::string("0000100000000001")); 
 
 const TString nameOfEmbeddingJPsiTree = "recTreeEmbeddingJPsi";
 const std::bitset<16> EmbeddingJPsiTreeBits = std::bitset<16>(std::string("0011000000001101")); 
-const TString nameOfEmbeddingJPsiDir = "EmbeddingJPsiPlots";
-
-const TString nameOfSysStudyTree = "recTreeSysStudy";
-const std::bitset<16> SysStudyTreeBits = std::bitset<16>(std::string("0011100000011111"));
-const TString nameOfSysStudyDir = "SysStudyPlots";
 
 const TString offsetFilePath = "/star/u/mvranovsk/star-upcDst/work/OffSetsRun17.list";
 const TString offsetCorrectionsFilePath = "/star/u/mvranovsk/star-upcDst/work/OffSetsCorrectionsRun17.list";
 
 const TString YAxisDescription = "counts";
 
-const bool TOF2Tracks = false;  // condition whether both tracks are to be matched to ToF or not
-const bool usePrimVtx = false;  // condition whether to use or not to use primary vertex in the analysis
 
 // TPC good track quality cuts
-const int minNHitsFit = 15;
-const int minNHitsDEdx = 15;
+const int minNHitsFit = 12;
+const int minNHitsDEdx = 12;
 const double minPt = 0.2;
-const double maxDcaXY = 1.5;
-const double minDcaZ = -1.0;
-const double maxDcaZ = 1.0;
-
-// loose conditions for Systematic study
-const int minNHitsFitLoose = 12;
-const int minNHitsDEdxLoose = 12;
-const double maxDcaXYLoose = 1.8;
-const double minDcaZLoose = -1.2;
-const double maxDcaZLoose = 1.2;
-const double maxEtaLoose = 1.0;
-const double vertexRangeLoose = 120;
-const double maxPidChiEELoose = 11;
-const double minPidChiPPLoose = 8;
-const double minPidChiPiPiLoose = 8;
-const double minPidChiKKLoose = 8;
+const double maxDcaXY = 1.8;
+const double minDcaZ = -1.2;
+const double maxDcaZ = 1.2;
+const bool TOF2Tracks = false;  // condition whether both tracks are to be matched to ToF or not
+const bool usePrimVtx = false;  // condition whether to use or not to use primary vertex in the analysis
 
 //topology cuts for V0 selection
 const double vertexDiffMax = 5.;
@@ -118,20 +91,21 @@ const double minPointingAngle = 0.97;
 const double maxDecayLengthHypo = 3.;
 
 // specific conditions for special eta-vtxZ cut
-const double maxEta = 0.9;
-const double vertexRange = 100.0; // cm
+const double maxEta = 1;
+const double vertexRangeForEVz = 100;
 const double etaVertexSlope = -1/250.0;
 const double etaVertexShift = 0.9;
 
 // vertex range in z-coordinate
+const double vertexRange = 100.0; // cm
 //const double exclusivityCut = 0.7;
 //const double exclusivityCut = 0.1;
 
 // cuts for JPsi analysis
-const double maxPidChiEE = 9;
-const double minPidChiPP = 10;
-const double minPidChiPiPi = 10;
-const double minPidChiKK = 10;
+const double maxPIDChiEE = 11;
+const double minPIDChiPP = 8;
+const double minPIDChiPiPi = 8;
+const double minPIDChiKK = 8;
 
 
 // Plot setting

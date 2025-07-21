@@ -4,6 +4,7 @@
 #include <vector>
 #include <bitset>
 #include "TString.h"
+#include "TMath.h"
 
 
 const bool runAnaBP = false;
@@ -11,12 +12,11 @@ const bool runAnaV0 = false;
 const bool runAnaV0Mult = false;
 const bool runTofEff = false;
 const bool runTofEffMult = false;
-const bool runAnaJPsi = true;
+const bool runAnaJPsi = false;
 const bool runAnaJPSI = false;
-const bool runAnaGoodRun = false;
+const bool runAnaGoodRun = true;
 const bool runEmbeddingJPsi = false;
-const bool runSysStudy = false;
-const bool runSysStudyEmbedding = false;
+const bool runSysStudy = true;  
 
 
 const unsigned int nAligIteration = 4;

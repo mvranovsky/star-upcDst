@@ -15,6 +15,7 @@
 #include "RunDef.h"
 #include "EmbeddingJPsi.h"
 #include "AnaGoodRun.h"
+#include "RecTree.h"
 
 using namespace std;
 using namespace UTIL;

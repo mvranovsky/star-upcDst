@@ -16,9 +16,9 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
 
    if( treeVersion.test(0) )
    {
-      mRecTree->Branch("nVertecies", &mNVertecies);
-      mRecTree->Branch("nGoodTpcTrks", &mNGoodTpcTrks);
-      mRecTree->Branch("tofMult", &mTofMult);
+      mRecTree->Branch("nVertices", &mNVertices);
+      mRecTree->Branch("nTracksTpc", &mNTracksTpc);
+      mRecTree->Branch("nTracksTof", &mNTracksTof);
       mRecTree->Branch("eventNumber", &mEventNumber);
       mRecTree->Branch("fillNumber", &mFillNumber);
       mRecTree->Branch("bunchCrossId", &mBunchCrossId);
@@ -253,27 +253,6 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       }      
    }
 
-   // settings used for good run list
-   if( treeVersion.test(11) ){
-      mRecTree->Branch("isRpOk", &mIsRpOk);
-      mRecTree->Branch("isJPsiTrigger1", &mIsJPsiTrigger1);
-      mRecTree->Branch("isJPsiTrigger2", &mIsJPsiTrigger2);
-      mRecTree->Branch("isJPsiTrigger3", &mIsJPsiTrigger3);
-      mRecTree->Branch("tpcTrack_eta", &mTpcTrack_eta);
-      mRecTree->Branch("tpcTrack_phi", &mTpcTrack_phi);
-      mRecTree->Branch("bemcTrack_eta", &mBemcTrack_eta);
-      mRecTree->Branch("bemcTrack_phi", &mBemcTrack_phi);
-      mRecTree->Branch("nHitsFit", &mTpcNHitsFit);
-      mRecTree->Branch("nHitsDEdx", &mTpcNHitsDEdx);
-      mRecTree->Branch("nSigmaTpcProton", &mTpcNSigmaProton);
-      mRecTree->Branch("nSigmaTpcPion", &mTpcNSigmaPion);
-      mRecTree->Branch("nSigmaTpcKaon", &mTpcNSigmaKaon);
-      mRecTree->Branch("nSigmaTpcElectron", &mTpcNSigmaElectron);
-      mRecTree->Branch("nTracksBemc", &nTracksBemc);
-      mRecTree->Branch("nClustersBemc", &nClustersBemc);
-      mRecTree->Branch("nTracksTof", &nTracksTof);
-     
-   }
 
    //BEMC info
    if( treeVersion.test(13) ){ 
@@ -290,9 +269,33 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
          mRecTree->Branch(Form("bemcClusterPhi%i", i), &mBemcClusterPhi[i]);
          mRecTree->Branch(Form("bemcClusterE%i", i), &mBemcClusterE[i]);
       }
-      mRecTree->Branch("nTracksBemc", &nTracksBemc);
-      mRecTree->Branch("nClustersBemc", &nClustersBemc);
+      mRecTree->Branch("nTracksBemc", &mNTracksBemc);
+      mRecTree->Branch("nClustersBemc", &mNClustersBemc);
    }
+
+   // Good Run List info
+   if( treeVersion.test(14) ){
+      mRecTree->Branch("AtLeast1JPsiTrigger", &mAtLeast1JPsiTrigger, "AtLeast1JPsiTrigger/I");
+      mRecTree->Branch("RPsClose", &mRPsClose, "RPsClose/I");
+      mRecTree->Branch("nEventsAll", &mNEventsAll, "nEventsAll/I");
+      mRecTree->Branch("nEventsPassed", &mNEventsPassed, "nEventsPassed/I");
+      mRecTree->Branch("nEventsJPsi", &mNEventsJPsi, "nEventsJPsi/I");
+      mRecTree->Branch("luminosity", &mLuminosity, "luminosity/D");
+      mRecTree->Branch("luminosityError", &mLuminosityError, "luminosityError/D");
+      mRecTree->Branch("nTracksBEMC", &mNTracksBemc, "nTracksBEMC/D");
+      mRecTree->Branch("nClustersBEMC", &mNClustersBemc, "nClustersBEMC/D");
+      mRecTree->Branch("nTracksTPC", &mNTracksTpc, "nTracksTPC/D");
+      mRecTree->Branch("nTracksTOF", &mNTracksTof, "nTracksTOF/D");
+      mRecTree->Branch("nVertices", &mNVertices, "nVertices/D");
+      mRecTree->Branch("tpcEtaAverage", &mTpcEtaAverage, "tpcEtaAverage/D");
+      mRecTree->Branch("bemcEtaAverage", &mBemcEtaAverage, "bemcEtaAverage/D");
+      mRecTree->Branch("tpcPhiAverage", &mTpcPhiAverage, "tpcPhiAverage/D");
+      mRecTree->Branch("bemcPhiAverage", &mBemcPhiAverage, "bemcPhiAverage/D");
+
+   }
+
+
+
 
 
    // Setting background Tree
@@ -303,6 +306,7 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
 }//RecTree::CreateRecTree
 
 
+
 //_____________________________________________________________________________
 RecTree::RecTree(TTree* tree, bitset<16> treeVersion) {
 
@@ -310,9 +314,9 @@ RecTree::RecTree(TTree* tree, bitset<16> treeVersion) {
    // event info
    if( treeVersion.test(0) )
    {
-      tree->SetBranchAddress("nVertecies", &mNVertecies);
-      tree->SetBranchAddress("nGoodTpcTrks", &mNGoodTpcTrks);
-      tree->SetBranchAddress("tofMult", &mTofMult);
+      tree->SetBranchAddress("nVertices", &mNVertices);
+      tree->SetBranchAddress("nTracksTpc", &mNTracksTpc);
+      tree->SetBranchAddress("nTracksTof", &mNTracksTof);
       tree->SetBranchAddress("eventNumber", &mEventNumber);
       tree->SetBranchAddress("fillNumber", &mFillNumber);
       tree->SetBranchAddress("bunchCrossId", &mBunchCrossId);

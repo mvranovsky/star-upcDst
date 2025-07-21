@@ -67,6 +67,10 @@ int main(int argc, char** argv)
       mAnaVector.push_back(new AnaJPsi(outFile));
       cout << "Will run analysis of JPsi." << endl;       
    }
+   if( runSysStudyEmbedding){
+      mAnaVector.push_back(new EmbeddingJPsi(outFile));
+      cout << "Will run systematics study of JPsi." << endl;
+   }
    if( runEmbeddingJPsi ){
       mAnaVector.push_back(new EmbeddingJPsi(outFile));
       cout << "Will run embedding of JPsi." << endl;
@@ -76,9 +80,12 @@ int main(int argc, char** argv)
       cout << "Will run analysis of JPSI tryout." << endl;       
    }
    if( runAnaGoodRun ){
-
       mAnaVector.push_back(new AnaGoodRun(outFile));
       cout << "Will run analysis of good runs." << endl;
+   }
+   if( runSysStudy ){
+      mAnaVector.push_back(new AnaJPsi(outFile));
+      cout << "Will run systematics study." << endl;
    }
 
    
@@ -93,7 +100,6 @@ int main(int argc, char** argv)
    // Initiate histograms
    
    Init();
-
 
    //ask for number of events
    nEvents = upcTree->GetEntries();
@@ -115,8 +121,8 @@ int main(int argc, char** argv)
       mRunNumber = upcEvt->getRunNumber();
       // check if the run number is in the list of bad runs
       //check if a number is in std::vector<int>
-      
-      if(!(runMCAna || runEmbeddingJPsi) ){
+
+      if(!(runMCAna || runEmbeddingJPsi || runSysStudyEmbedding) ){
          SetRpEvent();
       }
       
@@ -221,31 +227,10 @@ void analysisOfTracks(int RUNNUMBER, int nEvents, string inputPath){
 
 void fillRunTree(AnaGoodRun *Ana, string inputPath){
 
-   int mRunNumber = 0;
-   int atLeast1JPsiTrigger, RPsClose;
-   double nTracksBemc, nClustersBEMC, nTracksTPC, nTracksTOF, nVertices;
-   double tpcEtaAverage, bemcEtaAverage, tpcPhiAverage, bemcPhiAverage;
-   int nEventsAll, nEventsPassed, nEventsJPsi;
-   double luminosity, luminosityError;
 
-   TTree *runTree = new TTree("RunInfo", "RunInfo");
-   runTree->Branch("RunNumber", &mRunNumber, "RunNumber/I");
-   runTree->Branch("AtLeast1JPsiTrigger", &atLeast1JPsiTrigger, "AtLeast1JPsiTrigger/I");
-   runTree->Branch("RPsClose", &RPsClose, "RPsClose/I");
-   runTree->Branch("nEventsAll", &nEventsAll, "nEventsAll/I");
-   runTree->Branch("nEventsPassed", &nEventsPassed, "nEventsPassed/I");
-   runTree->Branch("nEventsJPsi", &nEventsJPsi, "nEventsJPsi/I");
-   runTree->Branch("luminosity", &luminosity, "luminosity/D");
-   runTree->Branch("luminosityError", &luminosityError, "luminosityError/D");
-   runTree->Branch("nTracksBEMC", &nTracksBemc, "nTracksBEMC/D");
-   runTree->Branch("nClustersBEMC", &nClustersBEMC, "nClustersBEMC/D");
-   runTree->Branch("nTracksTPC", &nTracksTPC, "nTracksTPC/D");
-   runTree->Branch("nTracksTOF", &nTracksTOF, "nTracksTOF/D");
-   runTree->Branch("nVertices", &nVertices, "nVertices/D");
-   runTree->Branch("tpcEtaAverage", &tpcEtaAverage, "tpcEtaAverage/D");
-   runTree->Branch("bemcEtaAverage", &bemcEtaAverage, "bemcEtaAverage/D");
-   runTree->Branch("tpcPhiAverage", &tpcPhiAverage, "tpcPhiAverage/D");
-   runTree->Branch("bemcPhiAverage", &bemcPhiAverage, "bemcPhiAverage/D");
+   outFile->cd();
+   RecTree* mRecTree = new RecTree(nameOfAnaGoodRunTree, AnaGoodRunTreeBits, false);
+
 
    if( upcTree->GetEntries() <= 0 ){
       // convert inputPath to int
@@ -254,56 +239,56 @@ void fillRunTree(AnaGoodRun *Ana, string inputPath){
       // get the run number from the file name
       mRunNumber = stoi(inputPath.substr(inputPath.find_last_of("/")+1, inputPath.find_last_of(".") - inputPath.find_last_of("/") - 1));  //means no events were processed
 
-      atLeast1JPsiTrigger = 0;
-      RPsClose = 0;
-      nEventsAll = 0;
-      nEventsPassed = 0;
-      nEventsJPsi = 0;
-      luminosity = 0.0;
-      luminosityError = 0.0; // not used yet
-      nTracksBemc = 0.0;
-      nClustersBEMC = 0.0;
-      nTracksTPC = 0.0;
-      nTracksTOF = 0.0;
-      nVertices = 0.0;
-      tpcEtaAverage = 0.0;
-      bemcEtaAverage = 0.0;
-      tpcPhiAverage = 0.0;
-      bemcPhiAverage = 0.0;
-      runTree->Fill();
+      mRecTree->setRunNumber(mRunNumber);
+      mRecTree->setAtLeast1JPsiTrigger(0);
+      mRecTree->setRPsClose(0);
+      mRecTree->setNEventsAll(0);
+      mRecTree->setNEventsPassed(0);
+      mRecTree->setNEventsJPsi(0);
+      mRecTree->setLuminosity(0.0);
+      mRecTree->setLuminosityError(0.0);
+      mRecTree->setNTracksBemc(0.0);
+      mRecTree->setNClustersBemc(0.0);
+      mRecTree->setNTracksTpc(0.0);
+      mRecTree->setNTracksTof(0.0);
+      mRecTree->setNVertices(0.0);
+      mRecTree->setTpcEtaAverage(0.0);
+      mRecTree->setBemcEtaAverage(0.0);
+      mRecTree->setTpcPhiAverage(0.0);
+      mRecTree->setBemcPhiAverage(0.0);
+
 
    }else{
       mRunNumber = upcEvt->getRunNumber();
       if(Ana->isJPsiTrigger()){
-         atLeast1JPsiTrigger = 1;
+         mRecTree->setAtLeast1JPsiTrigger(1);
       }else{
-         atLeast1JPsiTrigger = 0;
+         mRecTree->setAtLeast1JPsiTrigger(0);
       }
       if(areRPsCloseEnough(mRunNumber)){
-         RPsClose = 1;
+         mRecTree->setRPsClose(1);
       }else{
-         RPsClose = 0;
+         mRecTree->setRPsClose(0);
       }
-      nEventsAll = Ana->getNEventsAll();
-      nEventsPassed = Ana->getNEventsPassed();
-      nEventsJPsi = Ana->getJPsiTriggerEvents();
-      luminosity = Ana->getLuminosity(mRunNumber);
-      luminosityError = 0.0; // not used yet
-      nTracksBemc = Ana->getAverageBemcTracks();
-      nClustersBEMC = Ana->getAverageBemcClusters();
-      nTracksTPC = Ana->getAverageTpcTracks();
-      nTracksTOF = Ana->getAverageTOFTracks();
-      nVertices = Ana->getAverageVertices();
-      tpcEtaAverage = Ana->getAverageTpcEta();
-      bemcEtaAverage = Ana->getAverageBemcEta();
-      tpcPhiAverage = Ana->getAverageTpcPhi();
-      bemcPhiAverage = Ana->getAverageBemcPhi();
-      runTree->Fill();
+      mRecTree->setNEventsAll(Ana->getNEventsAll());
+      mRecTree->setNEventsPassed(Ana->getNEventsPassed());
+      mRecTree->setNEventsJPsi(Ana->getJPsiTriggerEvents());
+      mRecTree->setLuminosity(Ana->getLuminosity(mRunNumber));
+      mRecTree->setLuminosityError(0.0); // not used yet
+      mRecTree->setNTracksBemc(Ana->getAverageBemcTracks());
+      mRecTree->setNClustersBemc(Ana->getAverageBemcClusters());
+      mRecTree->setNTracksTpc(Ana->getAverageTpcTracks());
+      mRecTree->setNTracksTof(Ana->getAverageTOFTracks());
+      mRecTree->setNVertices(Ana->getAverageVertices());
+      mRecTree->setTpcEtaAverage(Ana->getAverageTpcEta());
+      mRecTree->setBemcEtaAverage(Ana->getAverageBemcEta());
+      mRecTree->setTpcPhiAverage(Ana->getAverageTpcPhi());
+      mRecTree->setBemcPhiAverage(Ana->getAverageBemcPhi());
       
    }
-   
-   outFile->cd();
-   runTree->Write(0, TObject::kOverwrite);
+
+   mRecTree->FillRecTree();
+
 
 }
 

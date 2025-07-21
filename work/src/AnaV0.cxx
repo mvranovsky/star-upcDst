@@ -310,6 +310,9 @@ void AnaV0::Init(){
         cout<<"AnaV0::Init() called"<<endl;
 
     mOutFile->cd();
+    mOutFile->mkdir(nameOfAnaV0Dir);
+    mOutFile->cd(nameOfAnaV0Dir);
+    
     hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nV0SelectionCuts-1, 1, nV0SelectionCuts);
     for(int tb=1; tb<nV0SelectionCuts; ++tb) {
         hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->analysisV0SelectionName(tb));

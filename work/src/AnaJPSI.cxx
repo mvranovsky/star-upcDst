@@ -155,6 +155,9 @@ void AnaJPSI::Init(){
      cout<<"AnaJPSI::Init() called"<<endl;
 
    mOutFile->cd();
+   mOutFile->mkdir(nameOfAnaJPSIDir);
+   mOutFile->cd(nameOfAnaJPSIDir);
+   
    hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nJPSI2SelectionCuts-1, 1, nJPSI2SelectionCuts);
    for(int tb=1; tb<nJPSI2SelectionCuts; ++tb) {
      hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->analysisJPSI2(tb));
@@ -165,6 +168,7 @@ void AnaJPSI::Init(){
      TString label; label.Form("%d",triggerID[tb]);
      hTriggerBits->GetXaxis()->SetBinLabel(tb+1, label);
    }
+
 
    hTrackQualityFlow = new TH1D("hTrackQualityFlow", "hTrackQualityFlow", 7,1,8);
    hTrackQualityFlow->GetXaxis()->SetBinLabel(1, TString("all"));
@@ -404,34 +408,34 @@ bool AnaJPSI::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2, int p
 
 
    if(pair == 0){  //pair of electrons
-      if(chi_ee > maxPIDChiEE)
+      if(chi_ee > maxPidChiEE)
          return false;
-      if(chi_pp < minPIDChiPP)
+      if(chi_pp < minPidChiPP)
          return false;
-      if(chi_pipi < minPIDChiPiPi)
+      if(chi_pipi < minPidChiPiPi)
          return false;
-      if(chi_kk < minPIDChiKK)
-         return false;  
+      if(chi_kk < minPidChiKK)
+         return false;
    }else if(pair == 1){  // pair of pions
-      if(chi_pipi > minPIDChiPiPi)
+      if(chi_pipi > minPidChiPiPi)
          return false;
    }else if(pair == 2){  // pair of kaons
-      if(chi_ee < maxPIDChiEE)
+      if(chi_ee < maxPidChiEE)
          return false;
-      if(chi_pp < minPIDChiPP)
+      if(chi_pp < minPidChiPP)
          return false;
-      if(chi_pipi < minPIDChiPiPi)
+      if(chi_pipi < minPidChiPiPi)
          return false;
-      if(chi_kk > minPIDChiKK)
+      if(chi_kk > minPidChiKK)
          return false; 
    }else{               // pair of protons
-      if(chi_ee < maxPIDChiEE)
+      if(chi_ee < maxPidChiEE)
          return false;
-      if(chi_pp > minPIDChiPP)
+      if(chi_pp > minPidChiPP)
          return false;
-      if(chi_pipi < minPIDChiPiPi)
+      if(chi_pipi < minPidChiPiPi)
          return false;
-      if(chi_kk < minPIDChiKK)
+      if(chi_kk < minPidChiKK)
          return false; 
    }
 

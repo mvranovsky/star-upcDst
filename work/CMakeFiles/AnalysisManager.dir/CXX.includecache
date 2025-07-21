@@ -191,6 +191,8 @@ EmbeddingJPsi.h
 include/EmbeddingJPsi.h
 AnaGoodRun.h
 include/AnaGoodRun.h
+RecTree.h
+include/RecTree.h
 
 include/EmbeddingJPsi.h
 Util.h

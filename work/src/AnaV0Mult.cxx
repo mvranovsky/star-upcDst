@@ -59,7 +59,7 @@ void AnaV0Mult::Make()
 
    }//global tracks loop
 
-   mRecTree->setNGoodTpcTrks( hadronID.size() );
+   mRecTree->setNTracksTpc( hadronID.size() );
    SaveEventInfo(mUpcEvt);
    SaveTriggerInfo(mUpcEvt, mRpEvt);
 
@@ -261,8 +261,11 @@ void AnaV0Mult::Init()
 
    if( DEBUG )
       cout<<"AnaV0Mult::Init() called"<<endl;
-
-   mOutFile->cd();
+      
+    mOutFile->cd();
+    mOutFile->mkdir(nameOfAnaV0MultDir);
+    mOutFile->cd(nameOfAnaV0MultDir);
+    
    hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nV0SelectionCuts-1, 1, nV0SelectionCuts);
    for(int tb=1; tb<nV0SelectionCuts; ++tb) {
       hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->analysisV0SelectionName(tb));
@@ -274,6 +277,7 @@ void AnaV0Mult::Init()
       hTriggerBits->GetXaxis()->SetBinLabel(tb+1, label);
    }
    mRecTree = new RecTree(nameOfAnaV0MultTree, AnaV0MultTreeBits, false); 
+
 
    hEta = new TH1D("hEta", "Pseudorapidity; #eta; counts", 60, -2, 2);
    hEtaCut = new TH1D("hEtaCut", "Pseudorapidity; #eta [-]; counts", 60, -2, 2);

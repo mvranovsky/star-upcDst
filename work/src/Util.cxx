@@ -146,8 +146,8 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mJPSICutName[JPSIALL] = TString("All");
    mJPSICutName[JPSITRIG] = TString("J/#Psi trigger");
    mJPSICutName[JPSI1VTX] = TString("1 Vertex");
-   mJPSICutName[JPSIVTXZ] = TString("|V_{Z}| < 100 cm");
    mJPSICutName[JPSIBEMC] = TString("2 BEMC tracks");
+   mJPSICutName[JPSIVTXZETA] = TString("V_{Z} - #eta cut");
    mJPSICutName[JPSIBACKTOBACK] = TString("Back-to-back");
    mJPSICutName[JPSIPID] = TString("PID");
    mJPSICutName[JPSI1RP] = TString("1 RP track");
@@ -168,6 +168,7 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mEmbeddingName[EMBEDDINGALL] = TString("All");
    mEmbeddingName[EMBEDDING2BEMC] = TString("2 BEMC tracks");
    mEmbeddingName[EMBEDDINGBACKTOBACK] = TString("Back-to-back");
+   mEmbeddingName[EMBEDDINGETA] = TString("|#eta| < 0.9");
    mEmbeddingName[EMBEDDINGPID] = TString("PID");
    mEmbeddingName[EMBEDDINGQTOT] = TString("Q_{tot} = 0");
 

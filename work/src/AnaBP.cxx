@@ -197,8 +197,12 @@ void AnaBP::Init()
    mUtil = new Util();
  
    if( DEBUG )
-      cout<<"AnaBP::Init() called"<<endl;
+   cout<<"AnaBP::Init() called"<<endl;
+   
    mOutFile->cd();
+   mOutFile->mkdir(nameOfAnaBPDir);
+   mOutFile->cd(nameOfAnaBPDir);
+
    hAnalysisFlow = new TH1D("AnalysisFlow", "CutsFlow", nAnalysisCuts-1, 1, nAnalysisCuts);
    
    for(int tb=1; tb<nAnalysisCuts; ++tb) {
@@ -212,8 +216,6 @@ void AnaBP::Init()
    }
    mRecTree = new RecTree(nameOfAnaBPTree, AnaBPTreeBits, true); 
    
-   mOutFile->mkdir("PID")->cd();
-
 
    hNSigmaPiPcorr = new TH2F("hNSigmaPiPcorr","n_{#sigma} pions against protons", 100, -25, 25, 100, -25, 25);
    hNSigmaPiPcorr->GetXaxis()->SetTitle("n#sigma_{#pi}");
@@ -251,8 +253,6 @@ void AnaBP::Init()
    hNSigmaKecorr->GetXaxis()->SetTitle("n#sigma_{K}");
    hNSigmaKecorr->GetYaxis()->SetTitle("n#sigma_{e}");
 
-   mOutFile->cd();
-   mOutFile->mkdir("RPinfo")->cd();
 
    //initialize 2D graphs of before and after fiducial RP cut
    hRPcorr[0] = new TH2F("hRPcorr","p_{y} vs p_{x} of protons in RP", 200, -0.7, 0.8, 150, -1, 1);
@@ -276,27 +276,6 @@ void AnaBP::Init()
    hRPcorrEast[1]->GetXaxis()->SetTitle("p_{x} [GeV]");
    hRPcorrEast[1]->GetYaxis()->SetTitle("p_{y} [GeV]");
 
-
-   /*
-   hPIDStats[0] = new TH1D("PIDStatsTotCh", "PID stats before tot. charge cut", 4, -1.5, 2.5);
-   hPIDStats[1] = new TH1D("PIDStatsExlsv", "PID stats before pT exclusive cut", 4, -1.5, 2.5);
-   for (int pid = 0; pid < 3; ++pid)
-      for (int stat = 0; stat < 3; ++stat)
-         for (int part = 0; part < 4; ++part)
-            hMSquared[pid][stat][part] = new TH1D( Form("hMSquared_%i_%i_%i",pid, stat, part), Form("hMSquared_%i_%i_%i",pid, stat, part), 200, -0.5, 1.5);
-   mOutFile->cd();
-    */
-   
-   //co su tieto grafy adc?
-   /*mOutFile->mkdir("CPT2noBBCL")->cd();
-   for (int iRp = 0; iRp < 2*nRomanPots; ++iRp)
-   {
-      hRpAdc[iRp]= new TH1D( mUtil->rpName(iRp/2) + Form("_%i_ADC",iRp%2), "ADC", 100, 0, 600);
-      hRpAdcInWindow[iRp]= new TH1D(mUtil->rpName(iRp/2) + Form("_%i_ADCinTAC",iRp%2), "ADC in TAC window", 100, 0, 600);
-      hRpTac[iRp]= new TH1D(mUtil->rpName(iRp/2) + Form("_%i_TAC",iRp%2), "TAC", 100, 0, 2000);
-   }
-   */
-   mOutFile->mkdir("cuts")->cd();
 
    hEtaPhi = new TH2F("hEtaPhi","Phi vs eta of TOF tracks",100,-2,2,100,-4,4);
    hEtaPhi->GetXaxis()->SetTitle("#eta");

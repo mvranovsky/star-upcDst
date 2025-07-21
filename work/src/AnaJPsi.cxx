@@ -7,7 +7,6 @@ AnaJPsi::~AnaJPsi(){
    //if(mUtil) delete mUtil;
 }
 
-
 void AnaJPsi::Make(){
 
    //trigger
@@ -25,7 +24,13 @@ void AnaJPsi::Make(){
    if(mUpcEvt->getNumberOfVertices() != 1){
       return;
    }
+
    hAnalysisFlow->Fill(JPSI1VTX);
+
+   // fill vertex histogram by fill for systematic study
+   int fillNum = mUpcEvt->getFillNumber();
+   hVtxZByFillNum->SetName(Form("hVtxZFillNum_%d", fillNum));
+   hVtxZByFillNum->Fill(mUpcEvt->getVertex(0)->getPosZ());
 
    const StUPCVertex *vtx = mUpcEvt->getVertex(0);
 
@@ -33,13 +38,8 @@ void AnaJPsi::Make(){
       cout << "Could not load vertex. Leaving event." << endl;
       return;
    }
-   hPosZ->Fill(vtx->getPosZ());
-   if(abs(vtx->getPosZ()) > vertexRange)
-      return;
-   hPosZCut->Fill(vtx->getPosZ());
 
 
-   hAnalysisFlow->Fill(JPSIVTXZ);
    unsigned int vertexID = vtx->getId();
 
    tpcCounter = 0;
@@ -56,45 +56,55 @@ void AnaJPsi::Make(){
          continue;
       }
 
-      hTrackQualityFlow->Fill(2);
-      if( !trk->getFlag(StUPCTrack::kBemc) )
-         continue;
-
       fillTrackQualityCuts(trk);
-      hEtaVtxZ->Fill(trk->getEta(), vtx->getPosZ());
-
-      if(!goodQualityTrack(trk))
-         continue;
+      
+      if(!goodQualityTrack(trk))  continue;
       
       fillTrackQualityCutsAfter(trk);
-      hEtaVtxZCut->Fill(trk->getEta(), vtx->getPosZ());
 
-      hNTracksTpc->Fill( tpcCounter );
+      tpcCounter += 1;      
+      
+      if( !trk->getFlag(StUPCTrack::kBemc) )   continue;
 
+      hTrackQualityFlow->Fill(7);
       tracksBEMC.push_back(iTrk);
    }
    hNTracksBEMC->Fill( tracksBEMC.size() );
+   hNTracksTpc->Fill(tpcCounter);
 
-   if(tracksBEMC.size() != 2){
-      return;
-   }
+   if(tracksBEMC.size() != 2)   return;
    
    hAnalysisFlow->Fill(JPSIBEMC);
    const StUPCTrack* track1 = mUpcEvt->getTrack( tracksBEMC[0] );
    const StUPCTrack* track2 = mUpcEvt->getTrack( tracksBEMC[1] );
 
-   if(!track1 || !track2)
-      return;
+   if(!track1 || !track2)   return;
 
+   SaveBemcInfo(track1, 0);
+   SaveBemcInfo(track2, 1);
+   SaveVertexInfo(vtx,0);
+
+   fillEtaVtxPlotsBefore(track1, track2, vtx->getPosZ());
+
+   if(abs(vtx->getPosZ()) > VERTEXZRANGE)  return;
+
+   if(abs(track1->getEta()) > MAXETA || abs(track2->getEta()) > MAXETA) return;
+
+   if(!IsGoodEtaTrack(track1, 0) || !IsGoodEtaTrack(track2, 0))  return;
+
+   fillEtaVtxPlotsAfter(track1, track2, vtx->getPosZ());
+   hAnalysisFlow->Fill(JPSIVTXZETA);
+
+
+   // back to back
+   if(!backToBack(track1, track2))   return;
 
    hAnalysisFlow->Fill(JPSIBACKTOBACK);
-
 
    //PID
    fillNSigmaPlots(track1);
    fillNSigmaPlots(track2);
-   if(!chiSquarePID(track1,track2))
-      return;
+   if(!chiSquarePID(track1,track2))   return;
 
    hAnalysisFlow->Fill(JPSIPID);
 
@@ -112,10 +122,7 @@ void AnaJPsi::Make(){
    int side = 0;
    if(analysisWithRPs){
       
-      
-      if(!exactly1RPTrack(side)){
-         return;
-      }
+      if(!exactly1RPTrack(side))   return;
 
       const StUPCRpsTrack *trackRP = mRpEvt->getTrack(0);
       if(!trackRP){
@@ -169,6 +176,18 @@ void AnaJPsi::Init(){
      cout<<"AnaJPsi::Init() called"<<endl;
 
    mOutFile->cd();
+   if(runSysStudy){
+      mRecTree = new RecTree(nameOfSysStudyTree, SysStudyTreeBits, true);
+      loadCuts(runSysStudy);
+      mOutFile->mkdir(nameOfSysStudyDir);
+      mOutFile->cd(nameOfSysStudyDir);
+   }else {
+      mRecTree = new RecTree(nameOfAnaJPsiTree, AnaJPsiTreeBits, true);
+      loadCuts(runSysStudy);
+      mOutFile->mkdir(nameOfAnaJPsiDir);
+      mOutFile->cd(nameOfAnaJPsiDir);
+   }
+   
    hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nJPSISelectionCuts-1, 1, nJPSISelectionCuts);
    for(int tb=1; tb<nJPSISelectionCuts; ++tb) {
      hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->analysisJPSI(tb));
@@ -180,17 +199,14 @@ void AnaJPsi::Init(){
      hTriggerBits->GetXaxis()->SetBinLabel(tb+1, label);
    }
 
-   hTrackQualityFlow = new TH1D("hTrackQualityFlow", "hTrackQualityFlow", 8,1,9);
+   hTrackQualityFlow = new TH1D("hTrackQualityFlow", "hTrackQualityFlow", 6,1,7);
    hTrackQualityFlow->GetXaxis()->SetBinLabel(1, TString("all"));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(2, TString("primary vertex"));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(3, TString("BEMC hit"));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("|#eta_{BEMC}| < %.1f", maxEta));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString::Format("|DCA_{Z}| < %.1f cm", maxDcaZ));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(6, TString::Format("DCA_{XY} < %.1f cm",maxDcaXY ));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(7, TString::Format("N^{fit}_{hits} > %d", minNHitsFit));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(8, TString::Format("N^{dE/dx}_{hits} > %d", minNHitsDEdx));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(2, TString::Format("|DCA_{Z}| < %.1f cm", MAXDCAZ));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(3, TString::Format("DCA_{XY} < %.1f cm", MAXDCAXY));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("N^{fit}_{hits} > %d", MINNHITSFIT));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString::Format("N^{dE/dx}_{hits} > %d", MINNHITSDEDX));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(6, TString("BEMC match"));
    
-   mRecTree = new RecTree(nameOfAnaJPsiTree, AnaJPsiTreeBits, true); 
 
    hEta = new TH1D("hEta", "Pseudorapidity; #eta_{e}; counts", 60, -2, 2);
    hEtaCut = new TH1D("hEtaCut", "Pseudorapidity; #eta_{e} [-]; counts", 60, -2, 2);
@@ -198,15 +214,14 @@ void AnaJPsi::Init(){
    hEtaBemc = new TH1D("hEtaBemc", "Pseudorapidity BEMC; #eta^{e}_{BEMC}; counts", 60, -2, 2);
    hEtaBemcCut = new TH1D("hEtaBemcCut", "Pseudorapidity BEMC; #eta^{e}_{BEMC} [-]; counts", 60, -2, 2);
 
-
-   hEtaPhi = new TH2F("hEtaPhi","Phi vs eta of TOF tracks; #eta_{e}; #varphi",100,-2,2,100,-4,4);
-   hEtaPhiCut = new TH2F("hEtaPhiCut","Phi vs eta of TOF tracks; #eta_{e} ; #varphi",100,-2,2,100,-4,4);
+   hEtaPhi = new TH2D("hEtaPhi","Phi vs eta of TPC tracks; #eta_{e}; #varphi",100,-2,2,100,-4,4);
+   hEtaPhiCut = new TH2D("hEtaPhiCut","Phi vs eta of TPC tracks; #eta_{e} ; #varphi",100,-2,2,100,-4,4);
 
    hPosZ =  new TH1D("hPosZ", "Position of z_{vertex}; Vertex_{Z} [cm]; counts", 60, -150, 150); 
    hPosZCut =  new TH1D("hPosZCut", "Position of z_{vertex}; Vertex_{Z} [cm]; counts", 60, -150, 150); 
 
-   hEtaVtxZ = new TH2F("hEtaVtxZ", "hEtaVtxZ; #eta_{e} [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
-   hEtaVtxZCut = new TH2F("hEtaVtxZCut", "hEtaVtxZCut; #eta_{e} [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
+   hEtaVtxZ = new TH2D("hEtaVtxZ", "hEtaVtxZ; #eta_{e} [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
+   hEtaVtxZCut = new TH2D("hEtaVtxZCut", "hEtaVtxZCut; #eta_{e} [-]; V_{Z} [cm]", 40, -1, 1,40 ,-100, 100);
 
    hNSigmaPiPcorr = new TH2F("hNSigmaPiPcorr","n_{#sigma} pions against protons;n#sigma_{#pi};n#sigma_{p}", 100, -25, 25, 100, -25, 25);
    hNSigmaPiKcorr = new TH2F("hNSigmaPiKcorr","n_{#sigma} pions against kaons;n#sigma_{#pi};n#sigma_{K}", 100, -25, 25, 100, -25, 25);
@@ -265,9 +280,7 @@ void AnaJPsi::Init(){
    hNTracksBEMC = new TH1D("hNTracksBEMC", "Number of Tracks in BEMC per event; Number of tracks in BEMC; counts", 21, -0.5, 20.5);
 
    hPt = new TH1D("hPt", "Transverse momentum of hadrons; p^{e}_{T} [GeV/c^{2}]; counts", 30, 0, 3);
-
    hPtCut = new TH1D("hPtCut", "hPtCut;p^{e}_{T} [GeV/c]; counts", 30, 0, 3);
-
 
    hDcaZ = new TH1D("hDcaZ", "hDcaZ; DCA_{Z} [cm]; counts", 40, -2, 2);
    hDcaZCut = new TH1D("hDcaZCut", "hDcaZCut; DCA_{Z} [cm]; counts", 40, -2, 2);
@@ -288,33 +301,58 @@ void AnaJPsi::Init(){
    hNTracksTof = new TH1D("hNTracksTof", "hNTracksTof; Number of ToF tracks [-]; counts", 11, -0.5, 10.5);
 
    hNTracksTpc = new TH1D("hNTracksTpc", "hNTracksTpc; Number of TPC tracks [-]; counts", 26, -0.5, 25.5);
+
+   hVtxZByFillNum = new TH1D("hVtxZByFillNum", "hVtxZByFillNum; V_{Z} [cm]; counts", 40, -200, 200);
   
    cout << "Finished AnaJPsi::Init()" << endl;
 }
 
+void AnaJPsi::loadCuts(bool isSysStudy){
+
+   if(isSysStudy){
+      VERTEXZRANGE = vertexRangeLoose;
+      MINNHITSFIT = minNHitsFitLoose;
+      MINNHITSDEDX = minNHitsDEdxLoose;
+      MINDCAZ = minDcaZLoose;
+      MAXDCAZ = maxDcaZLoose;
+      MAXDCAXY = maxDcaXYLoose;
+      MAXETA = maxEtaLoose;
+      MINPIDCHIPP = minPidChiPPLoose;
+      MINPIDCHIPIPI = minPidChiPiPiLoose;
+      MINPIDCHIKK = minPidChiKKLoose;
+      MAXPIDCHIEE = maxPidChiEELoose; // no cut
+   }else{
+      VERTEXZRANGE = vertexRange;
+      MINNHITSFIT = minNHitsFit;
+      MINNHITSDEDX = minNHitsDEdx;
+      MINDCAZ = minDcaZ;
+      MAXDCAZ = maxDcaZ;
+      MAXDCAXY = maxDcaXY;
+      MAXETA = maxEta;
+      MINPIDCHIPP = minPidChiPP;
+      MINPIDCHIPIPI = minPidChiPiPi;
+      MINPIDCHIKK = minPidChiKK;
+      MAXPIDCHIEE = maxPidChiEE; // no cut
+   }
+}
+
+
 bool AnaJPsi::goodQualityTrack(const StUPCTrack *trk){
 
-   
-   //if(trk->getPt() < minPt)  //pT
-   //   return false;
 
+   hTrackQualityFlow->Fill(2);
+   if( !(trk->getDcaZ() > MINDCAZ && trk->getDcaZ() < MAXDCAZ) )  //DCA z
+      return false;
    hTrackQualityFlow->Fill(3);
-   if(!(abs(trk->getBemcEta()) < maxEta))  // eta
+   if( !(trk->getDcaXY() < MAXDCAXY) ) //DCA xy
       return false;
    hTrackQualityFlow->Fill(4);
-   if( !(trk->getDcaZ() > minDcaZ && trk->getDcaZ() < maxDcaZ) )  //DCA z
+   if( !(trk->getNhitsFit() > MINNHITSFIT) )  //NhitsFit
       return false;
-   hTrackQualityFlow->Fill(5);   
-   if( !(trk->getDcaXY() < maxDcaXY) ) //DCA xy
+   hTrackQualityFlow->Fill(5);
+   if( !(trk->getNhitsDEdx() > MINNHITSDEDX) ) //NhitsdEdx
       return false;
    hTrackQualityFlow->Fill(6);
-   if( !(trk->getNhitsFit() > minNHitsFit) )  //NhitsFit
-      return false;
-   hTrackQualityFlow->Fill(7);
-   if( !(trk->getNhitsDEdx() > minNHitsDEdx) ) //NhitsdEdx
-      return false;
-   hTrackQualityFlow->Fill(8);
-   tpcCounter += 1;
 
    return true;
 
@@ -387,18 +425,18 @@ bool AnaJPsi::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
    hNSigmaKK1->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
    hNSigmaPiPi1->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
 
-   if(chi_pp < minPIDChiPP)  return false;
+   if(chi_pp < MINPIDCHIPP)  return false;
 
-   if(chi_pipi < minPIDChiPiPi)  return false;
+   if(chi_pipi < MINPIDCHIPIPI)  return false;
 
-   if(chi_kk < minPIDChiKK)  return false;
-   
+   if(chi_kk < MINPIDCHIKK)  return false;
+
    hNSigmaEE2->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());
    hNSigmaPP2->Fill(trk1->getNSigmasTPCProton(), trk2->getNSigmasTPCProton());
    hNSigmaKK2->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
    hNSigmaPiPi2->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
 
-   if(chi_ee > maxPIDChiEE)  return false;
+   if(chi_ee > MAXPIDCHIEE)  return false;
 
    return true;
 }
@@ -478,4 +516,46 @@ bool AnaJPsi::fiducialVolume(const StUPCRpsTrack* trackRP, int side){
 
    return true;
 
+}
+
+
+void AnaJPsi::fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+
+   Double_t eta2 = trk2->getEta();
+   Double_t phi2 = trk2->getPhi();
+
+   Double_t eta1 = trk1->getEta();
+   Double_t phi1 = trk1->getPhi();
+
+   hPosZ->Fill(posZ);
+
+   hEtaVtxZ->Fill(eta1 , posZ );
+   hEtaVtxZ->Fill(eta2 , posZ );
+
+   hEtaPhi->Fill(eta1, phi1);
+   hEtaPhi->Fill(eta2, phi2);
+
+   hEta->Fill(eta1);
+   hEta->Fill(eta2);
+
+}
+
+void AnaJPsi::fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+
+   Double_t eta2 = trk2->getEta();
+   Double_t phi2 = trk2->getPhi();
+
+   Double_t eta1 = trk1->getEta();
+   Double_t phi1 = trk1->getPhi();
+
+   hPosZCut->Fill(posZ);
+
+   hEtaVtxZCut->Fill(eta1 , posZ );
+   hEtaVtxZCut->Fill(eta2 , posZ );
+
+   hEtaPhiCut->Fill(eta1, phi1);
+   hEtaPhiCut->Fill(eta2, phi2);
+
+   hEtaCut->Fill(eta1);
+   hEtaCut->Fill(eta2);
 }

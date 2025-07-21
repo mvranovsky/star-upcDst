@@ -30,9 +30,6 @@ class RecTree{
       UInt_t getFillNumber() const { return mFillNumber; }
       UInt_t getBunchCrossId() const { return mBunchCrossId; }
       UInt_t getBunchCrossId7bit() const { return mBunchCrossId7bit; }
-      UInt_t getNVertecies() const { return mNVertecies; }
-      UInt_t getNGoodTpcTrks() const { return mNGoodTpcTrks; }
-      UShort_t getTofMult() const { return mTofMult; }
       UInt_t getBbcSmallEast() const { return mBbcSmallEast; }
       UInt_t getBbcSmallWest() const { return mBbcSmallWest; }
       UInt_t getBbcLargeEast() const { return mBbcLargeEast; }
@@ -146,25 +143,23 @@ class RecTree{
       Double_t getBemcClusterSigmaEta(unsigned int s) { return mBemcClusterSigmaEta[s]; }
       Double_t getBemcClusterSigmaPhi(unsigned int s) { return mBemcClusterSigmaPhi[s]; }
 
-      // setters for good run list study
-      Int_t getRpOk() const { return mIsRpOk; }
-      Int_t getJPsiTrigger1() const { return mIsJPsiTrigger1; }
-      Int_t getJPsiTrigger2() const { return mIsJPsiTrigger2; }
-      Int_t getJPsiTrigger3() const { return mIsJPsiTrigger3; }
-      vector<Double_t> getTpcTrackPhi() const { return mTpcTrack_phi; }
-      vector<Double_t> getTpcTrackEta() const { return mTpcTrack_eta; }
-      vector<Double_t> getBemcTrackPhi() const { return mBemcTrack_phi; }
-      vector<Double_t> getBemcTrackEta() const { return mBemcTrack_eta; }
-      vector<Double_t> getTpcNHitsFit() const { return mTpcNHitsFit; }
-      vector<Double_t> getTpcNHitsDEdx() const { return mTpcNHitsDEdx; }
-      vector<Double_t> getTpcNSigmaElectron() const {return mTpcNSigmaElectron; }
-      vector<Double_t> getTpcNSigmaProton() const {return mTpcNSigmaProton; }
-      vector<Double_t> getTpcNSigmaKaon() const {return mTpcNSigmaKaon;}
-      vector<Double_t> getTpcNSigmaPion() const {return mTpcNSigmaPion; }
-      Int_t getNTracksBemc() { return nTracksBemc; }
-      Int_t getNTracksTof() { return nTracksTof; }
-      Int_t getNClustersBemc() { return nClustersBemc; }
-
+      //create getters for the new variables
+      int getAtLeast1JPsiTrigger() const { return mAtLeast1JPsiTrigger; }
+      int getRPsClose() const { return mRPsClose; }
+      double getNTracksTpc() const { return mNTracksTpc; }
+      double getNTracksTof() const { return mNTracksTof; }
+      double getNVertices() const { return mNVertices; }
+      double getTpcEtaAverage() const { return mTpcEtaAverage; }
+      double getBemcEtaAverage() const { return mBemcEtaAverage; }
+      double getTpcPhiAverage() const { return mTpcPhiAverage; }
+      double getBemcPhiAverage() const { return mBemcPhiAverage; }
+      int getNEventsAll() const { return mNEventsAll; }
+      int getNEventsPassed() const { return mNEventsPassed; }
+      int getNEventsJPsi() const { return mNEventsJPsi; }
+      double getLuminosity() const { return mLuminosity; }
+      double getLuminosityError() const { return mLuminosityError; }
+      int getNTracksBemc() const { return mNTracksBemc; }
+      int getNClustersBemc() const { return mNClustersBemc; }
 
       //setters
       void setRunNumber(UInt_t var) { mRunNumber = var; }
@@ -172,9 +167,8 @@ class RecTree{
       void setFillNumber(UInt_t var) { mFillNumber = var; }
       void setBunchCrossId(UInt_t var) { mBunchCrossId = var; }
       void setBunchCrossId7bit(UInt_t var) { mBunchCrossId7bit = var; }
-      void setNVertecies(UInt_t var) { mNVertecies = var; }
-      void setNGoodTpcTrks(UInt_t var) { mNGoodTpcTrks = var; }
-      void setTofMult(UShort_t var) { mTofMult = var; }
+      void setNTracksTpc(int var) { mNTracksTpc = var; }
+      void setNTracksTof(int var) { mNTracksTof = var; }
       void setBbcSmallEast(UInt_t var) { mBbcSmallEast = var; }
       void setBbcSmallWest(UInt_t var) { mBbcSmallWest = var; }
       void setBbcLargeEast(UInt_t var) { mBbcLargeEast = var; }
@@ -288,26 +282,21 @@ class RecTree{
       void setVertexStudyDcaParticles(Double_t var) { mDcaParticles = var; }
       void setVertexStudyDcaBeamline(Double_t var) { mDcaBeamline = var; }
 
-      // setters for good run list study
-      void setRpOk(Int_t var) {mIsRpOk = var; }
-      void setJPsiTrigger1(Int_t var) { mIsJPsiTrigger1 = var; }
-      void setJPsiTrigger2(Int_t var) { mIsJPsiTrigger2 = var; }
-      void setJPsiTrigger3(Int_t var) { mIsJPsiTrigger3 = var; }
-      void setTpcTrackPhi(vector<Double_t> var) { mTpcTrack_phi = var; }
-      void setTpcTrackEta(vector<Double_t> var) { mTpcTrack_eta = var; }
-      void setBemcTrackPhi(vector<Double_t> var) { mBemcTrack_phi = var; }
-      void setBemcTrackEta(vector<Double_t> var) { mBemcTrack_eta = var; }
-      void setTpcNHitsFit(vector<Double_t> var) { mTpcNHitsFit = var; }
-      void setTpcNHitsDEdx(vector<Double_t> var) { mTpcNHitsDEdx = var; }
-      void setTpcNSigmaElectron(vector<Double_t> var) { mTpcNSigmaElectron = var; }
-      void setTpcNSigmaProton(vector<Double_t> var) { mTpcNSigmaProton = var; }
-      void setTpcNSigmaKaon(vector<Double_t> var) { mTpcNSigmaKaon = var;}
-      void setTpcNSigmaPion(vector<Double_t> var) { mTpcNSigmaPion = var; }
-      void setNTracksBemc(Int_t var) { nTracksBemc = var; }
-      void setNTracksTof(Int_t var) { nTracksTof = var; }
-      void setNClustersBemc(Int_t var) { nClustersBemc = var; }
+      void setAtLeast1JPsiTrigger(int var) { mAtLeast1JPsiTrigger = var; }
+      void setRPsClose(int var) { mRPsClose = var; }
+      void setNVertices(int var) { mNVertices = var; }
+      void setTpcEtaAverage(double var) { mTpcEtaAverage = var; }
+      void setBemcEtaAverage(double var) { mBemcEtaAverage = var; }
+      void setTpcPhiAverage(double var) { mTpcPhiAverage = var; }
+      void setBemcPhiAverage(double var) { mBemcPhiAverage = var; }
+      void setNEventsAll(int var) { mNEventsAll = var; }
+      void setNEventsPassed(int var) { mNEventsPassed = var; }
+      void setNEventsJPsi(int var) { mNEventsJPsi = var; }
+      void setLuminosity(double var) { mLuminosity = var; }
+      void setLuminosityError(double var) { mLuminosityError = var; }
+      void setNTracksBemc(int var) { mNTracksBemc = var; }
+      void setNClustersBemc(int var) { mNClustersBemc = var; }
 
-      //void CalculatePID();
 
    private:
       Util* mUtil;
@@ -315,8 +304,6 @@ class RecTree{
       // event info
       Double_t mRunNumber;
       UInt_t mEventNumber, mFillNumber, mBunchCrossId, mBunchCrossId7bit;
-      UShort_t mTofMult;
-      UInt_t mNVertecies, mNGoodTpcTrks;
       
       // BBC and ZDC info
       UInt_t mBbcSmallEast, mBbcSmallWest, mBbcLargeEast, mBbcLargeWest;
@@ -375,12 +362,14 @@ class RecTree{
       Double_t mBemcEta[nSigns], mBemcPhi[nSigns], mBemcPt[nSigns], mBemcE[nSigns];
       Double_t mBemcClusterEta[nSigns], mBemcClusterPhi[nSigns], mBemcClusterE[nSigns];
       Double_t mBemcClusterHTE[nSigns], mBemcClusterSigmaEta[nSigns], mBemcClusterSigmaPhi[nSigns];
-      Int_t  nTracksBemc, nClustersBemc;
+      Int_t  mNTracksBemc, mNClustersBemc;
 
-      // info about good run list
-      Int_t mIsRpOk , mIsJPsiTrigger1, mIsJPsiTrigger2, mIsJPsiTrigger3, nTracksTof;
-      vector<Double_t> mTpcTrack_phi, mTpcTrack_eta, mBemcTrack_eta, mBemcTrack_phi, mTpcNHitsFit, mTpcNHitsDEdx, mTpcNSigmaElectron, mTpcNSigmaPion, mTpcNSigmaProton, mTpcNSigmaKaon;
-
+      // good run info
+      int mAtLeast1JPsiTrigger, mRPsClose;
+      double mNTracksTpc, mNTracksTof, mNVertices;
+      double mTpcEtaAverage, mBemcEtaAverage, mTpcPhiAverage, mBemcPhiAverage;
+      int mNEventsAll, mNEventsPassed, mNEventsJPsi;
+      double mLuminosity, mLuminosityError;
 
 
 };

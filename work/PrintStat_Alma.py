@@ -50,6 +50,7 @@ if __name__ == "__main__":
     out = Popen(cmd.split(), stderr=PIPE ,stdout=PIPE).communicate()
     out = out[0].split(b"\n")
     for i in out:
+        #print(i)
         i1 = i.find(b"sched/sched")+len(b"sched/sched")
         i2 = i.find(b".csh")
         if i2 < 0: continue
@@ -87,7 +88,7 @@ if __name__ == "__main__":
         if job in running or job in donelist:
             continue
         missing.append(job)
-        print(job)
+        #print(job)
         
 
     print("Errors:", len(missing))

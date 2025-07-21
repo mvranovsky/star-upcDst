@@ -48,8 +48,6 @@ bool Ana::backToBack(const StUPCTrack *trk1, const StUPCTrack *trk2){
    return true;
 }
 
-
-
 bool Ana::RPInFidRange(double x, double y) const{
    return (abs(y) < 0.8 && abs(y) > 0.4 && x > -0.27 && (x + 0.6)*(x + 0.6) + y*y < 1.25) ? true : false;
 }
@@ -157,14 +155,14 @@ void Ana::AnaRpTracks(StRPEvent *event)
 
 void Ana::SaveEventInfo(const StUPCEvent *upcEvt)
 {
-   mRecTree->setNGoodTpcTrks( hadronID.size() );
-   mRecTree->setTofMult( tagID.size() );
+   mRecTree->setNTracksTpc( hadronID.size() );
+   mRecTree->setNTracksTof( tagID.size() );
    mRecTree->setEventNumber( upcEvt->getEventNumber() );
    mRecTree->setFillNumber( upcEvt->getFillNumber() );
    mRecTree->setBunchCrossId( upcEvt->getBunchCrossId() );
    mRecTree->setBunchCrossId7bit( upcEvt->getBunchCrossId7bit() );
    mRecTree->setRunNumber( upcEvt->getRunNumber() );
-   mRecTree->setNVertecies( upcEvt->getNumberOfVertices() );
+   mRecTree->setNVertices( upcEvt->getNumberOfVertices() );
 }
 /*
 void Ana::SaveTrackInfo(const StUPCTrack *trk, unsigned int iTrack) // this function uses momentum with trajectory being refitted to primary vertex
@@ -595,26 +593,6 @@ void Ana::resetInfo() {
       mRecTree->setDecayLength( -9999, iVtx );
       mRecTree->setVertexDiff( -9999, iVtx ); 
    }
-
-
-   //good run info
-   mRecTree->setRpOk(-1);
-   mRecTree->setJPsiTrigger1(-1);
-   mRecTree->setJPsiTrigger2(-1);
-   mRecTree->setJPsiTrigger3(-1);
-   mRecTree->setTpcTrackPhi({});
-   mRecTree->setTpcTrackEta({});
-   mRecTree->setBemcTrackPhi({});
-   mRecTree->setBemcTrackEta({});
-   mRecTree->setTpcNHitsFit({});
-   mRecTree->setTpcNHitsDEdx({});
-   mRecTree->setTpcNSigmaProton({});
-   mRecTree->setTpcNSigmaPion({});
-   mRecTree->setTpcNSigmaElectron({});
-   mRecTree->setTpcNSigmaKaon({});
-   mRecTree->setNTracksBemc(0);
-   mRecTree->setNTracksTof(0);
-   mRecTree->setNClustersBemc(0);
 
 
    // BEMC info

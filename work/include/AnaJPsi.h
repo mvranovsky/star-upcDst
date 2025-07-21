@@ -28,6 +28,9 @@ class AnaJPsi : public Ana{
       bool chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2);
       bool exactly1RPTrack(int &side);
       bool fiducialVolume(const StUPCRpsTrack *trackRP, int side);
+      void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+      void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
+      void loadCuts(bool runSysStudy);
 
       // all control histograms
       TH2F *hRPcorr[2], *hRPcorrWest[2], *hRPcorrEast[2], *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;
@@ -41,9 +44,10 @@ class AnaJPsi : public Ana{
       TH1D *hPt, *hPtCut;
       TH1D *hInvMassJPsi, *hInvMassJPsiBcg, *hTrackQualityFlow;
       Util* mUtil;
+      TH1D* hVtxZByFillNum;
 
       TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut, *hEtaBemc, *hEtaBemcCut;
-      TH2F* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
+      TH2D* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
 
       // virtual photon plots
       TH1D* hPtMissing, *hPtMissingCut, *hPhotonMomX, *hPhotonMomY, *hPhotonMomXBcg, *hPhotonMomYBcg, *hPtMissingBcg, *hPtMissingBcgCut;
@@ -54,6 +58,11 @@ class AnaJPsi : public Ana{
       int tpcCounter;
       TH1D *hTriggerBits;
       TH1D *hPIDStats[2];
+
+
+      // cuts
+      double VERTEXZRANGE,MAXDCAZ ,MINDCAZ, MAXDCAXY, MAXETA, MINPIDCHIPP, MINPIDCHIPIPI, MINPIDCHIKK, MAXPIDCHIEE;
+      int MINNHITSFIT, MINNHITSDEDX;
 
 };
 

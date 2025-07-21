@@ -129,9 +129,12 @@ void AnaGoodRun::Init(){
    
    
    if( DEBUG )
-     cout<<"AnaGoodRun::Init() called"<<endl;
-     
-     mOutFile->cd();
+   cout<<"AnaGoodRun::Init() called"<<endl;
+   
+   mOutFile->cd();
+   mOutFile->mkdir(nameOfAnaGoodRunDir);
+   mOutFile->cd(nameOfAnaGoodRunDir);
+   
    hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nGRCuts-1, 1, nGRCuts);
    for(int tb=1; tb<nGRCuts; ++tb) {
       hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->analysisGoodRun(tb));
@@ -145,6 +148,7 @@ void AnaGoodRun::Init(){
    
    //mRecTree = new RecTree(nameOfAnaGoodRunTree, AnaGoodRunTreeBits, false); 
 
+   
    hTpcEtaPhi = new TH2F("hTpcEtaPhi", "hTpcEtaPhi; #eta; #phi", 100, -1.0, 1.0, 100, -3.14, 3.14);
    hBemcEtaPhi = new TH2F("hBemcEtaPhi", "hBemcEtaPhi; #eta; #phi", 100, -1.0, 1.0, 100, -3.14, 3.14);
    hTpcEta = new TH1D("hTpcEta", "hTpcEta; #eta; counts", 100, -1.5, 1.5);
@@ -205,10 +209,10 @@ bool AnaGoodRun::goodQualityTrack(const StUPCTrack *trk){
 void AnaGoodRun::readLumiFile(){
     ifstream lumiFile;
 
-    lumiFile.open( "/star/u/truhlar/star-upcDst/work/lists/luminosityForZB.list" );
+    lumiFile.open( "/star/u/mvranovsk/star-upcDst/work/lists/luminosityForZB.list" );
     if (!lumiFile.is_open() )
     {
-       cerr << "\nERROR in PlotManager::readLumiFile(): Problems with opening a file: " << endl;
+       cerr << "\nERROR in AnaGoodRun::readLumiFile(): Problems with opening a file: " << endl;
        return;
     }
 
