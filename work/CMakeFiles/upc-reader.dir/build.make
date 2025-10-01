@@ -187,9 +187,22 @@ CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.s"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/AnaGoodRun.cxx -o CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.s
 
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: CMakeFiles/upc-reader.dir/flags.make
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: src/AnaZeroBias.cxx
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o -c /star/u/mvranovsk/star-upcDst/work/src/AnaZeroBias.cxx
+
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /star/u/mvranovsk/star-upcDst/work/src/AnaZeroBias.cxx > CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.i
+
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/AnaZeroBias.cxx -o CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.s
+
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: CMakeFiles/upc-reader.dir/flags.make
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: src/EmbeddingJPsi.cxx
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o -c /star/u/mvranovsk/star-upcDst/work/src/EmbeddingJPsi.cxx
 
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.i: cmake_force
@@ -199,6 +212,19 @@ CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.i: cmake_force
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.s"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/EmbeddingJPsi.cxx -o CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.s
+
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: CMakeFiles/upc-reader.dir/flags.make
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: src/BemcEfficiency.cxx
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o -c /star/u/mvranovsk/star-upcDst/work/src/BemcEfficiency.cxx
+
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /star/u/mvranovsk/star-upcDst/work/src/BemcEfficiency.cxx > CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.i
+
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /star/u/mvranovsk/star-upcDst/work/src/BemcEfficiency.cxx -o CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.s
 
 # Object files for target upc-reader
 upc__reader_OBJECTS = \
@@ -212,7 +238,9 @@ upc__reader_OBJECTS = \
 "CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o" \
 "CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o" \
 "CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o" \
-"CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o"
+"CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o" \
+"CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o" \
+"CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o"
 
 # External object files for target upc-reader
 upc__reader_EXTERNAL_OBJECTS =
@@ -227,10 +255,12 @@ libupc-reader.so: CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o
 libupc-reader.so: CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o
 libupc-reader.so: CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o
 libupc-reader.so: CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o
+libupc-reader.so: CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o
 libupc-reader.so: CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o
+libupc-reader.so: CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o
 libupc-reader.so: CMakeFiles/upc-reader.dir/build.make
 libupc-reader.so: CMakeFiles/upc-reader.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX shared library libupc-reader.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/star/u/mvranovsk/star-upcDst/work/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX shared library libupc-reader.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/upc-reader.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

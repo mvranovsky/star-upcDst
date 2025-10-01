@@ -4,12 +4,13 @@
 #include "Util.h"
 #include "RecTree.h"
 #include "Ana.h"
-#include "UpcDstLibreries.h"
+#include "UpcDstLibraries.h"
 #include "RunDef.h"
 #include "StUPCV0.h"
 #include "TParticle.h"
 #include "TVector3.h"
 #include "TLorentzVector.h"
+#include "TRandom3.h"
 
 using namespace std;
 using namespace UTIL;
@@ -33,7 +34,10 @@ class EmbeddingJPsi : public Ana{
       void fillBemcInfo(const StUPCTrack *trk);
       void fillBemcInfoAll();
       void trueMCPeak();
-      void loadCuts(bool runSysStudy);
+      void loadCuts();
+      bool isBemcHit(const StUPCTrack *trk); // MC simulator of BEMC efficiency
+      double bemcEfficiency(double pT); //function which returns bemc efficiency based on fit to real data
+      void runControlOfBemcEfficiency();
       // all control histograms
       TH2F *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;
       TH1D *hBranchRP;
@@ -42,13 +46,15 @@ class EmbeddingJPsi : public Ana{
       TH1D *hNSigmaPi, *hNSigmaP, *hNSigmaK, *hDEdxSignal;
       TH1D *hPIDChiee, *hPIDChipp, *hPIDChipipi, *hPIDChikk;
       TH1D *hPt, *hPtCut;
-      TH1D *hInvMassJPsi, *hInvMassJPsiBcg, *hTrackQualityFlow;
+      TH1D *hInvMassJPsi, *hTrackQualityFlow;
       Util* mUtil;
       TH2F *hNSigmaEE1, *hNSigmaEE2, *hNSigmaPP1, *hNSigmaPP2, *hNSigmaKK1, *hNSigmaKK2, *hNSigmaPiPi1, *hNSigmaPiPi2;
 
-      TH1D *hMassDifference, *hInvMassJPsiMC;
+      TH1D *hInvMassJPsiMC;
+      TH1D *hPtPair;
 
-
+      
+      
       TH1D* hEta,*hEtaCut, *hPosZ, *hPosZCut, *hEtaBemc, *hEtaBemcCut;
       TH2F* hEtaPhi, *hEtaPhiCut, *hEtaVtxZ, *hEtaVtxZCut; 
 
@@ -58,8 +64,9 @@ class EmbeddingJPsi : public Ana{
       
       Double_t beamline[4];
       Double_t bField;
-   
-
+      
+      TGraph *gBEControl; // graph for control of bemc efficiency function
+      
       vector<int> tracksBEMC;
 
       int tpcCounter;

@@ -1,5 +1,5 @@
-#ifndef Libreries_h
-#define Libreries_h
+#ifndef Libraries_h
+#define Libraries_h
 
 // c++ headers
 #include <iostream>

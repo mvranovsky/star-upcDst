@@ -6,7 +6,7 @@
 //    Author: Truhlar Tomas
 //_____________________________________________________________________________
 
-#include "Libreries.h"
+#include "Libraries.h"
 
 namespace UTIL {
    class Util; // just tell the compiler to expect a class def
@@ -37,9 +37,10 @@ namespace UTIL {
    enum V0SELECTION_CUT {V0ALL = 1, V0TRIG,V0FLAG, V0PID, V0PAIR, V0ETAVTXZ, V0OPPOSITE, V0PIPI, V0PPI, V0PIPBAR , nV0SelectionCuts };
    enum JPSISELECTION_CUT {JPSIALL = 1, JPSITRIG, JPSI1VTX,JPSIBEMC , JPSIVTXZETA, JPSIBACKTOBACK,JPSIPID, JPSI1RP, JPSIRPFIDCUT,JPSIQTOT, nJPSISelectionCuts };
    enum JPSISELECTION_CUT2 {JPSI2ALL = 1, JPSI2TRIG, JPSI21VTX,JPSI24TRACKS, JPSI2VTXZETA, JPSI2PID, JPSI2QTOT,nJPSI2SelectionCuts };
-   enum EMBEDDING{ EMBEDDINGALL = 1, EMBEDDING2BEMC, EMBEDDINGBACKTOBACK, EMBEDDINGETA,EMBEDDINGPID, EMBEDDINGQTOT, nEmbeddingCuts };
-   enum GOODRUN_CUT {GRALL = 1, GRTRIGGER , GRRP, GRGOODTRACKTPC, GRGOODTRACKBEMC, nGRCuts };
+   enum EMBEDDING{ EMBEDDINGALL = 1, EMBEDDING2BEMC, EMBEDDINGETA, EMBEDDINGBACKTOBACK,EMBEDDINGPID, EMBEDDINGQTOT, nEmbeddingCuts };
+   enum ZEROBIAS_CUT {ZBALL = 1, ZBTRIGGER , ZBBEMCTRACKS, ZBBACKTOBACK,ZBPID, ZBVTXZETA , ZBTRIGGERCONDITION, nZBCuts };
    enum TOFEFF_CUT {TOFALL = 1, TOFTRIG, TOFTRACKQUALITY, TOFETAVTXZ, TOFPAIR, TOFOPPOSITE , nTOFEFFCuts};
+   enum BE_CUT { BEALL = 1, BETRIG, BE1VTX, BE2TOF, BEPROJECTION, BEDELTADIPANGLE, BEETAVTXZ, BEPID, BEINVMASS, BEQTOT, nBECuts };
    enum RANGE_LIMIT { MIN, MAX };
    enum DATASET { MC = 0, MCZB, DATA, nDataSets };
    enum DATATAG { TRUEMC = 0, RECO, nDataTag };
@@ -76,8 +77,9 @@ class UTIL::Util{
       inline TString analysisJPSI(UInt_t id) const { if(id<nJPSISelectionCuts) return mJPSICutName[id]; else{ std::cerr << "ERROR in Util::JPsiCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisJPSI2(UInt_t id) const { if(id<nJPSI2SelectionCuts) return mJPSI2CutName[id]; else{ std::cerr << "ERROR in Util::JPSI2CutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString embeddingName(UInt_t id) const { if(id<nEmbeddingCuts) return mEmbeddingName[id]; else{ std::cerr << "ERROR in Util::embeddingName(UInt_t id): id out of range" << std::endl; return TString("");} }
-      inline TString analysisGoodRun(UInt_t id) const { if(id<nGRCuts) return mGRCutName[id]; else{ std::cerr << "ERROR in Util::GRCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
-      inline TString analysisTofEff(UInt_t id) const { if(id<nTOFEFFCuts) return mTOFEFFName[id]; else{ std::cerr << "ERROR in Util::analysisTofEff(UInt_t id): id out of range" << std::endl; return TString("");} }      
+      inline TString analysisZeroBias(UInt_t id) const { if(id<nZBCuts) return mZBCutName[id]; else{ std::cerr << "ERROR in Util::ZBCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
+      inline TString analysisTofEff(UInt_t id) const { if(id<nTOFEFFCuts) return mTOFEFFName[id]; else{ std::cerr << "ERROR in Util::analysisTofEff(UInt_t id): id out of range" << std::endl; return TString("");} }
+      inline TString bemcEfficiency(UInt_t id) const { if(id<nBECuts) return mBECutName[id]; else{ std::cerr << "ERROR in Util::bemcEfficiency(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString dataSetName(UInt_t id) const { if(id<nDataSets) return mDataSetName[id]; else{ std::cerr << "ERROR in Util::dataSetName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString dataTagName(UInt_t id) const { if(id<nDataTag) return mDataTagName[id]; else{ std::cerr << "ERROR in Util::dataTagName(UInt_t id): id out of range" << std::endl; return TString("");} }
 
@@ -135,8 +137,9 @@ class UTIL::Util{
       TString* mDataSetName;
       TString* mDataTagName;
       TString* mTOFEFFName;
-      TString* mGRCutName;
+      TString* mZBCutName;
       TString* mEmbeddingName;
+      TString* mBECutName;
           
       Double_t mParticleMass[nParticles]; // GeV/c^2
       const Double_t mSpeedOfLight; // m/s

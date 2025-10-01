@@ -1,8 +1,8 @@
-#ifndef UpcDstLibreries_h
-#define UpcDstLibreries_h
+#ifndef UpcDstLibraries_h
+#define UpcDstLibraries_h
 
 // c++ headers and ROOT headers
-#include "Libreries.h"
+#include "Libraries.h"
 
 // picoDst headers
 #include "StRPEvent.h"

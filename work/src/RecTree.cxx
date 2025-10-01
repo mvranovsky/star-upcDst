@@ -14,8 +14,7 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
    // event info
    mRecTree->Branch("runNumber", &mRunNumber);
 
-   if( treeVersion.test(0) )
-   {
+   if( treeVersion.test(0) ){
       mRecTree->Branch("nVertices", &mNVertices);
       mRecTree->Branch("nTracksTpc", &mNTracksTpc);
       mRecTree->Branch("nTracksTof", &mNTracksTof);
@@ -50,6 +49,8 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       mRecTree->Branch("mSquared", &mMSquared[0]);
       mRecTree->Branch("pairID", &mPairID[0]);
       mRecTree->Branch("totQ", &mTotQ[0]);
+      mRecTree->Branch("deltaDipAngle", &mDeltaDipAngle[0]);
+      mRecTree->Branch("isBackToBack", &mIsBackToBack[0]);
       for (int iPart = 0; iPart < nParticles; ++iPart)
          mRecTree->Branch("chiSquare" + mUtil->particleName(iPart), &mChiSquare[iPart]);
    
@@ -74,7 +75,7 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
             if( iTag == TRUEMC )
                mRecTree->Branch(Form("QAHadron%i",i) + tag, &mQATruth[i]);
 
-         } 
+         }
 
          mRecTree->Branch(Form("dEdxInKevCm%i",i), &mDEdxInKevCm[i]);
          mRecTree->Branch(Form("tofTimeInNs%i",i), &mTofTimeInNs[i]);
@@ -143,38 +144,11 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       mRecTree->Branch("ZdcEastUA", &mZdcEastUA); 
       mRecTree->Branch("ZdcWestUA", &mZdcWestUA); 
    }
+   
    // trigger efficiency info
    if( treeVersion.test(6) )
    {
-      mRecTree->Branch("BbcDsmBit", &mBbcDsmBit);  
-      mRecTree->Branch("BbcSmallEDsmBit", &mBbcSmallEDsmBit);
-      mRecTree->Branch("BbcSmallWDsmBit", &mBbcSmallWDsmBit);
-      mRecTree->Branch("BbcLargeEDsmBit", &mBbcLargeEDsmBit);
-      mRecTree->Branch("BbcLargeWDsmBit", &mBbcLargeWDsmBit);
-      mRecTree->Branch("ZdcDsmBit", &mZdcDsmBit);
-      mRecTree->Branch("ZdcEDsmBit", &mZdcEDsmBit);
-      mRecTree->Branch("ZdcWDsmBit", &mZdcWDsmBit);
-
-      mRecTree->Branch("BbcTrigBit", &mBbcTrigBit);  
-      mRecTree->Branch("ZdcTrigBit", &mZdcTrigBit);
-      mRecTree->Branch("ZdcETrigBit", &mZdcETrigBit);
-      mRecTree->Branch("ZdcWTrigBit", &mZdcWTrigBit);  
-
-      mRecTree->Branch("tofTrigBit", &mTofTrigBit);
-      mRecTree->Branch("tofDsmBit", &mTofDsmBit);
-      mRecTree->Branch("tofDsmABit", &mTofDsmABit);
-      mRecTree->Branch("tofDsmBBit", &mTofDsmBBit);
-
-      mRecTree->Branch("RpTrigBit", &mRpTrigBit);  
-      mRecTree->Branch("rpEtTrigBit", &mRpEtTrigBit);  
-      mRecTree->Branch("rpItTrigBit", &mRpItTrigBit);  
-      mRecTree->Branch("RpDsmBit", &mRpDsmBit);  
-      mRecTree->Branch("rpEtDsmBit", &mRpEtDsmBit);
-      mRecTree->Branch("rpItDsmBit", &mRpItDsmBit); 
-      for (int iRp = 0; iRp < nRomanPots; ++iRp)
-      {
-         mRecTree->Branch("rp" + mUtil->rpName(iRp) + "DsmBit", &mRpTrigBits[iRp]); 
-      }
+      mRecTree->Branch("isTopology", &mIsTopology);
    }
    
 
@@ -258,6 +232,7 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
    if( treeVersion.test(13) ){ 
       for (int i = 0; i < nSigns; ++i)
       {
+         mRecTree->Branch(Form("isBemcHit%i", i), &mIsBemcHit[i]);
          mRecTree->Branch(Form("bemcTrackEta%i", i), &mBemcEta[i]);
          mRecTree->Branch(Form("bemcTrackPt%i", i), &mBemcPt[i]);
          mRecTree->Branch(Form("bemcTrackPhi%i", i), &mBemcPhi[i]);
@@ -278,15 +253,20 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
       mRecTree->Branch("AtLeast1JPsiTrigger", &mAtLeast1JPsiTrigger, "AtLeast1JPsiTrigger/I");
       mRecTree->Branch("RPsClose", &mRPsClose, "RPsClose/I");
       mRecTree->Branch("nEventsAll", &mNEventsAll, "nEventsAll/I");
-      mRecTree->Branch("nEventsPassed", &mNEventsPassed, "nEventsPassed/I");
+      mRecTree->Branch("nEventsZBVetoAll", &mNEventsZBVetoAll, "nEventsZBVetoAll/I");
+      mRecTree->Branch("nEventsZBVetoPassed", &mNEventsZBVetoPassed, "nEventsZBVetoPassed/I");
       mRecTree->Branch("nEventsJPsi", &mNEventsJPsi, "nEventsJPsi/I");
+      mRecTree->Branch("nEventsLumiFile", &mNEventsLumiFile, "nEventsLumiFile/I");
       mRecTree->Branch("luminosity", &mLuminosity, "luminosity/D");
+      mRecTree->Branch("instLumi", &mInstLumi, "instLumi/D");
+
       mRecTree->Branch("luminosityError", &mLuminosityError, "luminosityError/D");
-      mRecTree->Branch("nTracksBEMC", &mNTracksBemc, "nTracksBEMC/D");
-      mRecTree->Branch("nClustersBEMC", &mNClustersBemc, "nClustersBEMC/D");
-      mRecTree->Branch("nTracksTPC", &mNTracksTpc, "nTracksTPC/D");
-      mRecTree->Branch("nTracksTOF", &mNTracksTof, "nTracksTOF/D");
-      mRecTree->Branch("nVertices", &mNVertices, "nVertices/D");
+      mRecTree->Branch("averageTracksBemc", &mAverageTracksBemc, "averageTracksBEMC/D");
+      mRecTree->Branch("averageClustersBemc", &mAverageClustersBemc, "averageClustersBEMC/D");
+      mRecTree->Branch("averageTracksTPC", &mAverageTracksTpc, "averageTracksTPC/D");
+      mRecTree->Branch("averageTracksTOF", &mAverageTracksTof, "averageTracksTOF/D");
+      mRecTree->Branch("averageVertices", &mAverageVertices, "averageVertices/D");
+
       mRecTree->Branch("tpcEtaAverage", &mTpcEtaAverage, "tpcEtaAverage/D");
       mRecTree->Branch("bemcEtaAverage", &mBemcEtaAverage, "bemcEtaAverage/D");
       mRecTree->Branch("tpcPhiAverage", &mTpcPhiAverage, "tpcPhiAverage/D");
@@ -295,13 +275,10 @@ RecTree::RecTree(TString treeName, bitset<16> treeVersion, bool isBcgTree) {
    }
 
 
-
-
-
    // Setting background Tree
    if(isBcgTree){
       mBcgTree = mRecTree->CloneTree(0);
-      mBcgTree->SetName(treeName + "_Bcg");
+      mBcgTree->SetName(treeName + "_Bcg");  
    }
 }//RecTree::CreateRecTree
 
@@ -483,6 +460,8 @@ RecTree::RecTree(TTree* tree, bitset<16> treeVersion) {
 
 RecTree::~RecTree(){
    if(mUtil) delete mUtil;
+   if(mRecTree) delete mRecTree;
+   if(mBcgTree) delete mBcgTree;
 }
 
 

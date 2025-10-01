@@ -172,12 +172,27 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mEmbeddingName[EMBEDDINGPID] = TString("PID");
    mEmbeddingName[EMBEDDINGQTOT] = TString("Q_{tot} = 0");
 
-   mGRCutName = new TString[nGRCuts];
-   mGRCutName[GRALL] = TString("All");
-   mGRCutName[GRTRIGGER] = TString("J/#psi Trigger");
-   mGRCutName[GRRP] = TString("RP working");
-   mGRCutName[GRGOODTRACKTPC] = TString("Good TPC track");
-   mGRCutName[GRGOODTRACKBEMC] = TString("Good BEMC track");
+   mZBCutName = new TString[nZBCuts];
+   mZBCutName[ZBALL] = TString("All");
+   mZBCutName[ZBTRIGGER] = TString("RP_zerobias Trigger");
+   mZBCutName[ZBBEMCTRACKS] = TString("Good BEMC tracks");
+   mZBCutName[ZBPID] = TString("PID");
+   mZBCutName[ZBBACKTOBACK] = TString("Back To Back"); 
+   mZBCutName[ZBVTXZETA] = TString("V_{Z} - #eta");
+   mZBCutName[ZBTRIGGERCONDITION] = TString("Trigger condition");
+
+
+   mBECutName = new TString[nBECuts];
+   mBECutName[BEALL] = TString("All");
+   mBECutName[BETRIG] = TString("trigger");
+   mBECutName[BE1VTX] = TString("1 Vertex");
+   mBECutName[BE2TOF] = TString("2 TOF tracks");
+   mBECutName[BEPROJECTION] = TString("Projected to BEMC");
+   mBECutName[BEDELTADIPANGLE] = TString("#delta -dip-angle");
+   mBECutName[BEETAVTXZ] = TString("#eta - V_{Z}");
+   mBECutName[BEPID] = TString("PID");
+   mBECutName[BEINVMASS] = TString("m_{ee} < 0.1 GeV/c^{2}");
+   mBECutName[BEQTOT] = TString("Q_{tot} = 0");
 
 
    mDataSetName = new TString[nDataSets];

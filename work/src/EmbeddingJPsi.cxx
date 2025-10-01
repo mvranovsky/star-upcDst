@@ -19,7 +19,6 @@ void EmbeddingJPsi::Make(){
    SaveEventInfo(mUpcEvt);
    // 1 vertex
 
-
    tpcCounter = 0;
    tracksBEMC.clear();
    hNClustersBEMC->Fill( mUpcEvt->getNumberOfClusters() );
@@ -32,16 +31,25 @@ void EmbeddingJPsi::Make(){
       if(!trk)  continue;
 
       ++tpcCounter;
-      
+
+      // vertexing does not work in embedding for pp, i have to use the truth information otherwise i would have to go over global tracks
       if(!(trk->getIdTruth() == 1 || trk->getIdTruth() == 2) )  continue;
       
       hTrackQualityFlow->Fill(1);
       
-      if( !trk->getFlag(StUPCTrack::kBemc) )  continue;
+      if( trk->getFlag(StUPCTrack::kBemc) )  fillBemcInfo(trk);  // before, here was continue
       
-      hTrackQualityFlow->Fill(2);
+      if(runCustomBemcSimulator){  // custom simulator for BEMC efficiency
+         if( isBemcHit(trk) ){
+            continue;
+         }
+      }else{  // standard way from embedding
+         if( !trk->getFlag(StUPCTrack::kBemc) )  {
+            continue;
+         }
+      }
 
-      fillBemcInfo(trk);
+      hTrackQualityFlow->Fill(2);
 
       fillTrackQualityCuts(trk);
 
@@ -73,7 +81,9 @@ void EmbeddingJPsi::Make(){
    hAnalysisFlow->Fill(EMBEDDINGETA);
 
    if(!backToBack(track1, track2))  return;
-   
+
+   mRecTree->setIsBackToBack(1,0);
+
    hAnalysisFlow->Fill(EMBEDDINGBACKTOBACK);
 
    //PID
@@ -90,6 +100,8 @@ void EmbeddingJPsi::Make(){
    track2->getLorentzVector(electron2, mUtil->mass(ELECTRON));
    state = electron1 + electron2;
 
+   hPtPair->Fill(state.Pt());
+
    SaveStateInfo(state,track1->getCharge() + track2->getCharge(),0 );
    SaveChiSquareInfo(track1, track2);
    SaveTrackInfo(track1,electron1, 0 );
@@ -105,7 +117,7 @@ void EmbeddingJPsi::Make(){
    }else{
       mRecTree->FillBcgTree();
    }
-   
+
 
    if(DEBUG){
       cout << "Finished EmbeddingJPsi::Make()" << endl;
@@ -120,12 +132,10 @@ void EmbeddingJPsi::Init(){
      cout<<"EmbeddingJPsi::Init() called"<<endl;
 
    mOutFile->cd();
-
-   mRecTree = new RecTree(nameOfEmbeddingJPsiTree, EmbeddingJPsiTreeBits, true);
-
-   mOutFile->mkdir(nameOfEmbeddingJPsiDir);
-   mOutFile->cd(nameOfEmbeddingJPsiDir);
-   loadCuts(runSysStudyEmbedding);  // if running sys study, will include loose cuts 
+     mRecTree = new RecTree(nameOfEmbeddingJPsiTree, EmbeddingJPsiTreeBits, true);
+     mOutFile->mkdir(nameOfEmbeddingJPsiDir);
+     mOutFile->cd(nameOfEmbeddingJPsiDir);
+   loadCuts();  // if running sys study, will include loose cuts 
    
    hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nEmbeddingCuts-1, 1, nEmbeddingCuts);
    for(int tb=1; tb<nEmbeddingCuts; ++tb) {
@@ -202,12 +212,15 @@ void EmbeddingJPsi::Init(){
    hBemcClusterPhiAll = new TH1D("hBemcClusterPhiAll", "BEMC cluster phi; #varphi_{BEMC} [rad]; counts", 100, -4, 4);
    hClusterMatched = new TH1D("hClusterMatched", "Cluster matched; Cluster matching (0 == all, 1 == matched with track); counts", 2, -0.5, 1.5);
 
-   hPt = new TH1D("hPt", "Transverse momentum of hadrons", 30, 0, 3);
+   hPt = new TH1D("hPt", "Transverse momentum of hadrons", 120, 0, 3);
    hPt->SetTitle("Distribution of p_{T}");
    hPt->GetXaxis()->SetTitle("p_{T} [GeV]");
    hPt->GetYaxis()->SetTitle(YAxisDescription);
 
-   hPtCut = new TH1D("hPtCut", "hPtCut;p_{T} [GeV/c]; counts", 30, 0, 3);
+   hPtCut = new TH1D("hPtCut", "hPtCut;p_{T} [GeV/c]; counts", 120, 0, 3);
+
+   hPtPair = new TH1D("hPtPair","transverse momentum of pair of electrons", 120, 0, 3);
+
 
    hNVertices = new TH1D("hNVertices", "Number of vertices before cut; n_{vertices} [-]; counts", 11, -0.5, 10.5);
 
@@ -230,26 +243,32 @@ void EmbeddingJPsi::Init(){
 
    hNTracksTpc = new TH1D("hNTracksTpc", "hNTracksTpc; Number of TPC tracks [-]; counts", 26, -0.5, 25.5);
   
-   //hInvMassJPsi = new TH1D("hInvMassJPsi", "hInvMassJPsi; m_{e e} [GeV/c^{2}]; counts", 40,2, 4);
-   hInvMassJPsiBcg = new TH1D("hInvMassJPsiBcgWide", "hInvMassJPsiBcg; m_{e e} [GeV/c^{2}]; counts", 100, 0, 1);
+   hInvMassJPsi = new TH1D("hInvMassTrueMC", "hInvMassJPsi; m_{ee} [GeV/c^{2}]; counts", 225, 0.5, 5);
 
-   hInvMassJPsi = new TH1D("hInvMassJPsiMC", "hInvMassJPsi; m_{ee} [GeV/c^{2}]; counts", 100,3.09, 3.10);
-
-   hMassDifference = new TH1D("hMassDifference", "hMassDifference; m_{ee} [GeV/c^{2}]; counts", 40, 0, 1);
+   gBEControl = new TGraph(); // graph for control of BEMC efficiency
+   gBEControl->SetName("gBEControl");
+   gBEControl->SetTitle("BEMC efficiency used in MC simulation; p_{T} [GeV/c]; efficiency");
+   runControlOfBemcEfficiency();
+  
+   bField = -4.991; // guess based on real runs
+   beamline[0] = 0;
+   beamline[2] = 0;
+   beamline[1] = 0;
+   beamline[3] = 0;
 
    cout << "Finished EmbeddingJPsi::Init()" << endl;
 }
 
 
-void EmbeddingJPsi::loadCuts(bool isSysStudy){
+void EmbeddingJPsi::loadCuts(){
 
-   if(isSysStudy){
+   if(runSysStudy){
       MINNHITSFIT = minNHitsFitLoose;
       MINNHITSDEDX = minNHitsDEdxLoose;
       MAXETA = maxEtaLoose;
-      MINPIDCHIPP = minPidChiPPLoose;
-      MINPIDCHIPIPI = minPidChiPiPiLoose;
-      MINPIDCHIKK = minPidChiKKLoose;
+      MINPIDCHIPP = minPidChiPP;
+      MINPIDCHIPIPI = minPidChiPiPi;
+      MINPIDCHIKK = minPidChiKK;
       MAXPIDCHIEE = maxPidChiEELoose; // no cut
    }else{
       MINNHITSFIT = minNHitsFit;
@@ -261,9 +280,6 @@ void EmbeddingJPsi::loadCuts(bool isSysStudy){
       MAXPIDCHIEE = maxPidChiEE; // no cut
    }
 }
-
-
-
 
 void EmbeddingJPsi::trueMCPeak(){
 
@@ -289,7 +305,6 @@ void EmbeddingJPsi::trueMCPeak(){
    TLorentzVector stateMC(mc1->Px() + mc2->Px(), mc1->Py() + mc2->Py(), mc1->Pz() + mc2->Pz(), mc1->Energy() + mc2->Energy());
 
    hInvMassJPsi->Fill(stateMC.M());
-   hInvMassJPsiBcg->Fill(stateMC.M());
 
 
 }
@@ -329,7 +344,7 @@ void EmbeddingJPsi::fillBemcInfoAll(){
 bool EmbeddingJPsi::goodQualityTrack(const StUPCTrack *trk){
 
 
-   if( !(abs(trk->getBemcEta()) < MAXETA))  // eta
+   if( !(abs(trk->getEta()) < MAXETA))  // eta
       return false;
    hTrackQualityFlow->Fill(3);   
    if( !(trk->getNhitsFit() > MINNHITSFIT) )  //NhitsFit
@@ -450,346 +465,45 @@ void EmbeddingJPsi::fillNSigmaPlots(const StUPCTrack *trk){
 }
 
 
+bool EmbeddingJPsi::isBemcHit(const StUPCTrack *trk){ // MC simulator of BEMC efficiency
 
-/*
-// maximizing yield by disregarding pileup
-   //trigger
-   hAnalysisFlow->Fill(JPSI2ALL);
+   TRandom3 randGen;
+   double random = randGen.Uniform(0,1);
 
-   hAnalysisFlow->Fill(JPSI2TRIG);
+   double val = bemcEfficiency( trk->getPt() );
 
-   SaveEventInfo(mUpcEvt);
-   // 1 vertex
-   //hNVertices->Fill(mUpcEvt->getNumberOfVertices());
-   //if(mUpcEvt->getNumberOfVertices() != 1){
-   //   return;
-   //}
-   
-   
-   const StUPCVertex *vtx = mUpcEvt->getVertex(0);
-   if(!vtx){
-      cout << "Could not load vertex. Leaving event." << endl;
-      return;
-      }
-      hPosZ->Fill(vtx->getPosZ());
-      if(abs(vtx->getPosZ()) > vertexRange)
-      return;
-      hPosZCut->Fill(vtx->getPosZ());
-   
-     
-     
-   //unsigned int vertexID = vtx->getId();
-
-   tpcCounter = 0;
-   tracksBEMC.clear();
-   hNClustersBEMC->Fill( mUpcEvt->getNumberOfClusters() );
-   
-   //central system good quality tracks + BEMC
-   fillBemcInfoAll();
-   for (int iTrk = 0; iTrk < mUpcEvt->getNumberOfTracks(); ++iTrk){
-      hTrackQualityFlow->Fill(1);
-      const StUPCTrack *trk = mUpcEvt->getTrack(iTrk);
-
-      if(!trk)
-         continue;
-      if(!trk->getFlag(StUPCTrack::kPrimary))
-         continue;
-      
-      //if(trk->getVertexId() != vertexID){ // only belonging to the 1 vertex
-      //   cout << "Found a track that has a different vertex id than the single vertex. Vertex id: "<< vertexID << "track vertex id: " << trk->getVertexId() << endl;
-      //   continue;
-      //}
-      
-      hTrackQualityFlow->Fill(2);
-      if( !trk->getFlag(StUPCTrack::kBemc) )
-         continue;
-      
-      fillBemcInfo(trk);
-
-      fillTrackQualityCuts(trk);
-
-      if(!goodQualityTrack(trk))
-      continue;
-      
-      fillTrackQualityCutsAfter(trk);
-      
-      hNTracksTpc->Fill( tpcCounter );
-      
-      tracksBEMC.push_back(iTrk);
-      hAnalysisFlow->Fill(JPSI2BEMC);
-   }
-   
-   hNTracksBEMC->Fill( tracksBEMC.size() );
-   if(tracksBEMC.size() < 2){
-      //cout << "Found " << tracksBEMC.size() << " tracks in BEMC. Leaving event." << endl;
-      return;
-   }
-      
-
-   int track1Id, track2Id, vertexId;
-   track1Id = -1;
-   track2Id = -1;
-   vertexId = -1;
-   for(unsigned int iTrk = 0; iTrk < tracksBEMC.size(); ++iTrk){
-      StUPCTrack *track1 = mUpcEvt->getTrack( tracksBEMC[iTrk] );
-      for(unsigned int jTrk = iTrk+1; jTrk < tracksBEMC.size(); ++jTrk){
-         StUPCTrack *track2 = mUpcEvt->getTrack( tracksBEMC[jTrk] );
-         if(!sameVertex(track1, track2)){
-            continue;
-         }
-         StUPCVertex *vtx = mUpcEvt->getVertex( track1->getVertexId() );
-         if(!vtx){
-            cout << "Could not load vertex. Leaving event." << endl;
-            continue;
-         }
-         hAnalysisFlow->Fill(JPSI2SAMEVTX);
-         
-         
-         hEtaVtxZ->Fill(track1->getEta(), vtx->getPosZ());
-         hEtaVtxZ->Fill(track2->getEta(), vtx->getPosZ());
-         hPosZ->Fill(vtx->getPosZ());
-         //cout << "VtxZ: " << vtx->getPosZ() << endl;
-      
-         if(abs(vtx->getPosZ()) > vertexRange)
-            continue;
-         
-         
-         hAnalysisFlow->Fill(JPSI2VTXZ);
-         
-         hEtaVtxZCut->Fill(track1->getEta(), vtx->getPosZ());
-         hEtaVtxZCut->Fill(track2->getEta(), vtx->getPosZ());
-         hPosZCut->Fill(vtx->getPosZ());
-         
-         //if(!backToBack(track1, track2))
-         //   continue;
-      
-         hAnalysisFlow->Fill(JPSI2BACKTOBACK);
-      
-         
-         //PID
-         fillNSigmaPlots(track1);
-         fillNSigmaPlots(track2);
-         //if(!chiSquarePID(track1,track2))
-         //   continue;
-         
-         hAnalysisFlow->Fill(JPSI2PID);
-         
-         hAnalysisFlow->Fill(JPSI21RP);
-         hAnalysisFlow->Fill(JPSI2RPFIDCUT);
-         
-         double totQ = track1->getCharge() + track2->getCharge();
-         hTotQ->Fill(totQ);
-         if(totQ != 0){
-            //cout << "Found a pair of tracks with the same charge. Leaving event." << endl;
-            continue;
-         }
-         
-         hAnalysisFlow->Fill(JPSI2QTOT);
-         track1Id = tracksBEMC[iTrk];
-         track2Id = tracksBEMC[jTrk];
-         vertexId = track1->getVertexId();
-
-         break;
-
-      }
-   }
-   if(track1Id == -1 || track2Id == -1 || vertexId == -1){
-      //cout << "Found no good pair of tracks. Leaving event." << endl;
-      return;
-   }
-   const StUPCTrack* Track1 = mUpcEvt->getTrack( track1Id );
-   const StUPCTrack* Track2 = mUpcEvt->getTrack( track2Id );
-   const StUPCVertex* vertex = mUpcEvt->getVertex( vertexId );
-
-   if(!Track1 || !Track2 || !vertex)
-      return;
-   
-   SaveVertexInfo(vertex, 0);
-   SaveBemcInfo(Track1, 0);
-   SaveBemcInfo(Track2, 1);
-   
-   // save info about tracks
-   TLorentzVector electron1, electron2, state;
-   Track1->getLorentzVector(electron1, mUtil->mass(ELECTRON));
-   Track2->getLorentzVector(electron2, mUtil->mass(ELECTRON));
-   state = electron1 + electron2;
-   SaveStateInfo(state,Track1->getCharge() + Track2->getCharge(),0 );
-   SaveChiSquareInfo(Track1, Track2);
-   SaveTrackInfo(Track1,electron1, 0 );
-   SaveTrackInfo(Track2,electron2, 1);
-
-   // just fill the ana flows for RP cuts even though they are not used
-
-   //Qtot
-   //cout << "Charge: " << totQ << endl;
-
-   //if(totQ == 0){
-   mRecTree->FillRecTree();
-   hInvMassJPsi->Fill(state.M());
-      //}else{
-         //   mRecTree->FillBcgTree();
-         //   hInvMassJPsiBcg->Fill(state.M());
-         //}
-   
-
-
-   if(DEBUG){
-      cout << "Finished EmbeddingJPsi::Make()" << endl;
-   }
-*/
-
-
-/*
-//full embedding analysis
-
-   //trigger
-   hAnalysisFlow->Fill(JPSIALL);
-
-   //trueMCPeak();
-
-   hAnalysisFlow->Fill(JPSITRIG);
-
-   SaveEventInfo(mUpcEvt);
-   // 1 vertex
-
-   hNVertices->Fill(mUpcEvt->getNumberOfVertices());
-   if(mUpcEvt->getNumberOfVertices() != 1){
-      return;
-   }
-   hAnalysisFlow->Fill(JPSI1VTX);
-   
-   const StUPCVertex *vtx = mUpcEvt->getVertex(0);
-   if(!vtx){
-      cout << "Could not load vertex. Leaving event." << endl;
-      return;
-   }
-
-   hPosZ->Fill(vtx->getPosZ());
-   if(abs(vtx->getPosZ()) > vertexRange){
-      return;
-   }
-
-   hPosZCut->Fill(vtx->getPosZ());
-   
-   SaveVertexInfo(vtx, 0);
-   hAnalysisFlow->Fill(JPSIVTXZ);
-   
-   unsigned int vertexID = vtx->getId();
-   
-   tpcCounter = 0;
-   tracksBEMC.clear();
-   hNClustersBEMC->Fill( mUpcEvt->getNumberOfClusters() );
-   
-   //central system good quality tracks + BEMC
-   fillBemcInfoAll();
-   for (int iTrk = 0; iTrk < mUpcEvt->getNumberOfTracks(); ++iTrk){
-      hTrackQualityFlow->Fill(1);
-      const StUPCTrack *trk = mUpcEvt->getTrack(iTrk);
-
-      if(!trk)
-         continue;
-      
-      if(!trk->getFlag(StUPCTrack::kPrimary))
-         continue;
-      
-      if(trk->getVertexId() != vertexID){ // only belonging to the 1 vertex
-         cout << "Found a track that has a different vertex id than the single vertex. Vertex id: "<< vertexID << "track vertex id: " << trk->getVertexId() << endl;
-         continue;
-      }
-      ++tpcCounter;
-      hTrackQualityFlow->Fill(2);
-
-      if( !trk->getFlag(StUPCTrack::kBemc) )
-         continue;
-      
-      if(trk->getIdTruth() != 0){
-         cout << "Found a track that has a non-zero idTruth. IdTruth: " << trk->getIdTruth() << endl;
-      }   
-      fillBemcInfo(trk);
-
-      fillTrackQualityCuts(trk);
-
-      if(!goodQualityTrack(trk))
-         continue;
-      
-      fillTrackQualityCutsAfter(trk);
-      
-      
-      tracksBEMC.push_back(iTrk);
-   }
-   
-   hNTracksTpc->Fill( tpcCounter );
-   
-   hNTracksBEMC->Fill( tracksBEMC.size() );
-
-   if(tracksBEMC.size() < 2){
-      return;
-   }
-   
-   hAnalysisFlow->Fill(JPSIBEMC);
-   
-   const StUPCTrack *track1 = mUpcEvt->getTrack(tracksBEMC[0]);
-   const StUPCTrack *track2 = mUpcEvt->getTrack(tracksBEMC[1]);
-   
-   SaveBemcInfo(track1, 0);
-   SaveBemcInfo(track2, 1);
-
-   //if(!backToBack(track1, track2)){
-   //   return;
-   //}
-
-   hAnalysisFlow->Fill(JPSIBACKTOBACK);
-
-   
-   //PID
-   fillNSigmaPlots(track1);
-   fillNSigmaPlots(track2);
-
-   //if(!chiSquarePID(track1,track2))
-   //   return;
-   
-   hAnalysisFlow->Fill(JPSIPID);
-   
-   hAnalysisFlow->Fill(JPSI21RP);
-   hAnalysisFlow->Fill(JPSI2RPFIDCUT);
-   
-
-   fillBeamlineInfo(mUpcEvt);
-   //StUPCV0 JPsi(track1, track2, mUtil->mass(ELECTRON), mUtil->mass(ELECTRON), 1,2, {vtx->getPosX(), vtx->getPosY(), vtx->getPosZ()}, beamline, bField, false);  
-   StUPCV0 JPsi(track1, track2, 0.105, 0.105, 1,2, {vtx->getPosX(), vtx->getPosY(), vtx->getPosZ()}, beamline, bField, false);  
-
-   // save info about tracks
-   TLorentzVector electron1, electron2, state;
-   electron1 = JPsi.lorentzVectorPart1();
-   electron2 = JPsi.lorentzVectorPart2();
-   state = electron1 + electron2;
-   
-   
-   TLorentzVector electron11, electron22, state12;   
-   track1->getLorentzVector(electron11, mUtil->mass(ELECTRON));
-   track2->getLorentzVector(electron22, mUtil->mass(ELECTRON));
-   state12 = electron11 + electron22;
-   hMassDifference->Fill(abs(state.M() - state12.M()));
-
-   SaveStateInfo(state,track1->getCharge() + track2->getCharge(),0 );
-   SaveChiSquareInfo(track1, track2);
-   SaveTrackInfo(track1,electron1, 0 );
-   SaveTrackInfo(track2,electron2, 1);
-   
-   double totQ = track1->getCharge() + track2->getCharge();
-   hTotQ->Fill(totQ);
-   hAnalysisFlow->Fill(JPSIQTOT);
-   
-   if(totQ == 0){
-      mRecTree->FillRecTree();
-      hInvMassJPsi->Fill(state.M());
+   if(random < val) {
+      return true;
    }else{
-      mRecTree->FillBcgTree();
-      hInvMassJPsiBcg->Fill(state.M());
+      return false;   
    }
    
+}
 
-   if(DEBUG){
-      cout << "Finished EmbeddingJPsi::Make()" << endl;
+
+double EmbeddingJPsi::bemcEfficiency(double pT){ //function which returns bemc efficiency based on fit to real data
+   // for now, the results of the fit are here hard coded
+   double eps0 = -1.303;
+   double n = 1.0758;
+   double pTThr = 0.0105;
+   double sigma = 0.524;
+
+
+   double res = eps0 + n*( 1 + TMath::Erf( (pT - pTThr)/(sqrt(2)*sigma ) ) );
+
+   return res;
+}
+
+
+void EmbeddingJPsi::runControlOfBemcEfficiency(){
+
+   int j = 0;
+   for(int i = 50; i < 500; ++i){
+      gBEControl->SetPoint(j , i*0.01, bemcEfficiency(i*0.01) );
+      j++;
    }
-*/
+
+   mOutFile->cd();
+   gBEControl->Write();
+
+}

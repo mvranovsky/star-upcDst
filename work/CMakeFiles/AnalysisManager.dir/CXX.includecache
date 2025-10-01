@@ -6,6 +6,18 @@
 
 #IncludeRegexTransform: 
 
+/star/u/mvranovsk/star-upcDst/include/StPicoHelix.h
+cmath
+-
+utility
+-
+algorithm
+-
+TVector3.h
+/star/u/mvranovsk/star-upcDst/include/TVector3.h
+SystemOfUnits.h
+/star/u/mvranovsk/star-upcDst/include/SystemOfUnits.h
+
 /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
 TArrayI.h
 /star/u/mvranovsk/star-upcDst/include/TArrayI.h
@@ -66,13 +78,17 @@ TObject.h
 TVector3.h
 /star/u/mvranovsk/star-upcDst/include/TVector3.h
 
+/star/u/mvranovsk/star-upcDst/include/SystemOfUnits.h
+math.h
+-
+
 /star/u/mvranovsk/star-upcDst/work/src/AnalysisManager.cxx
 AnalysisManager.h
 /star/u/mvranovsk/star-upcDst/work/src/AnalysisManager.h
 
 include/Ana.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
 Util.h
 include/Util.h
 RecTree.h
@@ -83,8 +99,8 @@ RunDef.h
 include/RunDef.h
 
 include/AnaBP.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
 Util.h
 include/Util.h
 RecTree.h
@@ -99,8 +115,12 @@ RecTree.h
 include/RecTree.h
 Ana.h
 include/Ana.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
+StUPCTrack.h
+include/StUPCTrack.h
+TLorentzVector.h
+include/TLorentzVector.h
 
 include/AnaJPSI.h
 Util.h
@@ -109,8 +129,8 @@ RecTree.h
 include/RecTree.h
 Ana.h
 include/Ana.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
 
 include/AnaJPsi.h
 Util.h
@@ -119,12 +139,12 @@ RecTree.h
 include/RecTree.h
 Ana.h
 include/Ana.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
 
 include/AnaV0.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
 Util.h
 include/Util.h
 RecTree.h
@@ -133,22 +153,12 @@ Ana.h
 include/Ana.h
 StUPCV0.h
 include/StUPCV0.h
-iostream
--
-vector
--
-utility
--
-unordered_map
--
-memory
--
 
 include/AnaV0Mult.h
 Util.h
 include/Util.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
 RecTree.h
 include/RecTree.h
 Ana.h
@@ -164,9 +174,23 @@ utility
 unordered_map
 -
 
+include/AnaZeroBias.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
+StUPCTrack.h
+include/StUPCTrack.h
+TLorentzVector.h
+include/TLorentzVector.h
+
 include/AnalysisManager.h
-Libreries.h
-include/Libreries.h
+Libraries.h
+include/Libraries.h
 Util.h
 include/Util.h
 AnaBP.h
@@ -193,6 +217,22 @@ AnaGoodRun.h
 include/AnaGoodRun.h
 RecTree.h
 include/RecTree.h
+AnaZeroBias.h
+include/AnaZeroBias.h
+BemcEfficiency.h
+include/BemcEfficiency.h
+
+include/BemcEfficiency.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
+StPicoHelix.h
+include/StPicoHelix.h
 
 include/EmbeddingJPsi.h
 Util.h
@@ -201,8 +241,8 @@ RecTree.h
 include/RecTree.h
 Ana.h
 include/Ana.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
 RunDef.h
 include/RunDef.h
 StUPCV0.h
@@ -213,8 +253,10 @@ TVector3.h
 include/TVector3.h
 TLorentzVector.h
 include/TLorentzVector.h
+TRandom3.h
+include/TRandom3.h
 
-include/Libreries.h
+include/Libraries.h
 iostream
 -
 string
@@ -335,8 +377,8 @@ Math/Vector3D.h
 -
 
 include/RecTree.h
-Libreries.h
-include/Libreries.h
+Libraries.h
+include/Libraries.h
 Util.h
 include/Util.h
 
@@ -347,8 +389,6 @@ bitset
 -
 TString.h
 include/TString.h
-TMath.h
-include/TMath.h
 
 include/TofEff.h
 Util.h
@@ -357,8 +397,8 @@ RecTree.h
 include/RecTree.h
 Ana.h
 include/Ana.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
 
 include/TofEffMult.h
 Util.h
@@ -367,12 +407,12 @@ RecTree.h
 include/RecTree.h
 Ana.h
 include/Ana.h
-UpcDstLibreries.h
-include/UpcDstLibreries.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
 
-include/UpcDstLibreries.h
-Libreries.h
-include/Libreries.h
+include/UpcDstLibraries.h
+Libraries.h
+include/Libraries.h
 StRPEvent.h
 include/StRPEvent.h
 StUPCRpsTrack.h
@@ -395,6 +435,6 @@ RunDef.h
 include/RunDef.h
 
 include/Util.h
-Libreries.h
-include/Libreries.h
+Libraries.h
+include/Libraries.h
 

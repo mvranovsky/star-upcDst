@@ -2,7 +2,7 @@
 #define Ana_h
 
 // include headers
-#include "UpcDstLibreries.h"
+#include "UpcDstLibraries.h"
 #include "Util.h"
 #include "RecTree.h"
 #include "StUPCV0.h"
@@ -28,12 +28,13 @@ class Ana{
       inline bool IsGoodTrack(const StUPCTrack *trk) const { return ( trk->getNhitsFit() > minNHitsFit && trk->getNhitsDEdx() > minNHitsDEdx && trk->getPt() > minPt);}
       inline bool IsGoodTofTrack(const StUPCTrack *trk) const {return (trk->getTofTime() > 0 && trk->getTofPathLength() > 0);}
       
-      inline double vertexEtaRange(int rSide, int idx ) const{ return mRecTree->IsVertexSet(idx) ? etaVertexSlope*mRecTree->getVertexZInCm(idx) + (2*rSide - 1)*etaVertexShift : (2*rSide - 1)*maxEta; } // 0 for min, 1 for max
-      inline bool IsGoodEtaTrack(const StUPCTrack *trk, int idx) const { return (abs(trk->getEta()) < maxEta && trk->getEta() > vertexEtaRange(0,idx) && trk->getEta() < vertexEtaRange(1, idx) );}
+      inline double vertexEtaRange(int rSide, int idx ) const{ return mRecTree->IsVertexSet(idx) ? etaVertexSlope*mRecTree->getVertexZInCm(idx) + (2*rSide - 1)*etaVertexShift : (2*rSide - 1)*maxEtaLoose; } // 0 for min, 1 for max
+      inline bool IsGoodEtaTrack(const StUPCTrack *trk, int idx) const { return (abs(trk->getEta()) < maxEtaLoose && trk->getEta() > vertexEtaRange(0,idx) && trk->getEta() < vertexEtaRange(1, idx) );}
       int hasGoodTPCnSigma(const StUPCTrack *trk); 
       bool CheckTriggers(const vector<int> *triggerArray, StUPCEvent *mUpcEvt, TH1D *hTriggerBits) const;
-      bool backToBack(const StUPCTrack *trk1, const StUPCTrack *trk2);
-
+      bool backToBack(const StUPCTrack *trk1, const StUPCTrack *trk2, bool useBemc = true);
+      Double_t deltaDipAngle(const StUPCTrack *trk1, const StUPCTrack *trk2);
+      Double_t deltaDipAngle(TVector3 p1, TVector3 p2);
 
 
 

@@ -22,25 +22,36 @@ void Ana::SetEvent(StUPCEvent *upcEvt, StRPEvent *rpEvt, StRPEvent *mcEvt){
 //           570709, 570711, 570712, 570719, 590701, 590703, 590705, 590708, 590709};
 
 
-bool Ana::backToBack(const StUPCTrack *trk1, const StUPCTrack *trk2){
+bool Ana::backToBack(const StUPCTrack *trk1, const StUPCTrack *trk2, bool useBemc){
    //back to back condition
+   double phi1, phi2;
+   if(useBemc){
+      phi1 = trk1->getBemcPhi();
+      phi2 = trk2->getBemcPhi();
+   }else{
+      phi1 = trk1->getPhi();
+      phi2 = trk2->getPhi();
+   }
+
    int sectionTrk1, sectionTrk2;
    for (int i = 0; i < 6; ++i){
       double lower, upper;
       lower = -TMath::Pi() + i*TMath::Pi()/3;
       upper = -TMath::Pi() + (i+1)*TMath::Pi()/3;
 
-      if(trk1->getBemcPhi() >= lower && trk1->getBemcPhi() < upper){
+      if(phi1 >= lower && phi1 < upper){
          sectionTrk1 = i;
       }
-      if(trk2->getBemcPhi() >= lower && trk2->getBemcPhi() < upper){
+      if(phi2 >= lower && phi2 < upper){
          sectionTrk2 = i;
       }
    }
+   /*
    double phiDelta = abs(trk1->getPhi() - trk2->getPhi());
    if(phiDelta <= 2.6)
-      return false;
-      
+   return false;
+   */
+   
    int deltaSections = abs(sectionTrk1 - sectionTrk2);
    if(deltaSections != 3)
       return false;
@@ -289,6 +300,22 @@ void Ana::SaveMissingPtInfo(const StUPCTrack *trk1, const StUPCTrack *trk2, cons
    mRecTree->setPyMissing( sum.Y() );
 }
 
+Double_t Ana::deltaDipAngle(const StUPCTrack *trk1, const StUPCTrack *trk2){
+
+   TVector3 p1, p2;
+   trk1->getMomentum(p1);
+   trk2->getMomentum(p2);
+
+   Double_t dip = TMath::ACos( ( p1.Pt()* p2.Pt() + p1.Z() * p2.Z() ) / ( p1.Mag() * p2.Mag() ) );
+   return dip;
+}
+
+Double_t Ana::deltaDipAngle(TVector3 p1, TVector3 p2){
+
+   Double_t dip = TMath::ACos( (p1.Pt()* p2.Pt() + p1.Z() * p2.Z()) / (p1.Mag() * p2.Mag() ) );
+   return dip;
+}
+
 
 void Ana::SaveStateInfo(TLorentzVector state, int totQ, unsigned int iState){
 
@@ -366,6 +393,18 @@ void Ana::SaveBbcInfo(const StUPCEvent *upcEvt)
 
 void Ana::SaveBemcInfo(const StUPCTrack *trk, unsigned int iTrack)
 {
+   if(!trk){
+      cout << "No track loaded for BEMC info" << endl;
+      return;
+   }
+
+   if(trk->getFlag( StUPCTrack::kBemc ))
+      mRecTree->setIsBemcHit(1, iTrack);
+   else{
+      mRecTree->setIsBemcHit(-1, iTrack);
+      return;
+   }
+
    mRecTree->setNTracksBemc(mUpcEvt->getBEMCMultiplicity());
    mRecTree->setNClustersBemc(mUpcEvt->getNumberOfClusters());
 
@@ -580,6 +619,7 @@ void Ana::resetInfo() {
       mRecTree->setPt( -9999, iState );
       mRecTree->setRap( -9999, iState);
       mRecTree->setTotQ( -9999 , iState);
+      mRecTree->setDeltaDipAngle( -9999, iState );
    }
 
    //vertices

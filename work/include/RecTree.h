@@ -1,7 +1,7 @@
 #ifndef RecTree_h
 #define RecTree_h
 
-#include "Libreries.h"
+#include "Libraries.h"
 #include "Util.h"
 
 using namespace std;
@@ -16,6 +16,8 @@ class RecTree{
 
       void FillRecTree(){ mRecTree->Fill(); }
       void FillBcgTree(){ mBcgTree->Fill(); }
+      void Write() { mRecTree->Write(); }
+      void WriteBcgTree() {mBcgTree->Write(); }
 
       void InitRPMCInfo();
       void InitRPMCInfo(TTree* tree);
@@ -25,9 +27,12 @@ class RecTree{
 
       //getters
       TTree* getTTree() const { return mRecTree; }
-      UInt_t getRunNumber() const { return mRunNumber; }
+      int getRunNumber() const { return mRunNumber; }
       UInt_t getEventNumber() const { return mEventNumber; }
       UInt_t getFillNumber() const { return mFillNumber; }
+      int getNTracksTpc() const { return mNTracksTpc; }
+      int getNTracksTof() const { return mNTracksTof; }
+      int getNVertices() const { return mNVertices; }
       UInt_t getBunchCrossId() const { return mBunchCrossId; }
       UInt_t getBunchCrossId7bit() const { return mBunchCrossId7bit; }
       UInt_t getBbcSmallEast() const { return mBbcSmallEast; }
@@ -60,6 +65,8 @@ class RecTree{
       Double_t getP(unsigned int s) const { return mP[s]; }
       Double_t getPt(unsigned int s) const { return mPt[s]; }
       Double_t getRap(unsigned int s) const { return mRap[s]; }
+      Double_t getDeltaDipAngle(unsigned int s) const { return mDeltaDipAngle[s]; }
+      Int_t getIsBackToBack(unsigned int s) const { return mIsBackToBack[s]; }
       Double_t getMSquared(unsigned int s) const { return mMSquared[s]; }
       Int_t getPairID(unsigned int s) const { return mPairID[s]; }
       Int_t getTotQ(unsigned int s) const { return mTotQ[s]; }
@@ -132,6 +139,7 @@ class RecTree{
       bool getVertexStudySameVertex() const { return mSameVertex; }
       Double_t getVertexStudyDcaParticles() const { return mDcaParticles; }
       Double_t getVertexStudyDcaBeamline() const { return mDcaBeamline; }
+      int getIsBemcHit(unsigned int s) const { return mIsBemcHit[s]; }
       Double_t getBemcTrackE(unsigned int s) { return mBemcE[s]; }
       Double_t getBemcTrackEta(unsigned int s) { return mBemcEta[s]; }
       Double_t getBemcTrackPhi(unsigned int s) { return mBemcPhi[s]; }
@@ -142,33 +150,43 @@ class RecTree{
       Double_t getBemcClusterHTE(unsigned int s) { return mBemcClusterHTE[s]; }
       Double_t getBemcClusterSigmaEta(unsigned int s) { return mBemcClusterSigmaEta[s]; }
       Double_t getBemcClusterSigmaPhi(unsigned int s) { return mBemcClusterSigmaPhi[s]; }
+      int getNTracksBemc() { return mNTracksBemc; }
+      int getNClustersBemc() { return mNClustersBemc; }
 
       //create getters for the new variables
       int getAtLeast1JPsiTrigger() const { return mAtLeast1JPsiTrigger; }
+      int getIsJPsiTrigger() const { return mIsJPsiTrigger; }
       int getRPsClose() const { return mRPsClose; }
-      double getNTracksTpc() const { return mNTracksTpc; }
-      double getNTracksTof() const { return mNTracksTof; }
-      double getNVertices() const { return mNVertices; }
       double getTpcEtaAverage() const { return mTpcEtaAverage; }
       double getBemcEtaAverage() const { return mBemcEtaAverage; }
       double getTpcPhiAverage() const { return mTpcPhiAverage; }
       double getBemcPhiAverage() const { return mBemcPhiAverage; }
-      int getNEventsAll() const { return mNEventsAll; }
-      int getNEventsPassed() const { return mNEventsPassed; }
+      int getNEventsZBVetoAll() const { return mNEventsZBVetoAll; }
+      int getNEventsZBVetoPassed() const { return mNEventsZBVetoPassed; }
       int getNEventsJPsi() const { return mNEventsJPsi; }
+      int getNEventsLumiFile() const { return mNEventsLumiFile; }
       double getLuminosity() const { return mLuminosity; }
       double getLuminosityError() const { return mLuminosityError; }
-      int getNTracksBemc() const { return mNTracksBemc; }
-      int getNClustersBemc() const { return mNClustersBemc; }
+      double getInstLumi() const { return mInstLumi; }
+
+      double getAverageVertices() const { return mAverageVertices; }
+      double getAverageTracksBemc() const { return mAverageTracksBemc; }
+      double getAverageClustersBemc() const { return mAverageClustersBemc; }
+      double getAverageTracksTpc() const { return mAverageTracksTpc; }
+      double getAverageTracksTof() const { return mAverageTracksTof; }
+
+      // trigger topology on zerobias data
+      int getIsTopology() const { return mIsTopology; }
 
       //setters
-      void setRunNumber(UInt_t var) { mRunNumber = var; }
+      void setRunNumber(int var) { mRunNumber = var; }
       void setEventNumber(UInt_t var) { mEventNumber = var; }
       void setFillNumber(UInt_t var) { mFillNumber = var; }
       void setBunchCrossId(UInt_t var) { mBunchCrossId = var; }
       void setBunchCrossId7bit(UInt_t var) { mBunchCrossId7bit = var; }
       void setNTracksTpc(int var) { mNTracksTpc = var; }
       void setNTracksTof(int var) { mNTracksTof = var; }
+      void setNVertices(int var) { mNVertices = var; }
       void setBbcSmallEast(UInt_t var) { mBbcSmallEast = var; }
       void setBbcSmallWest(UInt_t var) { mBbcSmallWest = var; }
       void setBbcLargeEast(UInt_t var) { mBbcLargeEast = var; }
@@ -199,6 +217,8 @@ class RecTree{
       void setPt(Double_t var, unsigned int s) { mPt[s] = var; }
       void setRap(Double_t var, unsigned int s) { mRap[s] = var; }
       void setMSquared(Double_t var, unsigned int s) { mMSquared[s] = var; }
+      void setDeltaDipAngle(Double_t var, unsigned int s) { mDeltaDipAngle[s] = var; }
+      void setIsBackToBack(Int_t var, unsigned int s) { mIsBackToBack[s] = var; }
       void setPairID(Int_t var, unsigned int s) { mPairID[s] = var; }
       void setTotQ(Int_t var, unsigned int s) { mTotQ[s] = var; }
       void setPIDChiSquare(double var, unsigned int s) {mChiSquare[s] = var; }
@@ -266,6 +286,7 @@ class RecTree{
       void setZdcEDsmBit(bool var) { mZdcEDsmBit = var; }
       void setZdcWDsmBit(bool var) { mZdcWDsmBit = var; }
       void setRpTrigBits(bool var, unsigned int rp) { mRpTrigBits[rp] = var; }
+      void setIsBemcHit(int var, unsigned int s) { mIsBemcHit[s] = var; }
       void setBemcTrackE(Double_t var, unsigned int s) { mBemcE[s] = var; }
       void setBemcTrackEta(Double_t var, unsigned int s) { mBemcEta[s] = var; }
       void setBemcTrackPhi(Double_t var, unsigned int s) { mBemcPhi[s] = var; }
@@ -276,6 +297,8 @@ class RecTree{
       void setBemcClusterHTE(Double_t var, unsigned int s) { mBemcClusterHTE[s] = var; }
       void setBemcClusterSigmaEta(Double_t var, unsigned int s) { mBemcClusterSigmaEta[s] = var; }
       void setBemcClusterSigmaPhi(Double_t var, unsigned int s) { mBemcClusterSigmaPhi[s] = var; }
+      void setNTracksBemc(int var) { mNTracksBemc = var; }
+      void setNClustersBemc(int var) { mNClustersBemc = var; }
 
       void setVertexStudyPrimary(bool var) { mPrimary = var; }
       void setVertexStudySameVertex(bool var) { mSameVertex = var; }
@@ -283,28 +306,38 @@ class RecTree{
       void setVertexStudyDcaBeamline(Double_t var) { mDcaBeamline = var; }
 
       void setAtLeast1JPsiTrigger(int var) { mAtLeast1JPsiTrigger = var; }
+      void setIsJPsiTrigger(int var) { mIsJPsiTrigger = var; }
       void setRPsClose(int var) { mRPsClose = var; }
-      void setNVertices(int var) { mNVertices = var; }
       void setTpcEtaAverage(double var) { mTpcEtaAverage = var; }
       void setBemcEtaAverage(double var) { mBemcEtaAverage = var; }
       void setTpcPhiAverage(double var) { mTpcPhiAverage = var; }
       void setBemcPhiAverage(double var) { mBemcPhiAverage = var; }
       void setNEventsAll(int var) { mNEventsAll = var; }
-      void setNEventsPassed(int var) { mNEventsPassed = var; }
+      void setNEventsZBVetoAll(int var) { mNEventsZBVetoAll = var; }
+      void setNEventsZBVetoPassed(int var) { mNEventsZBVetoPassed = var; }
       void setNEventsJPsi(int var) { mNEventsJPsi = var; }
+      void setNEventsLumiFile(int var) { mNEventsLumiFile = var; }
       void setLuminosity(double var) { mLuminosity = var; }
       void setLuminosityError(double var) { mLuminosityError = var; }
-      void setNTracksBemc(int var) { mNTracksBemc = var; }
-      void setNClustersBemc(int var) { mNClustersBemc = var; }
+      void setInstLumi(double var) { mInstLumi = var; }
+      
+      void setAverageVertices(int var) { mAverageVertices = var; }
+      void setAverageTracksBemc(double var) { mAverageTracksBemc = var; }
+      void setAverageClustersBemc(double var) { mAverageClustersBemc = var; }
+      void setAverageTracksTpc(double var) { mAverageTracksTpc = var; }
+      void setAverageTracksTof(double var) { mAverageTracksTof = var; }
+
+      void setIsTopology(int var) { mIsTopology = var; }
 
 
    private:
-      Util* mUtil;
       TTree *mRecTree, *mBcgTree;
+      Util* mUtil;
       // event info
-      Double_t mRunNumber;
+      int mRunNumber;
       UInt_t mEventNumber, mFillNumber, mBunchCrossId, mBunchCrossId7bit;
-      
+      int mNTracksTof, mNTracksTpc, mNVertices;
+
       // BBC and ZDC info
       UInt_t mBbcSmallEast, mBbcSmallWest, mBbcLargeEast, mBbcLargeWest;
       UInt_t mZdcAdcEastPmt[3], mZdcAdcWestPmt[3];
@@ -312,6 +345,7 @@ class RecTree{
       UShort_t mZdcEastUA, mZdcWestUA;
       UShort_t mZdcTdcEast, mZdcTdcWest, mZdcTimeDiff;
       Double_t mZdcVertexZ;
+
 
       // Vertex info
       Double_t mVertexZInCm[nStates][nDataTag], mVertexXInCm[nStates][nDataTag], mVertexYInCm[nStates][nDataTag];
@@ -322,6 +356,8 @@ class RecTree{
       Double_t mInvMass[nStates], mMSquared[nStates];
       Double_t mTheta[nStates], mPhi[nStates], mP[nStates], mPt[nStates], mRap[nStates];
       Int_t mPairID[nStates], mTotQ[nStates];
+      Double_t mDeltaDipAngle[nStates];
+      Int_t mIsBackToBack[nStates]; // back-to-back flag
 
       // State PID chi square info
       Double_t mChiSquare[nParticles];
@@ -359,18 +395,24 @@ class RecTree{
       bool mPrimary, mSameVertex;
 
       // BEMC info
+      int mIsBemcHit[nSigns];  
       Double_t mBemcEta[nSigns], mBemcPhi[nSigns], mBemcPt[nSigns], mBemcE[nSigns];
       Double_t mBemcClusterEta[nSigns], mBemcClusterPhi[nSigns], mBemcClusterE[nSigns];
       Double_t mBemcClusterHTE[nSigns], mBemcClusterSigmaEta[nSigns], mBemcClusterSigmaPhi[nSigns];
-      Int_t  mNTracksBemc, mNClustersBemc;
+      int  mNTracksBemc, mNClustersBemc;
 
       // good run info
       int mAtLeast1JPsiTrigger, mRPsClose;
-      double mNTracksTpc, mNTracksTof, mNVertices;
+      double mAverageTracksTpc, mAverageTracksTof, mAverageVertices, mAverageTracksBemc, mAverageClustersBemc;
       double mTpcEtaAverage, mBemcEtaAverage, mTpcPhiAverage, mBemcPhiAverage;
-      int mNEventsAll, mNEventsPassed, mNEventsJPsi;
-      double mLuminosity, mLuminosityError;
+      int mNEventsAll, mNEventsJPsi, mNEventsLumiFile;
+      double mLuminosity, mLuminosityError, mInstLumi;
 
+      int mNEventsZBVetoAll, mNEventsZBVetoPassed;
+      int mIsJPsiTrigger;
+
+      // topology trigger
+      int mIsTopology;
 
 };
 

@@ -11,7 +11,7 @@ void AnaJPsi::Make(){
 
    //trigger
    hAnalysisFlow->Fill(JPSIALL);
-   if( !CheckTriggers(&JPSItriggers, mUpcEvt, hTriggerBits) ) 
+   if( !CheckTriggers(&JPSItriggers, mUpcEvt, hTriggerBits) )
       return;
    hAnalysisFlow->Fill(JPSITRIG);
 
@@ -28,9 +28,11 @@ void AnaJPsi::Make(){
    hAnalysisFlow->Fill(JPSI1VTX);
 
    // fill vertex histogram by fill for systematic study
-   int fillNum = mUpcEvt->getFillNumber();
-   hVtxZByFillNum->SetName(Form("hVtxZFillNum_%d", fillNum));
-   hVtxZByFillNum->Fill(mUpcEvt->getVertex(0)->getPosZ());
+   if(runSysStudy){
+      int fillNum = mUpcEvt->getFillNumber();
+      hVtxZByFillNum->SetName(Form("hVtxZFillNum_%d", fillNum));
+      hVtxZByFillNum->Fill(mUpcEvt->getVertex(0)->getPosZ());
+   }
 
    const StUPCVertex *vtx = mUpcEvt->getVertex(0);
 
@@ -38,7 +40,6 @@ void AnaJPsi::Make(){
       cout << "Could not load vertex. Leaving event." << endl;
       return;
    }
-
 
    unsigned int vertexID = vtx->getId();
 
@@ -90,14 +91,20 @@ void AnaJPsi::Make(){
 
    if(abs(track1->getEta()) > MAXETA || abs(track2->getEta()) > MAXETA) return;
 
+   // combined condition for eta and Vz (max eff)
    if(!IsGoodEtaTrack(track1, 0) || !IsGoodEtaTrack(track2, 0))  return;
 
    fillEtaVtxPlotsAfter(track1, track2, vtx->getPosZ());
    hAnalysisFlow->Fill(JPSIVTXZETA);
 
-
    // back to back
-   if(!backToBack(track1, track2))   return;
+   //if(!backToBack(track1, track2))   return;  // only interested in events we trigger on
+
+   if(backToBack(track1, track2)){
+      mRecTree->setIsBackToBack(1,0);
+   }else{
+      mRecTree->setIsBackToBack(-1,0);
+   }
 
    hAnalysisFlow->Fill(JPSIBACKTOBACK);
 
@@ -152,7 +159,6 @@ void AnaJPsi::Make(){
    double totQ = track1->getCharge() + track2->getCharge();
    hTotQ->Fill(totQ);
 
-   
    if(totQ == 0){
       mRecTree->FillRecTree();
       hAnalysisFlow->Fill(JPSIQTOT);
@@ -176,17 +182,12 @@ void AnaJPsi::Init(){
      cout<<"AnaJPsi::Init() called"<<endl;
 
    mOutFile->cd();
-   if(runSysStudy){
-      mRecTree = new RecTree(nameOfSysStudyTree, SysStudyTreeBits, true);
-      loadCuts(runSysStudy);
-      mOutFile->mkdir(nameOfSysStudyDir);
-      mOutFile->cd(nameOfSysStudyDir);
-   }else {
-      mRecTree = new RecTree(nameOfAnaJPsiTree, AnaJPsiTreeBits, true);
-      loadCuts(runSysStudy);
-      mOutFile->mkdir(nameOfAnaJPsiDir);
-      mOutFile->cd(nameOfAnaJPsiDir);
-   }
+
+   mRecTree = new RecTree(nameOfAnaJPsiTree, AnaJPsiTreeBits, true);
+   mOutFile->mkdir(nameOfAnaJPsiDir);
+   mOutFile->cd(nameOfAnaJPsiDir);
+   loadCuts();
+   
    
    hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nJPSISelectionCuts-1, 1, nJPSISelectionCuts);
    for(int tb=1; tb<nJPSISelectionCuts; ++tb) {
@@ -307,9 +308,9 @@ void AnaJPsi::Init(){
    cout << "Finished AnaJPsi::Init()" << endl;
 }
 
-void AnaJPsi::loadCuts(bool isSysStudy){
+void AnaJPsi::loadCuts(){
 
-   if(isSysStudy){
+   if(runSysStudy){
       VERTEXZRANGE = vertexRangeLoose;
       MINNHITSFIT = minNHitsFitLoose;
       MINNHITSDEDX = minNHitsDEdxLoose;
@@ -317,10 +318,10 @@ void AnaJPsi::loadCuts(bool isSysStudy){
       MAXDCAZ = maxDcaZLoose;
       MAXDCAXY = maxDcaXYLoose;
       MAXETA = maxEtaLoose;
-      MINPIDCHIPP = minPidChiPPLoose;
-      MINPIDCHIPIPI = minPidChiPiPiLoose;
-      MINPIDCHIKK = minPidChiKKLoose;
-      MAXPIDCHIEE = maxPidChiEELoose; // no cut
+      MINPIDCHIPP = minPidChiPP;
+      MINPIDCHIPIPI = minPidChiPiPi;
+      MINPIDCHIKK = minPidChiKK;
+      MAXPIDCHIEE = maxPidChiEELoose; 
    }else{
       VERTEXZRANGE = vertexRange;
       MINNHITSFIT = minNHitsFit;
@@ -332,7 +333,7 @@ void AnaJPsi::loadCuts(bool isSysStudy){
       MINPIDCHIPP = minPidChiPP;
       MINPIDCHIPIPI = minPidChiPiPi;
       MINPIDCHIKK = minPidChiKK;
-      MAXPIDCHIEE = maxPidChiEE; // no cut
+      MAXPIDCHIEE = maxPidChiEE; 
    }
 }
 
@@ -425,12 +426,14 @@ bool AnaJPsi::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
    hNSigmaKK1->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
    hNSigmaPiPi1->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
 
+   
    if(chi_pp < MINPIDCHIPP)  return false;
-
+   
    if(chi_pipi < MINPIDCHIPIPI)  return false;
-
+   
    if(chi_kk < MINPIDCHIKK)  return false;
-
+   
+   
    hNSigmaEE2->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());
    hNSigmaPP2->Fill(trk1->getNSigmasTPCProton(), trk2->getNSigmasTPCProton());
    hNSigmaKK2->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());

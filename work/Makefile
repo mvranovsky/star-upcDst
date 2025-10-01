@@ -298,6 +298,33 @@ src/AnaV0Mult.cxx.s:
 	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.s
 .PHONY : src/AnaV0Mult.cxx.s
 
+src/AnaZeroBias.o: src/AnaZeroBias.cxx.o
+
+.PHONY : src/AnaZeroBias.o
+
+# target to build an object file
+src/AnaZeroBias.cxx.o:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o
+.PHONY : src/AnaZeroBias.cxx.o
+
+src/AnaZeroBias.i: src/AnaZeroBias.cxx.i
+
+.PHONY : src/AnaZeroBias.i
+
+# target to preprocess a source file
+src/AnaZeroBias.cxx.i:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.i
+.PHONY : src/AnaZeroBias.cxx.i
+
+src/AnaZeroBias.s: src/AnaZeroBias.cxx.s
+
+.PHONY : src/AnaZeroBias.s
+
+# target to generate assembly for a file
+src/AnaZeroBias.cxx.s:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.s
+.PHONY : src/AnaZeroBias.cxx.s
+
 src/AnalysisManager.o: src/AnalysisManager.cxx.o
 
 .PHONY : src/AnalysisManager.o
@@ -324,6 +351,33 @@ src/AnalysisManager.s: src/AnalysisManager.cxx.s
 src/AnalysisManager.cxx.s:
 	$(MAKE) -f CMakeFiles/AnalysisManager.dir/build.make CMakeFiles/AnalysisManager.dir/src/AnalysisManager.cxx.s
 .PHONY : src/AnalysisManager.cxx.s
+
+src/BemcEfficiency.o: src/BemcEfficiency.cxx.o
+
+.PHONY : src/BemcEfficiency.o
+
+# target to build an object file
+src/BemcEfficiency.cxx.o:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o
+.PHONY : src/BemcEfficiency.cxx.o
+
+src/BemcEfficiency.i: src/BemcEfficiency.cxx.i
+
+.PHONY : src/BemcEfficiency.i
+
+# target to preprocess a source file
+src/BemcEfficiency.cxx.i:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.i
+.PHONY : src/BemcEfficiency.cxx.i
+
+src/BemcEfficiency.s: src/BemcEfficiency.cxx.s
+
+.PHONY : src/BemcEfficiency.s
+
+# target to generate assembly for a file
+src/BemcEfficiency.cxx.s:
+	$(MAKE) -f CMakeFiles/upc-reader.dir/build.make CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.s
+.PHONY : src/BemcEfficiency.cxx.s
 
 src/EmbeddingJPsi.o: src/EmbeddingJPsi.cxx.o
 
@@ -488,9 +542,15 @@ help:
 	@echo "... src/AnaV0Mult.o"
 	@echo "... src/AnaV0Mult.i"
 	@echo "... src/AnaV0Mult.s"
+	@echo "... src/AnaZeroBias.o"
+	@echo "... src/AnaZeroBias.i"
+	@echo "... src/AnaZeroBias.s"
 	@echo "... src/AnalysisManager.o"
 	@echo "... src/AnalysisManager.i"
 	@echo "... src/AnalysisManager.s"
+	@echo "... src/BemcEfficiency.o"
+	@echo "... src/BemcEfficiency.i"
+	@echo "... src/BemcEfficiency.s"
 	@echo "... src/EmbeddingJPsi.o"
 	@echo "... src/EmbeddingJPsi.i"
 	@echo "... src/EmbeddingJPsi.s"

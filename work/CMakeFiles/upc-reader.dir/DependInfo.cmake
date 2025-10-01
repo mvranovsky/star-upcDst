@@ -10,6 +10,8 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/star/u/mvranovsk/star-upcDst/work/src/AnaJPsi.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o"
   "/star/u/mvranovsk/star-upcDst/work/src/AnaV0.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o"
   "/star/u/mvranovsk/star-upcDst/work/src/AnaV0Mult.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o"
+  "/star/u/mvranovsk/star-upcDst/work/src/AnaZeroBias.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o"
+  "/star/u/mvranovsk/star-upcDst/work/src/BemcEfficiency.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o"
   "/star/u/mvranovsk/star-upcDst/work/src/EmbeddingJPsi.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o"
   "/star/u/mvranovsk/star-upcDst/work/src/RecTree.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/RecTree.cxx.o"
   "/star/u/mvranovsk/star-upcDst/work/src/TofEff.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/TofEff.cxx.o"

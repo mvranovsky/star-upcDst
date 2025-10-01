@@ -15,7 +15,7 @@ from array import array
 lumi_ZB_path = "/gpfs01/star/pwg_tasks/upc02/CEP_input_files/lists/luminosityForZB.list"
 
 lumi_path = "/star/u/mvranovsk/star-upcDst/work/lists/lum_perrun_JPsi_HTTP.txt"  
-file_path = "/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaGoodRun_6.5.25/merged/StRP_production_0000.root" 
+file_path = "/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaGoodRun_21.7.25/merged/StRP_production_0000.root" 
 #From the table: https://www.star.bnl.gov/protected/common/common2017/trigger2017/lumipp500GeV/lum_pertriggerid_pp2017_500GeV.html
 
 total_lumi_from_Jaime = 330.220
@@ -82,26 +82,26 @@ def load_events_from_rootfile(file_path):
     # Open the ROOT file
     root_file = ROOT.TFile(file_path)
     # Get the tree from the file
-    tree = root_file.Get("RunInfo")  # Replace "tree" with the actual name of your tree
+    tree = root_file.Get("recAnaGoodRun") 
     # Loop over the entries in the tree 
     #load the branches to variables for ROOT 5
 
     mRunNumber = array('i', [0])
-    nEventsAll = array('i', [0])
-    nEventsPassed = array('i', [0])
+    nEventsZBAll = array('i', [0])
+    nEventsZBPassed = array('i', [0])
     luminosity = array('d', [0])
     nEventsJPsi = array('i', [0])
 
 
-    tree.SetBranchAddress("RunNumber", mRunNumber)
-    tree.SetBranchAddress("nEventsAll", nEventsAll)
-    tree.SetBranchAddress("nEventsPassed", nEventsPassed)
+    tree.SetBranchAddress("runNumber", mRunNumber)
+    tree.SetBranchAddress("nEventsZBAll", nEventsZBAll)
+    tree.SetBranchAddress("nEventsZBPassed", nEventsZBPassed)
     tree.SetBranchAddress("luminosity", luminosity)
     tree.SetBranchAddress("nEventsJPsi", nEventsJPsi)
 
     for i in range(tree.GetEntries()):
         tree.GetEntry(i)
-        events_map[mRunNumber[0]] = ( nEventsPassed[0], nEventsAll[0], luminosity[0], nEventsJPsi[0] )
+        events_map[mRunNumber[0]] = ( nEventsZBPassed[0], nEventsZBAll[0], luminosity[0], nEventsJPsi[0] )
 
     root_file.Close()
 
@@ -127,6 +127,7 @@ total_cor_int_lum_perrun_max = 0.0 # corrected by veto eff
 total_int_lum_perrun = 0.0
 total_uncorrected_lumi = 0.0
 total_events = 0.0
+JPsiEventsInTheList = 0.0
 
 
 if __name__ == "__main__":
@@ -140,12 +141,12 @@ if __name__ == "__main__":
     with open(input_list, 'r') as f:
         lines = f.readlines()
     
-    lumi_map = read_file_and_store_values(lumi_path)
-    print "lumi_map size: ", len(lumi_map)
+    lumi_map = read_file_and_store_values(lumi_path)  # load luminosity values for each run
+    print "lumi_map size: ", len(lumi_map)  # load mainly ZB passed and all events for correction (probability of retaining an event)
 
     events_map = load_events_from_rootfile(file_path)
 
-    for line in lines:
+    for line in lines:  # loop over runs from the input list
         run_number = int(line.split("/")[-1].replace(".root", ""))
 
 
@@ -158,26 +159,22 @@ if __name__ == "__main__":
         if run_number not in events_map:
             print "Run number not found in the events map: ", run_number
             continue
-        
-        events_passed, events_all, luminosity, nEventsJPsi = events_map[run_number]
-    
-        if events == 0:
+
+        events_ZB_passed, events_ZB_all, luminosity, nEventsJPsi = events_map[run_number]
+
+        if events_ZB_all == 0:
             print "No events in the run: ", run_number, ". nEventsJPsi: ", nEventsJPsi
             continue
 
 
-        #inst_Lumi == luminosity
-        if nEventsJPsi >1000000:
-            print "A lot of events in the run: ", run_number, ". nEventsJPsi: ", nEventsJPsi
-            continue
-
 
         #print "Run number: ", run_number, " Lumi: ", lumi, " Events: ", events, " Inst Lumi: ", inst_lumi, " luminosity: ", luminosity
-        total_events += nEventsJPsi
-        total_int_lum_perrun += lumi*nEventsJPsi/events
-        total_cor_int_lum_perrun += lumi*veto_correction(inst_lumi)*nEventsJPsi/events
-        total_cor_int_lum_perrun_min += lumi*(veto_correction(inst_lumi)-0.01)*nEventsJPsi/events
-        total_cor_int_lum_perrun_max += lumi*(veto_correction(inst_lumi)+0.01)*nEventsJPsi/events
+        total_events += events
+        JPsiEventsInTheList += nEventsJPsi
+        total_int_lum_perrun += lumi*events_ZB_passed/events_ZB_all  # integrated luminosity per run
+        total_cor_int_lum_perrun += lumi*veto_correction(inst_lumi)
+        total_cor_int_lum_perrun_min += lumi*(veto_correction(inst_lumi)-0.01)
+        total_cor_int_lum_perrun_max += lumi*(veto_correction(inst_lumi)+0.01)
         total_uncorrected_lumi += lumi
 
 
@@ -202,10 +199,11 @@ if __name__ == "__main__":
     #print the results
     print "-------------------------------------------------------"
     #print "Total uncorected integrated luminosity: ", total_uncorrected_lumi , " pb^-1"
-    print "total integrated luminosity per run: ", total_int_lum_perrun , " pb^-1"
-    print "Total integrated luminosity from Jaime:" , total_lumi_from_Jaime*(total_events/total_events_from_Jaime), " pb^-1"
-    print "Total events: ", total_events
-
+    print "total integrated luminosity per run corrected by events_ZB_passed/events_ZB_all: ", total_int_lum_perrun , " pb^-1"
+    print "Total integrated luminosity per run corrected by veto correction: ", total_cor_int_lum_perrun , " pb^-1"
+    print "Total integrated luminosity from Jaime (uncorrected):" , total_lumi_from_Jaime*(total_events/total_events_from_Jaime), " pb^-1"
+    print "Total uncorrected integrated luminosity: ", total_uncorrected_lumi , " pb^-1"
+    '''
     print "-------------------------------------------------------"
     print "Combined efficiency: ", eff_combined*100 , " %"  
     print "Total integrated luminosity corrected by veto correction: ", total_cor_int_lum_perrun , " pb^-1"
@@ -217,6 +215,7 @@ if __name__ == "__main__":
     print "Final integrated luminosity max:", total_cor_int_lum_perrun_max, " pb^-1"
     print "Final cross section max:", CS_max , " pb"
     print "-------------------------------------------------------"
+    '''
 
 
 

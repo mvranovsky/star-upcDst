@@ -2,7 +2,7 @@
 #define AnalysisManager_h
 
 // include headers
-#include "Libreries.h"
+#include "Libraries.h"
 #include "Util.h"
 #include "AnaBP.h"
 #include "Ana.h"
@@ -16,6 +16,8 @@
 #include "EmbeddingJPsi.h"
 #include "AnaGoodRun.h"
 #include "RecTree.h"
+#include "AnaZeroBias.h"
+#include "BemcEfficiency.h"
 
 using namespace std;
 using namespace UTIL;
@@ -28,6 +30,7 @@ TTree *upcTree, *mcTree;
 
 Util* mUtil;
 vector<Ana*> mAnaVector;
+//RecTree* mRecTree;
 
 //RpMCAna* mRpMCAna;
 //double mc_vrtx[nCoordinates]; // x,y,z position of vertex from MC
@@ -36,7 +39,7 @@ vector<Ana*> mAnaVector;
 Long64_t nEvents, nMcEvents, iMcEvnt;
 
 // event info
-UInt_t mRunNumber;
+Double_t mRunNumber;
 
 map<unsigned int, TVector3> mCorrection[nRomanPots];
 map<unsigned int, TVector3> mOffSet[nRomanPots];

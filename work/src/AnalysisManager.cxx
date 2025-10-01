@@ -33,8 +33,6 @@ int main(int argc, char** argv)
 
    cout<<"Output file created..."<<endl;
 
-   //if( runMAINANA )
-      //mAnaVector.push_back(new MainAna(outFile));
    if( runAnaBP ){
       mAnaVector.push_back(new AnaBP(outFile));
       cout << "Will run analysis AnaBP." << endl;
@@ -67,10 +65,6 @@ int main(int argc, char** argv)
       mAnaVector.push_back(new AnaJPsi(outFile));
       cout << "Will run analysis of JPsi." << endl;       
    }
-   if( runSysStudyEmbedding){
-      mAnaVector.push_back(new EmbeddingJPsi(outFile));
-      cout << "Will run systematics study of JPsi." << endl;
-   }
    if( runEmbeddingJPsi ){
       mAnaVector.push_back(new EmbeddingJPsi(outFile));
       cout << "Will run embedding of JPsi." << endl;
@@ -83,9 +77,13 @@ int main(int argc, char** argv)
       mAnaVector.push_back(new AnaGoodRun(outFile));
       cout << "Will run analysis of good runs." << endl;
    }
-   if( runSysStudy ){
-      mAnaVector.push_back(new AnaJPsi(outFile));
-      cout << "Will run systematics study." << endl;
+   if( runAnaZeroBias ){
+      mAnaVector.push_back(new AnaZeroBias(outFile));
+      cout << "Will run analysis of Zero Bias." << endl;
+   }
+   if( runBemcEfficiency ){
+      mAnaVector.push_back(new BemcEfficiency(outFile));
+      cout << "Will run analysis of BEMC efficiency." << endl;
    }
 
    
@@ -110,8 +108,8 @@ int main(int argc, char** argv)
    //check if the run number is in the list of bad runs
    for(Long64_t iev=0; iev<nEvents; ++iev) 
    { //get the event
-      //if( iev%1000 == 0)
-      //   cout<<"Analyzing "<<iev<<". event "<<endl;
+      if( runEmbeddingJPsi && iev%1000 == 0)
+         cout<<"Analyzing "<<iev<<". event "<<endl;
       upcTree->GetEntry(iev);
       
       if(iev == 0){
@@ -122,7 +120,7 @@ int main(int argc, char** argv)
       // check if the run number is in the list of bad runs
       //check if a number is in std::vector<int>
 
-      if(!(runMCAna || runEmbeddingJPsi || runSysStudyEmbedding) ){
+      if(!(runMCAna || runEmbeddingJPsi ) ){
          SetRpEvent();
       }
       
@@ -133,14 +131,14 @@ int main(int argc, char** argv)
    }
    
    
-   if( runAnaGoodRun ){
-      analysisOfTracks(mRunNumber, nEvents,inputPath);
+   if( runAnaGoodRun && nEvents > 0){
+      //analysisOfTracks(mRunNumber, nEvents,inputPath);
+      cout << "Filling run tree for run number: " << mRunNumber << endl;
       AnaGoodRun* anaGoodRun = dynamic_cast<AnaGoodRun*>(mAnaVector[0]);
       if( anaGoodRun ){
-         fillRunTree(anaGoodRun, inputPath);
+         anaGoodRun->fillRunTree();
+         cout << "Should be non zero: " << anaGoodRun->getNEventsAll() << endl;
       }
-      
-
    }
    
    //close the outputs
@@ -171,124 +169,4 @@ void Init()
 
 }  
 
-void analysisOfTracks(int RUNNUMBER, int nEvents, string inputPath){
-
-   ofstream runInfoFile("RunInfo.txt");
-   AnaGoodRun* anaGoodRun = dynamic_cast<AnaGoodRun*>(mAnaVector[0]);
-   if( anaGoodRun ){
-
-      if(nEvents == 0){
-         cout << "No events were processed!" << endl;
-         // load the single argument from the command line, it is the path to the file. It looks like /path/to/file/RUNNUMBER.root
-
-         int runNumber = stoi(inputPath.substr(inputPath.find_last_of("/")+1, inputPath.find_last_of(".") - inputPath.find_last_of("/") - 1));
-         runInfoFile << runNumber << endl;  //means no events were processed
-         runInfoFile << "-1" << endl;  
-         runInfoFile.close();
-         return;
-      }else{
-         runInfoFile << RUNNUMBER << endl;
-      }
-
-      bool RPsAreClose = areRPsCloseEnough(RUNNUMBER);
-      if(RPsAreClose){
-         runInfoFile << "1" << endl;  //means the run is good (RPs close)
-      }else{
-         runInfoFile << "0" << endl;  //means the run is bad (RPs far)
-      }
-
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->isJPsiTrigger() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getAverageBemcTracks() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getAverageBemcClusters() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getAverageTpcTracks() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getAverageTOFTracks() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getAverageVertices() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getAverageTpcEta() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getAverageBemcEta() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getAverageTpcPhi() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getAverageBemcPhi() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getNEventsPassed() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getNEventsAll() << endl;
-      runInfoFile << fixed << setprecision(6) << anaGoodRun->getLuminosity(RUNNUMBER) << endl;
-
-      cout << "Finished filling up RunInfo.txt" << endl;
-
-      runInfoFile.close();
-      return;
-   }else{
-      cout << "No AnaGoodRun object found!" << endl;
-      runInfoFile << "No AnaGoodRun object found!" << endl;
-      runInfoFile.close();
-      return;
-   }
-
-   
-}
-
-void fillRunTree(AnaGoodRun *Ana, string inputPath){
-
-
-   outFile->cd();
-   RecTree* mRecTree = new RecTree(nameOfAnaGoodRunTree, AnaGoodRunTreeBits, false);
-
-
-   if( upcTree->GetEntries() <= 0 ){
-      // convert inputPath to int
-      // inputPath looks like /path/to/file/RUNNUMBER.root
-      // get the last part of the path, which is the file name
-      // get the run number from the file name
-      mRunNumber = stoi(inputPath.substr(inputPath.find_last_of("/")+1, inputPath.find_last_of(".") - inputPath.find_last_of("/") - 1));  //means no events were processed
-
-      mRecTree->setRunNumber(mRunNumber);
-      mRecTree->setAtLeast1JPsiTrigger(0);
-      mRecTree->setRPsClose(0);
-      mRecTree->setNEventsAll(0);
-      mRecTree->setNEventsPassed(0);
-      mRecTree->setNEventsJPsi(0);
-      mRecTree->setLuminosity(0.0);
-      mRecTree->setLuminosityError(0.0);
-      mRecTree->setNTracksBemc(0.0);
-      mRecTree->setNClustersBemc(0.0);
-      mRecTree->setNTracksTpc(0.0);
-      mRecTree->setNTracksTof(0.0);
-      mRecTree->setNVertices(0.0);
-      mRecTree->setTpcEtaAverage(0.0);
-      mRecTree->setBemcEtaAverage(0.0);
-      mRecTree->setTpcPhiAverage(0.0);
-      mRecTree->setBemcPhiAverage(0.0);
-
-
-   }else{
-      mRunNumber = upcEvt->getRunNumber();
-      if(Ana->isJPsiTrigger()){
-         mRecTree->setAtLeast1JPsiTrigger(1);
-      }else{
-         mRecTree->setAtLeast1JPsiTrigger(0);
-      }
-      if(areRPsCloseEnough(mRunNumber)){
-         mRecTree->setRPsClose(1);
-      }else{
-         mRecTree->setRPsClose(0);
-      }
-      mRecTree->setNEventsAll(Ana->getNEventsAll());
-      mRecTree->setNEventsPassed(Ana->getNEventsPassed());
-      mRecTree->setNEventsJPsi(Ana->getJPsiTriggerEvents());
-      mRecTree->setLuminosity(Ana->getLuminosity(mRunNumber));
-      mRecTree->setLuminosityError(0.0); // not used yet
-      mRecTree->setNTracksBemc(Ana->getAverageBemcTracks());
-      mRecTree->setNClustersBemc(Ana->getAverageBemcClusters());
-      mRecTree->setNTracksTpc(Ana->getAverageTpcTracks());
-      mRecTree->setNTracksTof(Ana->getAverageTOFTracks());
-      mRecTree->setNVertices(Ana->getAverageVertices());
-      mRecTree->setTpcEtaAverage(Ana->getAverageTpcEta());
-      mRecTree->setBemcEtaAverage(Ana->getAverageBemcEta());
-      mRecTree->setTpcPhiAverage(Ana->getAverageTpcPhi());
-      mRecTree->setBemcPhiAverage(Ana->getAverageBemcPhi());
-      
-   }
-
-   mRecTree->FillRecTree();
-
-
-}
 

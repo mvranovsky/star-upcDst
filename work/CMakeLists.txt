@@ -15,7 +15,9 @@ set (SRCS
   src/AnaJPsi.cxx
   src/AnaJPSI.cxx
   src/AnaGoodRun.cxx
+  src/AnaZeroBias.cxx
   src/EmbeddingJPsi.cxx
+  src/BemcEfficiency.cxx
   )
 
 #name of LIB_READER
@@ -62,25 +64,4 @@ foreach(IBIN ${BIN})
   add_executable(${IBIN} src/${IBIN}.cxx)
   target_link_libraries(${IBIN} ${LIB_READER} ${UPC_LIB} ${ROOT_DEPS} )
 endforeach(IBIN ${BIN})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

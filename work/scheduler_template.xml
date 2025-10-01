@@ -10,7 +10,6 @@
     starver pro
     ./__EXE__ ${FILELIST} 
     mv AnalysisOutput.root ${JOBID}.root
-    mv RunInfo.txt ${JOBID}.txt
     <!-- ./__EXE__ __INPUT__  -->
     <!-- mv AnalysisOutput.root __DAYID__.root  -->
     ls
@@ -38,6 +37,8 @@
       <File>file:__SRCDIR__/work/OffSetsCorrectionsRun17.list</File>
       <File>file:__SRCDIR__/build/libstar-upc.so</File>
       <File>file:__SRCDIR__/work/libupc-reader.so</File>
+      <File>file:__SRCDIR__/work/lists/lum_perrun_JPsi_HTTP.txt</File>
+      <File>file:__SRCDIR__/work/lists/luminosityForZB.list</File>
     </Package>
   </SandBox>
 </job>

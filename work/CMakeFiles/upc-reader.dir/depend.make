@@ -13,10 +13,10 @@ CMakeFiles/upc-reader.dir/src/Ana.cxx.o: /star/u/mvranovsk/star-upcDst/include/S
 CMakeFiles/upc-reader.dir/src/Ana.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
 CMakeFiles/upc-reader.dir/src/Ana.cxx.o: src/Ana.cxx
 CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/Ana.h
-CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/RunDef.h
-CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/UpcDstLibraries.h
 CMakeFiles/upc-reader.dir/src/Ana.cxx.o: include/Util.h
 
 CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
@@ -32,10 +32,10 @@ CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: /star/u/mvranovsk/star-upcDst/in
 CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: src/AnaGoodRun.cxx
 CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/Ana.h
 CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/AnaGoodRun.h
-CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/RunDef.h
-CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/UpcDstLibraries.h
 CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o: include/Util.h
 
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
@@ -51,10 +51,10 @@ CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: /star/u/mvranovsk/star-upcDst/inclu
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: src/AnaJPSI.cxx
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: include/Ana.h
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: include/AnaJPSI.h
-CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: include/RunDef.h
-CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: include/UpcDstLibraries.h
 CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o: include/Util.h
 
 CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
@@ -70,10 +70,10 @@ CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/inclu
 CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: src/AnaJPsi.cxx
 CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: include/Ana.h
 CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: include/AnaJPsi.h
-CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: include/RunDef.h
-CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: include/UpcDstLibraries.h
 CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o: include/Util.h
 
 CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
@@ -89,10 +89,10 @@ CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: /star/u/mvranovsk/star-upcDst/include
 CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: src/AnaV0.cxx
 CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: include/Ana.h
 CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: include/AnaV0.h
-CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: include/RunDef.h
-CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: include/UpcDstLibraries.h
 CMakeFiles/upc-reader.dir/src/AnaV0.cxx.o: include/Util.h
 
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
@@ -108,11 +108,51 @@ CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: /star/u/mvranovsk/star-upcDst/inc
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: src/AnaV0Mult.cxx
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/Ana.h
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/AnaV0Mult.h
-CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/RunDef.h
-CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/UpcDstLibraries.h
 CMakeFiles/upc-reader.dir/src/AnaV0Mult.cxx.o: include/Util.h
+
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: src/AnaZeroBias.cxx
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: include/Ana.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: include/AnaZeroBias.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: include/Libraries.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: include/RecTree.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: include/RunDef.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: include/UpcDstLibraries.h
+CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o: include/Util.h
+
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StPicoHelix.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCEvent.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsCluster.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrack.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCRpsTrackPoint.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCTofHit.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCTrack.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCV0.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: /star/u/mvranovsk/star-upcDst/include/SystemOfUnits.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: src/BemcEfficiency.cxx
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: include/Ana.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: include/BemcEfficiency.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: include/Libraries.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: include/RecTree.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: include/RunDef.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: include/UpcDstLibraries.h
+CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o: include/Util.h
 
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCBemcCluster.h
@@ -126,14 +166,14 @@ CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Ana.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/EmbeddingJPsi.h
-CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/RunDef.h
-CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/UpcDstLibraries.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: include/Util.h
 CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o: src/EmbeddingJPsi.cxx
 
-CMakeFiles/upc-reader.dir/src/RecTree.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/RecTree.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/RecTree.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/RecTree.cxx.o: include/Util.h
 CMakeFiles/upc-reader.dir/src/RecTree.cxx.o: src/RecTree.cxx
@@ -150,11 +190,11 @@ CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: /star/u/mvranovsk/star-upcDst/includ
 CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
 CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: src/TofEff.cxx
 CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: include/Ana.h
-CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: include/RunDef.h
 CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: include/TofEff.h
-CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: include/UpcDstLibraries.h
 CMakeFiles/upc-reader.dir/src/TofEff.cxx.o: include/Util.h
 
 CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: /star/u/mvranovsk/star-upcDst/include/StRPEvent.h
@@ -169,14 +209,14 @@ CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: /star/u/mvranovsk/star-upcDst/in
 CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: /star/u/mvranovsk/star-upcDst/include/StUPCVertex.h
 CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: src/TofEffMult.cxx
 CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: include/Ana.h
-CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: include/RecTree.h
 CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: include/RunDef.h
 CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: include/TofEffMult.h
-CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: include/UpcDstLibreries.h
+CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: include/UpcDstLibraries.h
 CMakeFiles/upc-reader.dir/src/TofEffMult.cxx.o: include/Util.h
 
-CMakeFiles/upc-reader.dir/src/Util.cxx.o: include/Libreries.h
+CMakeFiles/upc-reader.dir/src/Util.cxx.o: include/Libraries.h
 CMakeFiles/upc-reader.dir/src/Util.cxx.o: include/Util.h
 CMakeFiles/upc-reader.dir/src/Util.cxx.o: src/Util.cxx
 

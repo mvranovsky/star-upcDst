@@ -4,7 +4,7 @@
 #include "Util.h"
 #include "RecTree.h"
 #include "Ana.h"
-#include "UpcDstLibreries.h"
+#include "UpcDstLibraries.h"
 
 
 using namespace std;
@@ -30,7 +30,7 @@ class AnaJPsi : public Ana{
       bool fiducialVolume(const StUPCRpsTrack *trackRP, int side);
       void fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
       void fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ);
-      void loadCuts(bool runSysStudy);
+      void loadCuts();
 
       // all control histograms
       TH2F *hRPcorr[2], *hRPcorrWest[2], *hRPcorrEast[2], *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;

@@ -11,19 +11,23 @@ const bool runAnaV0 = false;
 const bool runAnaV0Mult = false;
 const bool runTofEff = false;
 const bool runTofEffMult = false;
-const bool runAnaJPsi = true;
+const bool runAnaJPsi = false;
 const bool runAnaJPSI = false;
 const bool runAnaGoodRun = false;
-const bool runEmbeddingJPsi = false;
-const bool runSysStudy = false;
-const bool runSysStudyEmbedding = false;
+const bool runEmbeddingJPsi = true;
+const bool runAnaZeroBias = false;
+const bool runBemcEfficiency = false;
 
 
+const bool runSysStudy = false;   // used in JPsi analyses for loose conditions
 const unsigned int nAligIteration = 4;
-const bool runMCAna = false;
+const bool runMCAna = false;    // used for TofEff and V0
 const bool DEBUG = false;
 const bool V0Control = false;
 const bool analysisWithRPs = false;
+const bool runCustomBemcSimulator = true;   // override BEMC efficiency from embedding
+
+
 // 570702 RP_UPC // 570712 RP_UPC // 570703 RP_SDT // 570709 RP_ET // 570719 RP_ET // 570701 RP_CPT2 // 570711 RP_CPT2 
 // 570705 RP_CPT2noBBCL // 570704 RP_Zerobias // 590703 RP_SDT // 590709 RP_ET // 590701 RP_CPT2 // 590705 RP_CPT2noBBCL 
 // 590708 RP_CPTnoBBCL // 570209 JPsi*HTTP // 570219 JPsi*HTTP // 570229 JPsi*HTTP
@@ -34,12 +38,13 @@ const std::vector<int> CEPtriggers = { 570705 }; //, 590705 //{ 570701, 570705, 
 const std::vector<int> JPSItriggers = { 570209, 570219, 570229 };
 
 const std::vector<int> ZBtriggers = {570704};
+
 const int nPlanesUsed = 3;
 const bool AFTERBURNER = true;
 
 //const TString nameOfTree[] = { TString("recTreeBP"), TString("recTreeV0"), TString("recTreeV0Control")};
 //const bitset<16> treeBits[] = { bitset<16>(string("0000000000011111")), bitset<16>(string("0000011100010001")), bitset<16>(string("0000011100010001"))};
-//postupne odzadu: eventinfo, vertexinfo(1), stateinfo(1), centralhadronsinfo(2), rptracksinfo(2), zdc,bbc info, trigger efficiency info, TRUEMC info, vertexinfo(multiple), stateinfo(multiple), centralhadronsinfo(multiple)
+//postupne odzadu: eventinfo(0), vertexinfo(1), stateinfo(1), centralhadronsinfo(2), rptracksinfo(2), zdc,bbc info, trigger efficiency info, TRUEMC info, vertexinfo(multiple), stateinfo(multiple), centralhadronsinfo(multiple)
 
 const TString nameOfAnaBPTree = "recTreeBP";
 const std::bitset<16> AnaBPTreeBits = std::bitset<16>(std::string("0000011100010001"));
@@ -62,24 +67,29 @@ const std::bitset<16> TofEffMultTreeBits = std::bitset<16>(std::string("00000111
 const TString nameOfTofEffMultDir = "TofEffMultPlots";
 
 const TString nameOfAnaJPsiTree = "recTreeAnaJPsi";
-const std::bitset<16> AnaJPsiTreeBits = std::bitset<16>(std::string("0011000000011111")); 
+const std::bitset<16> AnaJPsiTreeBits = std::bitset<16>(std::string("0011000000011111"));
 const TString nameOfAnaJPsiDir = "AnaJPsiPlots";
 
 const TString nameOfAnaJPSITree = "recTreeAnaJPSI";
 const std::bitset<16> AnaJPSITreeBits = std::bitset<16>(std::string("0011010000010111")); 
 const TString nameOfAnaJPSIDir = "AnaJPSIPlots";
 
-const TString nameOfAnaGoodRunTree = "recAnaGoodRun";
-const std::bitset<16> AnaGoodRunTreeBits = std::bitset<16>(std::string("0100000000000000")); 
-const TString nameOfAnaGoodRunDir = "AnaGoodRunPlots";
-
 const TString nameOfEmbeddingJPsiTree = "recTreeEmbeddingJPsi";
 const std::bitset<16> EmbeddingJPsiTreeBits = std::bitset<16>(std::string("0011000000001101")); 
 const TString nameOfEmbeddingJPsiDir = "EmbeddingJPsiPlots";
 
-const TString nameOfSysStudyTree = "recTreeSysStudy";
-const std::bitset<16> SysStudyTreeBits = std::bitset<16>(std::string("0011100000011111"));
-const TString nameOfSysStudyDir = "SysStudyPlots";
+const TString nameOfAnaGoodRunTree = "recAnaGoodRun";
+const std::bitset<16> AnaGoodRunTreeBits = std::bitset<16>(std::string("0100000000000000")); 
+const TString nameOfAnaGoodRunDir = "AnaGoodRunPlots";
+
+const TString nameOfAnaZeroBiasTree = "recTreeZeroBias";
+const std::bitset<16> ZeroBiasTreeBits = std::bitset<16>(std::string("0000000001001111")); 
+const TString nameOfAnaZeroBiasDir = "AnaZeroBiasPlots";
+
+const TString nameOfBemcEfficiencyTree = "recTreeBemcEfficiency";
+const std::bitset<16> BemcEfficiencyTreeBits = std::bitset<16>(std::string("0011000000001111"));
+const TString nameOfBemcEfficiencyDir = "BemcEfficiencyPlots";
+
 
 const TString offsetFilePath = "/star/u/mvranovsk/star-upcDst/work/OffSetsRun17.list";
 const TString offsetCorrectionsFilePath = "/star/u/mvranovsk/star-upcDst/work/OffSetsCorrectionsRun17.list";
@@ -106,9 +116,6 @@ const double maxDcaZLoose = 1.2;
 const double maxEtaLoose = 1.0;
 const double vertexRangeLoose = 120;
 const double maxPidChiEELoose = 11;
-const double minPidChiPPLoose = 8;
-const double minPidChiPiPiLoose = 8;
-const double minPidChiKKLoose = 8;
 
 //topology cuts for V0 selection
 const double vertexDiffMax = 5.;
@@ -122,6 +129,10 @@ const double maxEta = 0.9;
 const double vertexRange = 100.0; // cm
 const double etaVertexSlope = -1/250.0;
 const double etaVertexShift = 0.9;
+
+// conditions for BEMC efficiency 
+const double maxDeltaDipAngle = 0.03;
+const double maxInvMass = 0.1; //GeV/c^2 
 
 // vertex range in z-coordinate
 //const double exclusivityCut = 0.7;
