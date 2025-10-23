@@ -282,7 +282,9 @@ void Ana::SaveMissingPtInfo(const StUPCTrack *trk1, const StUPCTrack *trk2, cons
    trk1->getMomentum(trk1Mom);
    trk2->getMomentum(trk2Mom);
    sum = trk1Mom + trk2Mom + trackRP->pVec();
+
    double pTMissing = sqrt( pow(sum.X(), 2) + pow(sum.Y(), 2) );
+
    mRecTree->setPtMissing( pTMissing );
    mRecTree->setPxMissing( sum.X() );
    mRecTree->setPyMissing( sum.Y() );
@@ -293,6 +295,7 @@ void Ana::SaveMissingPtInfo(const StUPCTrack *trk1, const StUPCTrack *trk2, cons
    trk1->getMomentum(trk1Mom);
    trk2->getMomentum(trk2Mom);
    sum = trk1Mom + trk2Mom + trkRP1->pVec() + trkRP2->pVec();
+   
    double pTMissing = sqrt( pow(sum.X(), 2) + pow(sum.Y(), 2) );
 
    mRecTree->setPtMissing( pTMissing );

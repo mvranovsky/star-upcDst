@@ -85,6 +85,10 @@ int main(int argc, char** argv)
       mAnaVector.push_back(new BemcEfficiency(outFile));
       cout << "Will run analysis of BEMC efficiency." << endl;
    }
+   if( runAnaChiC ){
+      mAnaVector.push_back(new AnaChiC(outFile));
+      cout << "Will run analysis of ChiC." << endl;       
+   }
 
    
    // Load RP off-sets with off-set corrections 
@@ -102,7 +106,7 @@ int main(int argc, char** argv)
    //ask for number of events
    nEvents = upcTree->GetEntries();
    if (DEBUG)
-      nEvents = 30000; // use for debugging and testing
+      nEvents = 3000; // use for debugging and testing
    cout<<"Processing "<<nEvents<<" events"<<endl;
 
    //check if the run number is in the list of bad runs

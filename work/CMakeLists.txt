@@ -18,6 +18,7 @@ set (SRCS
   src/AnaZeroBias.cxx
   src/EmbeddingJPsi.cxx
   src/BemcEfficiency.cxx
+  src/AnaChiC.cxx
   )
 
 #name of LIB_READER

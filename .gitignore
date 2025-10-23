@@ -28,3 +28,4 @@ scheduler/.nfs*
 *.h~
 *.C~
 *.list~
+work/output.out

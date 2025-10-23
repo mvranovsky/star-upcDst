@@ -12,6 +12,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/upc-reader.dir/src/AnaZeroBias.cxx.o"
   "CMakeFiles/upc-reader.dir/src/EmbeddingJPsi.cxx.o"
   "CMakeFiles/upc-reader.dir/src/BemcEfficiency.cxx.o"
+  "CMakeFiles/upc-reader.dir/src/AnaChiC.cxx.o"
   "libupc-reader.pdb"
   "libupc-reader.so"
 )

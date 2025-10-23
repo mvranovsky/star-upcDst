@@ -36,6 +36,8 @@ namespace UTIL {
    enum ANALYSIS_CUT { ALL = 1, TRIG, TWORPTRKS, INFID, ONETOFVX, ZVERTEX, TWOTOFTRKS, ETA, OPPOSITE, PIPI, PPI, PIPBAR, nAnalysisCuts };
    enum V0SELECTION_CUT {V0ALL = 1, V0TRIG,V0FLAG, V0PID, V0PAIR, V0ETAVTXZ, V0OPPOSITE, V0PIPI, V0PPI, V0PIPBAR , nV0SelectionCuts };
    enum JPSISELECTION_CUT {JPSIALL = 1, JPSITRIG, JPSI1VTX,JPSIBEMC , JPSIVTXZETA, JPSIBACKTOBACK,JPSIPID, JPSI1RP, JPSIRPFIDCUT,JPSIQTOT, nJPSISelectionCuts };
+   enum CHICSELECTION_CUT {CHICALL = 1, CHICTRIG, CHIC1VTX, CHICBEMC, CHICVTXZETA, CHICBACKTOBACK, CHICPID, CHIC2RP, CHICRPFIDCUT, CHICQTOT, nCHICSelectionCuts };
+
    enum JPSISELECTION_CUT2 {JPSI2ALL = 1, JPSI2TRIG, JPSI21VTX,JPSI24TRACKS, JPSI2VTXZETA, JPSI2PID, JPSI2QTOT,nJPSI2SelectionCuts };
    enum EMBEDDING{ EMBEDDINGALL = 1, EMBEDDING2BEMC, EMBEDDINGETA, EMBEDDINGBACKTOBACK,EMBEDDINGPID, EMBEDDINGQTOT, nEmbeddingCuts };
    enum ZEROBIAS_CUT {ZBALL = 1, ZBTRIGGER , ZBBEMCTRACKS, ZBBACKTOBACK,ZBPID, ZBVTXZETA , ZBTRIGGERCONDITION, nZBCuts };
@@ -75,6 +77,8 @@ class UTIL::Util{
       inline TString analysisCutName(UInt_t id) const { if(id<nAnalysisCuts) return mCutName[id]; else{ std::cerr << "ERROR in Util::analysisCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisV0SelectionName(UInt_t id) const { if(id<nV0SelectionCuts) return mV0CutName[id]; else{ std::cerr << "ERROR in Util::AnaV0CutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisJPSI(UInt_t id) const { if(id<nJPSISelectionCuts) return mJPSICutName[id]; else{ std::cerr << "ERROR in Util::JPsiCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
+      inline TString analysisCHIC(UInt_t id) const { if(id<nCHICSelectionCuts) return mCHICCutName[id]; else{ std::cerr << "ERROR in Util::CHICCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
+
       inline TString analysisJPSI2(UInt_t id) const { if(id<nJPSI2SelectionCuts) return mJPSI2CutName[id]; else{ std::cerr << "ERROR in Util::JPSI2CutName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString embeddingName(UInt_t id) const { if(id<nEmbeddingCuts) return mEmbeddingName[id]; else{ std::cerr << "ERROR in Util::embeddingName(UInt_t id): id out of range" << std::endl; return TString("");} }
       inline TString analysisZeroBias(UInt_t id) const { if(id<nZBCuts) return mZBCutName[id]; else{ std::cerr << "ERROR in Util::ZBCutName(UInt_t id): id out of range" << std::endl; return TString("");} }
@@ -140,6 +144,7 @@ class UTIL::Util{
       TString* mZBCutName;
       TString* mEmbeddingName;
       TString* mBECutName;
+      TString* mCHICCutName;
           
       Double_t mParticleMass[nParticles]; // GeV/c^2
       const Double_t mSpeedOfLight; // m/s

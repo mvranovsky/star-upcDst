@@ -108,6 +108,16 @@ include/RecTree.h
 Ana.h
 include/Ana.h
 
+include/AnaChiC.h
+Util.h
+include/Util.h
+RecTree.h
+include/RecTree.h
+Ana.h
+include/Ana.h
+UpcDstLibraries.h
+include/UpcDstLibraries.h
+
 include/AnaGoodRun.h
 Util.h
 include/Util.h
@@ -221,6 +231,8 @@ AnaZeroBias.h
 include/AnaZeroBias.h
 BemcEfficiency.h
 include/BemcEfficiency.h
+AnaChiC.h
+include/AnaChiC.h
 
 include/BemcEfficiency.h
 Util.h

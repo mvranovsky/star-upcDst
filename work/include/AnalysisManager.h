@@ -18,6 +18,7 @@
 #include "RecTree.h"
 #include "AnaZeroBias.h"
 #include "BemcEfficiency.h"
+#include "AnaChiC.h"
 
 using namespace std;
 using namespace UTIL;

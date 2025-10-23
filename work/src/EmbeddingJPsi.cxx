@@ -1,4 +1,4 @@
-#include "../include/EmbeddingJPsi.h"
+#include "EmbeddingJPsi.h"
 
 //_____________________________________________________________________________
 EmbeddingJPsi::EmbeddingJPsi(TFile *outFile): Ana(outFile){}
@@ -13,15 +13,15 @@ void EmbeddingJPsi::Make(){
    //trigger
    hAnalysisFlow->Fill(EMBEDDINGALL);
 
-   trueMCPeak();
+   //trueMCPeak();
 
 
    SaveEventInfo(mUpcEvt);
-   // 1 vertex
 
    tpcCounter = 0;
    tracksBEMC.clear();
    hNClustersBEMC->Fill( mUpcEvt->getNumberOfClusters() );
+   //cout << "new event" << endl;
    
    //central system good quality tracks + BEMC
    fillBemcInfoAll();
@@ -35,18 +35,35 @@ void EmbeddingJPsi::Make(){
       // vertexing does not work in embedding for pp, i have to use the truth information otherwise i would have to go over global tracks
       if(!(trk->getIdTruth() == 1 || trk->getIdTruth() == 2) )  continue;
       
+      //cout << "track id truth: " << trk->getIdTruth() << endl;
       hTrackQualityFlow->Fill(1);
       
-      if( trk->getFlag(StUPCTrack::kBemc) )  fillBemcInfo(trk);  // before, here was continue
+      if( trk->getFlag(StUPCTrack::kBemc) )  fillBemcInfo(trk); 
       
+      hBemcPtAllEmbed->Fill(trk->getPt());
+      hBemcPtAllMc->Fill(trk->getPt());
+
+      //mainly filling histograms for bemc efficiency plots
+      bool isBemcMcHit = false;
+      if(isBemcHit(trk)){
+         isBemcMcHit = true;
+         hBemcPtHitMc->Fill(trk->getPt());
+      }
+
+      bool isBemcEmbedHit = false;
+      if(trk->getFlag(StUPCTrack::kBemc)){
+         isBemcEmbedHit = true;
+         hBemcPtHitEmbed->Fill(trk->getPt());
+      }
+
       if(runCustomBemcSimulator){  // custom simulator for BEMC efficiency
-         if( isBemcHit(trk) ){
+         if( !isBemcMcHit ){
             continue;
          }
       }else{  // standard way from embedding
-         if( !trk->getFlag(StUPCTrack::kBemc) )  {
+         if( !isBemcEmbedHit )  {
             continue;
-         }
+         }      
       }
 
       hTrackQualityFlow->Fill(2);
@@ -69,9 +86,14 @@ void EmbeddingJPsi::Make(){
    hAnalysisFlow->Fill(EMBEDDING2BEMC);
    
    const StUPCTrack *track1 = mUpcEvt->getTrack(tracksBEMC[0]);
-
    const StUPCTrack *track2 = mUpcEvt->getTrack(tracksBEMC[1]);
-   
+
+   TLorentzVector electron1, electron2, state;
+   track1->getLorentzVector(electron1, mUtil->mass(ELECTRON));
+   track2->getLorentzVector(electron2, mUtil->mass(ELECTRON));
+
+   state = electron1 + electron2;
+
    SaveBemcInfo(track1, 0);
    SaveBemcInfo(track2, 1);
 
@@ -79,10 +101,13 @@ void EmbeddingJPsi::Make(){
    if( !(abs(track1->getEta()) < MAXETA && abs(track2->getEta()) < MAXETA ) )   return;
 
    hAnalysisFlow->Fill(EMBEDDINGETA);
+   hDeltaPhi->Fill( fabs(track1->getPhi() - track2->getPhi()) );
 
    if(!backToBack(track1, track2))  return;
 
+   hDeltaPhiCut->Fill( fabs(track1->getPhi() - track2->getPhi()) );
    mRecTree->setIsBackToBack(1,0);
+
 
    hAnalysisFlow->Fill(EMBEDDINGBACKTOBACK);
 
@@ -94,12 +119,6 @@ void EmbeddingJPsi::Make(){
    
    hAnalysisFlow->Fill(EMBEDDINGPID);
    
-
-   TLorentzVector electron1, electron2, state;   
-   track1->getLorentzVector(electron1, mUtil->mass(ELECTRON));
-   track2->getLorentzVector(electron2, mUtil->mass(ELECTRON));
-   state = electron1 + electron2;
-
    hPtPair->Fill(state.Pt());
 
    SaveStateInfo(state,track1->getCharge() + track2->getCharge(),0 );
@@ -110,15 +129,17 @@ void EmbeddingJPsi::Make(){
    double totQ = track1->getCharge() + track2->getCharge();
 
    hTotQ->Fill(totQ);
+
    
    if(totQ == 0){
       mRecTree->FillRecTree();
       hAnalysisFlow->Fill(EMBEDDINGQTOT);
+      hInvMassJPsi->Fill(state.M());
    }else{
       mRecTree->FillBcgTree();
    }
 
-
+   
    if(DEBUG){
       cout << "Finished EmbeddingJPsi::Make()" << endl;
    }
@@ -177,6 +198,7 @@ void EmbeddingJPsi::Init(){
    hNSigmaPi = new TH1D("hNSigmaPi", "n_{#sigma} pions; n_{#sigma} #pi [-]; counts", 100, -10, 10 );
    hNSigmaP = new TH1D("hNSigmaP", "n_{#sigma} protons; n_{#sigma} p [-]; counts", 100, -10, 10 );
    hNSigmaK = new TH1D("hNSigmaK", "n_{#sigma} kaons; n_{#sigma} K [-]; counts", 100, -10, 10 );
+   hNSigmaE = new TH1D("hNSigmaE", "n_{#sigma} electrons; n_{#sigma} e [-]; counts", 100, -10, 10 );
    hDEdxSignal = new TH1D("hDEdxSignal", "dE/dx signal; ln#frac{dE}{dx} [MeV/cm];counts", 100, 0, 1 );
 
    hPIDChiee = new TH1D("hPIDChiee", "hPIDChiee; #chi_{ee} [-]; counts", 50, 0, 50);
@@ -242,19 +264,36 @@ void EmbeddingJPsi::Init(){
    hTotQ->GetYaxis()->SetTitle(YAxisDescription);
 
    hNTracksTpc = new TH1D("hNTracksTpc", "hNTracksTpc; Number of TPC tracks [-]; counts", 26, -0.5, 25.5);
-  
-   hInvMassJPsi = new TH1D("hInvMassTrueMC", "hInvMassJPsi; m_{ee} [GeV/c^{2}]; counts", 225, 0.5, 5);
 
+   const int nEdges = 16;
+   Double_t edges[nEdges] = {0.5,0.7,0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4,  1.5,  1.6,  1.7,  1.8,  1.9,2.1, 2.5};
+        
+   hBemcPtAllEmbed = new TH1D("hBemcPtAllEmbed", "hBemcPtAllEmbed; p^{e}_{T} [GeV/c]; counts", nEdges-1, edges);
+   hBemcPtHitEmbed = new TH1D("hBemcPtHitEmbed", "hBemcPtHitEmbed; p^{e}_{T} [GeV/c]; counts", nEdges-1, edges);
+   hBemcPtHitMc = new TH1D("hBemcPtHitMc", "hBemcPtHitMc; p^{e}_{T} [GeV/c]; counts", nEdges-1, edges);
+   hBemcPtAllMc = new TH1D("hBemcPtAllMc", "hBemcPtAllMc; p^{e}_{T} [GeV/c]; counts", nEdges-1, edges);
+   
+   
+   hDeltaPhi = new TH1D("hDeltaPhi", "hDeltaPhi; #Delta#varphi [rad]; counts", 64, -3.14, 3.14);
+   hDeltaPhiCut = new TH1D("hDeltaPhiCut", "hDeltaPhiCut; #Delta#varphi [rad]; counts", 64, -3.14, 3.14);
+   
    gBEControl = new TGraph(); // graph for control of BEMC efficiency
    gBEControl->SetName("gBEControl");
    gBEControl->SetTitle("BEMC efficiency used in MC simulation; p_{T} [GeV/c]; efficiency");
+   loadBemcParameters();
    runControlOfBemcEfficiency();
-  
+   
+   hInvMassJPsi = new TH1D("hInvMassSpectrum", "hInvMassSpectrum; m_{ee} [GeV/c^{2}]; counts",120, 1.0, 4);
+
+
+   randGen = new TRandom3(0); // random generator for BEMC efficiency simulation
+
    bField = -4.991; // guess based on real runs
    beamline[0] = 0;
    beamline[2] = 0;
    beamline[1] = 0;
    beamline[3] = 0;
+
 
    cout << "Finished EmbeddingJPsi::Init()" << endl;
 }
@@ -285,18 +324,8 @@ void EmbeddingJPsi::trueMCPeak(){
 
 
    TParticle *mc1, *mc2;
-   for(int iMcTrk = 0;iMcTrk < mUpcEvt->getNumberOfMCParticles(); ++iMcTrk){
-      TParticle *mcTrk = mUpcEvt->getMCParticle(iMcTrk);
-      if(!mcTrk)
-         continue;
-      if(mcTrk->GetPdgCode() == 11 ){
-         mc1 = mcTrk;
-      }
-      else if(mcTrk->GetPdgCode() == -11){
-         mc2 = mcTrk;
-      }
-
-   }
+   mc1 = mUpcEvt->getMCParticle(0);
+   mc2 = mUpcEvt->getMCParticle(1);
 
    if(!mc1 || !mc2){
       return;
@@ -304,7 +333,7 @@ void EmbeddingJPsi::trueMCPeak(){
 
    TLorentzVector stateMC(mc1->Px() + mc2->Px(), mc1->Py() + mc2->Py(), mc1->Pz() + mc2->Pz(), mc1->Energy() + mc2->Energy());
 
-   hInvMassJPsi->Fill(stateMC.M());
+   //hInvMassJPsi->Fill(stateMC.M());
 
 
 }
@@ -420,17 +449,13 @@ bool EmbeddingJPsi::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2)
    hPIDChiee->Fill(chi_ee);
    hPIDChipp->Fill(chi_pp);
    hPIDChikk->Fill(chi_kk);
+
    hNSigmaEE1->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());
    hNSigmaPP1->Fill(trk1->getNSigmasTPCProton(), trk2->getNSigmasTPCProton());
    hNSigmaKK1->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
    hNSigmaPiPi1->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
 
-   if(chi_pp < MINPIDCHIPP)  return false;
-
-   if(chi_pipi < MINPIDCHIPIPI)  return false;
-
-   if(chi_kk < MINPIDCHIKK)  return false;
-
+   
    hNSigmaEE2->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());
    hNSigmaPP2->Fill(trk1->getNSigmasTPCProton(), trk2->getNSigmasTPCProton());
    hNSigmaKK2->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
@@ -451,6 +476,7 @@ void EmbeddingJPsi::fillNSigmaPlots(const StUPCTrack *trk){
     hNSigmaPi->Fill(nSigmaPion);
     hNSigmaP->Fill(nSigmaProton);
     hNSigmaK->Fill(nSigmaKaon);
+    hNSigmaE->Fill(nSigmaElectron);
     hDEdxSignal->Fill( trk->getDEdxSignal()*1000000 );
     hNSigmaPiPcorr->Fill(nSigmaPion, nSigmaProton);
     hNSigmaPiKcorr->Fill(nSigmaPion, nSigmaKaon);
@@ -467,26 +493,30 @@ void EmbeddingJPsi::fillNSigmaPlots(const StUPCTrack *trk){
 
 bool EmbeddingJPsi::isBemcHit(const StUPCTrack *trk){ // MC simulator of BEMC efficiency
 
-   TRandom3 randGen;
-   double random = randGen.Uniform(0,1);
+   double random = randGen->Uniform(0.0,1.0);
+
+   //cout << "   Random number: " << random << endl;
+   //cout << "   Track pT: " << trk->getPt() << endl;
 
    double val = bemcEfficiency( trk->getPt() );
+   //cout << "   BEMC efficiency value: " << val << endl;
 
+   bool result = false;
    if(random < val) {
-      return true;
+      //cout << "   Track is a BEMC hit" << endl;
+      result = true;
    }else{
-      return false;   
+      //cout << "   Track is NOT a BEMC hit" << endl;
+      result = false;
    }
+   //cout << "pt: " << trk->getPt() << " bemcEff: " << val << " random: " << random << " result: " << result << endl;
+   return result;
    
 }
 
 
 double EmbeddingJPsi::bemcEfficiency(double pT){ //function which returns bemc efficiency based on fit to real data
    // for now, the results of the fit are here hard coded
-   double eps0 = -1.303;
-   double n = 1.0758;
-   double pTThr = 0.0105;
-   double sigma = 0.524;
 
 
    double res = eps0 + n*( 1 + TMath::Erf( (pT - pTThr)/(sqrt(2)*sigma ) ) );
@@ -498,6 +528,11 @@ double EmbeddingJPsi::bemcEfficiency(double pT){ //function which returns bemc e
 void EmbeddingJPsi::runControlOfBemcEfficiency(){
 
    int j = 0;
+   cout << "BEMC efficiency parameters: " << endl;
+   cout << "eps0 = " << eps0 << endl;
+   cout << "n = " << n << endl;
+   cout << "pTThr = " << pTThr << endl;
+   cout << "sigma = " << sigma << endl;
    for(int i = 50; i < 500; ++i){
       gBEControl->SetPoint(j , i*0.01, bemcEfficiency(i*0.01) );
       j++;
@@ -506,4 +541,19 @@ void EmbeddingJPsi::runControlOfBemcEfficiency(){
    mOutFile->cd();
    gBEControl->Write();
 
+}
+
+void EmbeddingJPsi::loadBemcParameters(TString filename){
+
+   // open file called BEMCParameters.txt
+   ifstream inFile(filename);
+   if(!inFile){
+      cerr << "Error in EmbeddingJPsi::loadBemcParameters, no BEMCParameters.txt file found" << endl;
+      return;
+}
+
+   // read parameters from file
+   inFile >> eps0 >> n >> pTThr >> sigma;
+
+   inFile.close();
 }

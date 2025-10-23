@@ -38,17 +38,20 @@ class EmbeddingJPsi : public Ana{
       bool isBemcHit(const StUPCTrack *trk); // MC simulator of BEMC efficiency
       double bemcEfficiency(double pT); //function which returns bemc efficiency based on fit to real data
       void runControlOfBemcEfficiency();
+      void loadBemcParameters(TString filename = "BEMCParameters.txt");
+
       // all control histograms
       TH2F *hNSigmaPiPcorr, *hNSigmaPiKcorr, *hNSigmaPiecorr, *hNSigmaPKcorr, *hNSigmaPecorr, *hNSigmaKecorr, *hNSigmaPPicorr, *hNSigmaKPcorr, *hNSigmaKPicorr;
       TH1D *hBranchRP;
       TH1D *hDcaZ, *hDcaZCut, *hDcaXY, *hDcaXYCut, *hNfitHits, *hNfitHitsCut, *hNhitsDEdx, *hNhitsDEdxCut, *hNVertices, *hTotQ;
       TH1D *hSameTrackPair, *hNTracksTpc, *hNTracksTof, *hNTracksBEMC, *hNClustersBEMC;
-      TH1D *hNSigmaPi, *hNSigmaP, *hNSigmaK, *hDEdxSignal;
+      TH1D *hNSigmaPi, *hNSigmaP, *hNSigmaK, *hDEdxSignal, *hNSigmaE;
       TH1D *hPIDChiee, *hPIDChipp, *hPIDChipipi, *hPIDChikk;
       TH1D *hPt, *hPtCut;
       TH1D *hInvMassJPsi, *hTrackQualityFlow;
       Util* mUtil;
       TH2F *hNSigmaEE1, *hNSigmaEE2, *hNSigmaPP1, *hNSigmaPP2, *hNSigmaKK1, *hNSigmaKK2, *hNSigmaPiPi1, *hNSigmaPiPi2;
+      TH1D* hDeltaPhi, *hDeltaPhiCut;
 
       TH1D *hInvMassJPsiMC;
       TH1D *hPtPair;
@@ -76,6 +79,19 @@ class EmbeddingJPsi : public Ana{
       // cuts
       double MAXETA, MINPIDCHIPP, MINPIDCHIPIPI, MINPIDCHIKK, MAXPIDCHIEE;
       int MINNHITSFIT, MINNHITSDEDX;
+
+      TH1D *hBemcPtAllEmbed, *hBemcPtHitEmbed;
+      TH1D *hBemcPtAllMc, *hBemcPtHitMc;
+
+
+      // variables for BEMC MC simulator
+      double eps0 = 0.00;
+      double n = 0.423;
+      double pTThr = 0.424;
+      double sigma = 0.39;
+
+      // has to be defined here only once
+      TRandom3 *randGen;
 
 
 };

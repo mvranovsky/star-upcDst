@@ -14,13 +14,13 @@ const bool runTofEffMult = false;
 const bool runAnaJPsi = false;
 const bool runAnaJPSI = false;
 const bool runAnaGoodRun = false;
-const bool runEmbeddingJPsi = true;
+const bool runEmbeddingJPsi = false;
 const bool runAnaZeroBias = false;
 const bool runBemcEfficiency = false;
-const bool runAnaChiC = false;
+const bool runAnaChiC = true;
 
 
-const bool runSysStudy = false;   // used in JPsi analyses for loose conditions
+const bool runSysStudy = true;   // used in JPsi analyses for loose conditions
 const unsigned int nAligIteration = 4;
 const bool runMCAna = false;   // used for TofEff and V0
 const bool DEBUG = false;

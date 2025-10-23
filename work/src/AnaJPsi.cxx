@@ -98,7 +98,7 @@ void AnaJPsi::Make(){
    hAnalysisFlow->Fill(JPSIVTXZETA);
 
    // back to back
-   //if(!backToBack(track1, track2))   return;  // only interested in events we trigger on
+   if(!backToBack(track1, track2))   return;  // only interested in events we trigger on
 
    if(backToBack(track1, track2)){
       mRecTree->setIsBackToBack(1,0);
@@ -426,12 +426,13 @@ bool AnaJPsi::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
    hNSigmaKK1->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
    hNSigmaPiPi1->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
 
-   
+   /*
    if(chi_pp < MINPIDCHIPP)  return false;
    
    if(chi_pipi < MINPIDCHIPIPI)  return false;
    
    if(chi_kk < MINPIDCHIKK)  return false;
+   */
    
    
    hNSigmaEE2->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());

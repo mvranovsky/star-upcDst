@@ -10,24 +10,24 @@
     starver pro
     ./AnalysisManager ${FILELIST} 
     mv AnalysisOutput.root ${JOBID}.root
-    <!-- ./AnalysisManager <input URL="filelist:/star/u/mvranovsk/star-upcDst/work/lists/goodRun17noRP.list"/>  -->
+    <!-- ./AnalysisManager <input URL="filelist:/star/u/mvranovsk/star-upcDst/work/lists/goodRun17WithRP.list"/>  -->
     <!-- mv AnalysisOutput.root __DAYID__.root  -->
     ls
   </command>
 
-  <input URL="filelist:/star/u/mvranovsk/star-upcDst/work/lists/goodRun17noRP.list"/>
+  <input URL="filelist:/star/u/mvranovsk/star-upcDst/work/lists/goodRun17WithRP.list"/>
   
-  <!-- <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_noRP_noB2B_21.9.25/logs/__DAYID__.out"/>  -->
-  <!-- <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_noRP_noB2B_21.9.25/logs/__DAYID__.err"/>  -->
+  <!-- <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaChiC_13.10.25/logs/__DAYID__.out"/>  -->
+  <!-- <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaChiC_13.10.25/logs/__DAYID__.err"/>  -->
 
-  <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_noRP_noB2B_21.9.25/logs/$JOBID.out"/>
-  <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_noRP_noB2B_21.9.25/logs/$JOBID.err"/>
+  <stdout URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaChiC_13.10.25/logs/$JOBID.out"/>
+  <stderr URL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaChiC_13.10.25/logs/$JOBID.err"/>
 
-  <output fromScratch="*.root" toURL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_noRP_noB2B_21.9.25/" />
-  <output fromScratch="*.txt" toURL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_noRP_noB2B_21.9.25/" />
+  <output fromScratch="*.root" toURL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaChiC_13.10.25/" />
+  <output fromScratch="*.txt" toURL="file:/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaChiC_13.10.25/" />
 
   <Generator>
-    <Location>/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaJPsi_noRP_noB2B_21.9.25/sched</Location>
+    <Location>/gpfs01/star/pwg/mvranovsk/Run17_P20ic/AnaChiC_13.10.25/sched</Location>
   </Generator>
 
   <SandBox installer="ZIP">

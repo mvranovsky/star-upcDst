@@ -11,13 +11,12 @@ const bool runAnaV0 = false;
 const bool runAnaV0Mult = false;
 const bool runTofEff = false;
 const bool runTofEffMult = false;
-const bool runAnaJPsi = false;
+const bool runAnaJPsi = true;
 const bool runAnaJPSI = false;
 const bool runAnaGoodRun = false;
-const bool runEmbeddingJPsi = true;
+const bool runEmbeddingJPsi = false;
 const bool runAnaZeroBias = false;
 const bool runBemcEfficiency = false;
-const bool runAnaChiC = false;
 
 
 const bool runSysStudy = false;   // used in JPsi analyses for loose conditions
@@ -90,10 +89,6 @@ const TString nameOfAnaZeroBiasDir = "AnaZeroBiasPlots";
 const TString nameOfBemcEfficiencyTree = "recTreeBemcEfficiency";
 const std::bitset<16> BemcEfficiencyTreeBits = std::bitset<16>(std::string("0011000000001111"));
 const TString nameOfBemcEfficiencyDir = "BemcEfficiencyPlots";
-
-const TString nameOfAnaChiCTree = "recTreeAnaChiC";
-const std::bitset<16> AnaChiCTreeBits = std::bitset<16>(std::string("0011000000011111"));
-const TString nameOfAnaChiCDir = "AnaChiCPlots";
 
 
 const TString offsetFilePath = "/star/u/mvranovsk/star-upcDst/work/OffSetsRun17.list";

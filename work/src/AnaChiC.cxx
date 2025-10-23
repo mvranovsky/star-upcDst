@@ -1,19 +1,19 @@
-#include "BemcEfficiency.h"
+#include "AnaChiC.h"
 
 //_____________________________________________________________________________
-BemcEfficiency::BemcEfficiency(TFile *outFile): Ana(outFile){}
+AnaChiC::AnaChiC(TFile *outFile): Ana(outFile){}
 
-BemcEfficiency::~BemcEfficiency(){
+AnaChiC::~AnaChiC(){
    //if(mUtil) delete mUtil;
 }
 
-void BemcEfficiency::Make(){
+void AnaChiC::Make(){
 
    //trigger
-   hAnalysisFlow->Fill(BEALL);
-   if( !CheckTriggers(&triggerID, mUpcEvt, hTriggerBits) )
+   hAnalysisFlow->Fill(JPSIALL);
+   if( !CheckTriggers(&JPSItriggers, mUpcEvt, hTriggerBits) )
       return;
-   hAnalysisFlow->Fill(BETRIG);
+   hAnalysisFlow->Fill(JPSITRIG);
 
    SaveEventInfo(mUpcEvt);
 
@@ -25,7 +25,7 @@ void BemcEfficiency::Make(){
       return;
    }
 
-   hAnalysisFlow->Fill(BE1VTX);
+   hAnalysisFlow->Fill(JPSI1VTX);
 
 
    const StUPCVertex *vtx = mUpcEvt->getVertex(0);
@@ -38,8 +38,8 @@ void BemcEfficiency::Make(){
    unsigned int vertexID = vtx->getId();
 
    tpcCounter = 0;
-   tracksTOF.clear();
-
+   tracksBEMC.clear();
+   //central system good quality tracks + BEMC
    for (int iTrk = 0; iTrk < mUpcEvt->getNumberOfTracks(); ++iTrk){
       hTrackQualityFlow->Fill(1);
       const StUPCTrack *trk = mUpcEvt->getTrack(iTrk);
@@ -59,69 +59,58 @@ void BemcEfficiency::Make(){
 
       tpcCounter += 1;      
       
-      if( !trk->getFlag(StUPCTrack::kTof) )   continue;
+      if( !trk->getFlag(StUPCTrack::kBemc) )   continue;
 
       hTrackQualityFlow->Fill(7);
-      tracksTOF.push_back(iTrk);
+      tracksBEMC.push_back(iTrk);
    }
-   hNTracksTOF->Fill( tracksTOF.size() );
+   hNTracksBEMC->Fill( tracksBEMC.size() );
    hNTracksTpc->Fill(tpcCounter);
 
-   if(tracksTOF.size() != 2)   return;
+   if(tracksBEMC.size() != 2)   return;
    
-   hAnalysisFlow->Fill(BE2TOF);
-   const StUPCTrack* track1 = mUpcEvt->getTrack( tracksTOF[0] );
-   const StUPCTrack* track2 = mUpcEvt->getTrack( tracksTOF[1] );
+   hAnalysisFlow->Fill(JPSIBEMC);
+   const StUPCTrack* track1 = mUpcEvt->getTrack( tracksBEMC[0] );
+   const StUPCTrack* track2 = mUpcEvt->getTrack( tracksBEMC[1] );
 
    if(!track1 || !track2)   return;
 
-   // projection to BEMC
-
-   
-   if( !track1->getFlag(StUPCTrack::kBemcProj) )  return;
-   
-   if( !track2->getFlag(StUPCTrack::kBemcProj) )  return;
-   
-   
-   hAnalysisFlow->Fill(BEPROJECTION);
-
-
-   // delta dip angle
-   double deltaDip = deltaDipAngle(track1, track2);
-   hDeltaDipAngle->Fill(deltaDip);
-
-   //cout << "Delta dip angle: " << deltaDip << endl;
-
-   if( deltaDip > MAXDELTADIPANGLE )  return;
-   
-   hDeltaDipAngleCut->Fill(deltaDip);
-
-   hAnalysisFlow->Fill(BEDELTADIPANGLE);
-
    SaveBemcInfo(track1, 0);
    SaveBemcInfo(track2, 1);
-   mRecTree->setDeltaDipAngle(deltaDip, 0);  
    SaveVertexInfo(vtx,0);
 
    fillEtaVtxPlotsBefore(track1, track2, vtx->getPosZ());
 
-   if(abs(vtx->getPosZ()) > 30)  return;
 
+   /* skip for now when maximizing statistics
+   if(abs(vtx->getPosZ()) > VERTEXZRANGE)  return;
+   
    if(abs(track1->getEta()) > MAXETA || abs(track2->getEta()) > MAXETA) return;
-
+   
    // combined condition for eta and Vz (max eff)
-   //if(!IsGoodEtaTrack(track1, 0) || !IsGoodEtaTrack(track2, 0))  return;
+   if(!IsGoodEtaTrack(track1, 0) || !IsGoodEtaTrack(track2, 0))  return;
+   */
 
    fillEtaVtxPlotsAfter(track1, track2, vtx->getPosZ());
+   hAnalysisFlow->Fill(JPSIVTXZETA);
 
-   hAnalysisFlow->Fill(BEETAVTXZ);
+   // back to back
+   //if(!backToBack(track1, track2))   return;  // only interested in events we trigger on
+
+   if(backToBack(track1, track2)){
+      mRecTree->setIsBackToBack(1,0);
+   }else{
+      mRecTree->setIsBackToBack(-1,0);
+   }
+
+   hAnalysisFlow->Fill(JPSIBACKTOBACK);
 
    //PID
    fillNSigmaPlots(track1);
    fillNSigmaPlots(track2);
    if(!chiSquarePID(track1,track2))   return;
 
-   hAnalysisFlow->Fill(BEPID);
+   hAnalysisFlow->Fill(JPSIPID);
 
 
    // save info about tracks
@@ -134,13 +123,30 @@ void BemcEfficiency::Make(){
    SaveTrackInfo(track1,electron1, 0 );
    SaveTrackInfo(track2,electron2, 1);
 
-   // invariant mass cut
-   hInvMass->Fill(state.M());
-   if(state.M() > MAXINVMASS)  return;
-   hInvMassCut->Fill(state.M());
-
-   hAnalysisFlow->Fill(BEINVMASS);
    
+   if(!exactly2RPTracks())   return;
+
+   const StUPCRpsTrack *trackRPEast = mRpEvt->getTrack(mRpTrackIdVec_perSide[East][0]);
+   const StUPCRpsTrack *trackRPWest = mRpEvt->getTrack(mRpTrackIdVec_perSide[West][0]);
+   if(!trackRPEast || !trackRPWest){
+      cout << "No RP track found. Leaving event." << endl;
+      return;
+   }
+   
+   hAnalysisFlow->Fill(JPSI1RP);
+
+   SaveRPinfo(trackRPEast, East);
+   SaveRPinfo(trackRPWest, West);
+
+   /*
+   if(!fiducialVolume(trackRPEast, East) || !fiducialVolume(trackRPWest, West)){   
+      return;
+   }
+   */
+
+   hAnalysisFlow->Fill(JPSIRPFIDCUT);
+   
+   SaveMissingPtInfo(track1, track2, trackRPEast, trackRPWest);
    
    //Qtot
    double totQ = track1->getCharge() + track2->getCharge();
@@ -154,31 +160,31 @@ void BemcEfficiency::Make(){
    }
 
    if(DEBUG){
-      cout << "Finished BemcEfficiency::Make()" << endl;
+      cout << "Finished AnaChiC::Make()" << endl;
    }
 }
 
 
 
-void BemcEfficiency::Init(){
+void AnaChiC::Init(){
 
    mUtil = new Util();
 
 
    if( DEBUG )
-     cout<<"BemcEfficiency::Init() called"<<endl;
+     cout<<"AnaChiC::Init() called"<<endl;
 
    mOutFile->cd();
 
-   mRecTree = new RecTree(nameOfBemcEfficiencyTree, BemcEfficiencyTreeBits, true);
-   mOutFile->mkdir(nameOfBemcEfficiencyDir);
-   mOutFile->cd(nameOfBemcEfficiencyDir);
+   mRecTree = new RecTree(nameOfAnaChiCTree, AnaChiCTreeBits, true);
+   mOutFile->mkdir(nameOfAnaChiCDir);
+   mOutFile->cd(nameOfAnaChiCDir);
    loadCuts();
    
    
-   hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nBECuts-1, 1, nBECuts);
-   for(int tb=1; tb<nBECuts; ++tb) {
-     hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->bemcEfficiency(tb));
+   hAnalysisFlow = new TH1D("hAnalysisFlow", "CutsFlow", nJPSISelectionCuts-1, 1, nJPSISelectionCuts);
+   for(int tb=1; tb<nJPSISelectionCuts; ++tb) {
+     hAnalysisFlow->GetXaxis()->SetBinLabel(tb, mUtil->analysisJPSI(tb));
    }
 
    hTriggerBits = new TH1D("TriggerBits", "TriggerBits", nTriggers, -0.5, 16.5);
@@ -193,7 +199,7 @@ void BemcEfficiency::Init(){
    hTrackQualityFlow->GetXaxis()->SetBinLabel(3, TString::Format("DCA_{XY} < %.1f cm", MAXDCAXY));
    hTrackQualityFlow->GetXaxis()->SetBinLabel(4, TString::Format("N^{fit}_{hits} > %d", MINNHITSFIT));
    hTrackQualityFlow->GetXaxis()->SetBinLabel(5, TString::Format("N^{dE/dx}_{hits} > %d", MINNHITSDEDX));
-   hTrackQualityFlow->GetXaxis()->SetBinLabel(6, TString("TOF match"));
+   hTrackQualityFlow->GetXaxis()->SetBinLabel(6, TString("BEMC match"));
    
 
    hEta = new TH1D("hEta", "Pseudorapidity; #eta_{e}; counts", 60, -2, 2);
@@ -256,7 +262,16 @@ void BemcEfficiency::Init(){
    hRPcorrEast[1] = new TH2F("hRPcorrEast_fid","p_{y} vs p_{x} of proton in RP fiducial region (east);p_{x} [GeV];p_{y} [GeV]",  200, -0.7, 0.8, 150, -1, 1);
 
 
-   hNTracksTOF = new TH1D("hNTracksTOF", "Number of Tracks in TOF per event; Number of tracks in TOF; counts", 21, -0.5, 20.5);
+   hNTracksRP = new TH1D("hNTracksRP", "Number of Tracks in RPs per event; n_{tracks}^{RP} [-]; counts", 30, -0.5, 29.5);
+
+   hBranchRP = new TH1D("hBranchRP", "hBranchRP; detector branch; counts", 4,-0.5,3.5);
+   //detectors branch, EU=0, ED=1, WU=2, WD=3
+   hBranchRP->GetXaxis()->SetBinLabel(1, "East Up");
+   hBranchRP->GetXaxis()->SetBinLabel(2, "East Down");
+   hBranchRP->GetXaxis()->SetBinLabel(3, "West Up");
+   hBranchRP->GetXaxis()->SetBinLabel(4, "West Down");
+
+   hNTracksBEMC = new TH1D("hNTracksBEMC", "Number of Tracks in BEMC per event; Number of tracks in BEMC; counts", 21, -0.5, 20.5);
 
    hPt = new TH1D("hPt", "Transverse momentum of hadrons; p^{e}_{T} [GeV/c^{2}]; counts", 30, 0, 3);
    hPtCut = new TH1D("hPtCut", "hPtCut;p^{e}_{T} [GeV/c]; counts", 30, 0, 3);
@@ -277,41 +292,46 @@ void BemcEfficiency::Init(){
 
    hTotQ = new TH1D("hTotQ", "Total charge of pair; Q_{tot} [-]; counts", 3, -1.5, 1.5);
 
+   hNTracksTof = new TH1D("hNTracksTof", "hNTracksTof; Number of ToF tracks [-]; counts", 11, -0.5, 10.5);
+
    hNTracksTpc = new TH1D("hNTracksTpc", "hNTracksTpc; Number of TPC tracks [-]; counts", 26, -0.5, 25.5);
 
    hVtxZByFillNum = new TH1D("hVtxZByFillNum", "hVtxZByFillNum; V_{Z} [cm]; counts", 40, -200, 200);
-
-   hDeltaDipAngle = new TH1D("hDeltaDipAngle", "hDeltaDipAngle; #delta dip angle [rad]; counts", 50, 0, 0.05);
-
-   hDeltaDipAngleCut = new TH1D("hDeltaDipAngleCut", "hDeltaDipAngleCut; #delta dip angle [rad]; counts", 50, 0, 0.05);
-
-   hInvMass = new TH1D("hInvMass", "Invariant mass of pair; M_{ee} [GeV/c^{2}]; counts", 50, 0, 0.5);
-
-   hInvMassCut = new TH1D("hInvMassCut", "Invariant mass of pair after cut; M_{ee} [GeV/c^{2}]; counts", 50, 0, 0.5);
-
-   cout << "Finished BemcEfficiency::Init()" << endl;
+  
+   cout << "Finished AnaChiC::Init()" << endl;
 }
 
-void BemcEfficiency::loadCuts(){
+void AnaChiC::loadCuts(){
 
-   VERTEXZRANGE = vertexRange;
-   MINNHITSFIT = minNHitsFit;
-   MINNHITSDEDX = minNHitsDEdx;
-   MINDCAZ = minDcaZ;
-   MAXDCAZ = maxDcaZ;
-   MAXDCAXY = maxDcaXY;
-   MAXETA = maxEta;
-   MINPIDCHIPP = minPidChiPP;
-   MINPIDCHIPIPI = minPidChiPiPi;
-   MINPIDCHIKK = minPidChiKK;
-   MAXPIDCHIEE = maxPidChiEE; 
-   MAXDELTADIPANGLE = maxDeltaDipAngle;
-   MAXINVMASS = maxInvMass;
-
+   if(runSysStudy){
+      VERTEXZRANGE = vertexRangeLoose;
+      MINNHITSFIT = minNHitsFitLoose;
+      MINNHITSDEDX = minNHitsDEdxLoose;
+      MINDCAZ = minDcaZLoose;
+      MAXDCAZ = maxDcaZLoose;
+      MAXDCAXY = maxDcaXYLoose;
+      MAXETA = maxEtaLoose;
+      MINPIDCHIPP = minPidChiPP;
+      MINPIDCHIPIPI = minPidChiPiPi;
+      MINPIDCHIKK = minPidChiKK;
+      MAXPIDCHIEE = maxPidChiEELoose; 
+   }else{
+      VERTEXZRANGE = vertexRange;
+      MINNHITSFIT = minNHitsFit;
+      MINNHITSDEDX = minNHitsDEdx;
+      MINDCAZ = minDcaZ;
+      MAXDCAZ = maxDcaZ;
+      MAXDCAXY = maxDcaXY;
+      MAXETA = maxEta;
+      MINPIDCHIPP = minPidChiPP;
+      MINPIDCHIPIPI = minPidChiPiPi;
+      MINPIDCHIKK = minPidChiKK;
+      MAXPIDCHIEE = maxPidChiEE; 
+   }
 }
 
 
-bool BemcEfficiency::goodQualityTrack(const StUPCTrack *trk){
+bool AnaChiC::goodQualityTrack(const StUPCTrack *trk){
 
 
    hTrackQualityFlow->Fill(2);
@@ -332,8 +352,32 @@ bool BemcEfficiency::goodQualityTrack(const StUPCTrack *trk){
 
 }
 
+bool AnaChiC::sameVertex(const StUPCTrack *trk1,const StUPCTrack *trk2){
+   int vtx1ID, vtx2ID;
+   vtx1ID = trk1->getVertexId();
+   vtx2ID = trk2->getVertexId();
 
-void BemcEfficiency::fillTrackQualityCuts(const StUPCTrack* trk){
+   const StUPCVertex *vtx = mUpcEvt->getVertex(vtx1ID);
+
+   if(!vtx)
+      return false;
+
+   if(vtx1ID != vtx2ID)
+      return false;
+
+   // additional condition on DCA XY
+   if(trk1->getDcaXY() > maxDcaXY || trk2->getDcaXY() > maxDcaXY)
+      return false;
+   
+   // additional condition on DCA Z
+   if((trk1->getDcaZ() < minDcaZ || trk1->getDcaZ() > maxDcaZ) || (trk2->getDcaZ() < minDcaZ || trk2->getDcaZ() > maxDcaZ) )
+      return false;
+
+   return true;
+}
+
+
+void AnaChiC::fillTrackQualityCuts(const StUPCTrack* trk){
 
    hEtaBemc->Fill( trk->getBemcEta() );
    hEta->Fill(trk->getEta() );
@@ -345,7 +389,7 @@ void BemcEfficiency::fillTrackQualityCuts(const StUPCTrack* trk){
    hDcaXY->Fill(trk->getDcaXY());
 }
 
-void BemcEfficiency::fillTrackQualityCutsAfter(const StUPCTrack* trk){
+void AnaChiC::fillTrackQualityCutsAfter(const StUPCTrack* trk){
 
    hEtaBemcCut->Fill( trk->getBemcEta() );
    hEtaCut->Fill(trk->getEta() );
@@ -358,7 +402,7 @@ void BemcEfficiency::fillTrackQualityCutsAfter(const StUPCTrack* trk){
 
 }
 
-bool BemcEfficiency::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
+bool AnaChiC::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2){
 
    Double_t chi_pp = pow(trk1->getNSigmasTPCProton(),2) + pow(trk2->getNSigmasTPCProton(),2);
    Double_t chi_ee = pow(trk1->getNSigmasTPCElectron(),2) + pow(trk2->getNSigmasTPCElectron(),2);
@@ -383,18 +427,18 @@ bool BemcEfficiency::chiSquarePID(const StUPCTrack *trk1, const StUPCTrack *trk2
    if(chi_kk < MINPIDCHIKK)  return false;
    */
    
-  
-  if(chi_ee > MAXPIDCHIEE)  return false;
+   
+   hNSigmaEE2->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());
+   hNSigmaPP2->Fill(trk1->getNSigmasTPCProton(), trk2->getNSigmasTPCProton());
+   hNSigmaKK2->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
+   hNSigmaPiPi2->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
 
-  hNSigmaEE2->Fill(trk1->getNSigmasTPCElectron(), trk2->getNSigmasTPCElectron());
-  hNSigmaPP2->Fill(trk1->getNSigmasTPCProton(), trk2->getNSigmasTPCProton());
-  hNSigmaKK2->Fill(trk1->getNSigmasTPCKaon(), trk2->getNSigmasTPCKaon());
-  hNSigmaPiPi2->Fill(trk1->getNSigmasTPCPion(), trk2->getNSigmasTPCPion());
+   if(chi_ee > MAXPIDCHIEE)  return false;
 
    return true;
 }
 
-void BemcEfficiency::fillNSigmaPlots(const StUPCTrack *trk){
+void AnaChiC::fillNSigmaPlots(const StUPCTrack *trk){
     Double_t nSigmaPion, nSigmaProton, nSigmaKaon, nSigmaElectron;
     nSigmaPion = trk->getNSigmasTPCPion();
     nSigmaProton = trk->getNSigmasTPCProton();
@@ -418,7 +462,57 @@ void BemcEfficiency::fillNSigmaPlots(const StUPCTrack *trk){
 }
 
 
-void BemcEfficiency::fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+bool AnaChiC::exactly2RPTracks(){
+   //1 RP track condition  
+   AnaRpTracks(mRpEvt);
+
+   double nRpTracks_perSide[nSides] = {0,0};
+   for (unsigned int iSide = 0; iSide < nSides; ++iSide)
+   {
+      for (unsigned int iTrck = 0; iTrck < mRpTrackIdVec_perSide[iSide].size(); ++iTrck)
+      {
+         StUPCRpsTrack* trkRP = mRpEvt->getTrack(mRpTrackIdVec_perSide[iSide][iTrck]);
+         if(!trkRP){
+            cout << "Incorrect RP track. Leaving this event." << endl;
+            return false;
+         }
+
+         nRpTracks_perSide[iSide]++;
+      }
+   }
+
+   if (!(nRpTracks_perSide[East] == 1 && nRpTracks_perSide[West] == 1))
+      return false;
+
+   return true;
+}
+
+bool AnaChiC::fiducialVolume(const StUPCRpsTrack* trackRP, int side){
+   hRPcorr[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   if(side == East){
+      hRPcorrEast[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }else{
+      hRPcorrWest[0]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }
+
+   //fiducial volume condition
+   if( !RPInFidRange(trackRP->pVec().X(), trackRP->pVec().Y()) )
+      return false;
+   
+   hRPcorr[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   if(side == East){
+      hRPcorrEast[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }else{
+      hRPcorrWest[1]->Fill(trackRP->pVec().X(), trackRP->pVec().Y());
+   }
+   hBranchRP->Fill( trackRP->branch() );
+
+   return true;
+
+}
+
+
+void AnaChiC::fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
 
    Double_t eta2 = trk2->getEta();
    Double_t phi2 = trk2->getPhi();
@@ -439,7 +533,7 @@ void BemcEfficiency::fillEtaVtxPlotsBefore(const StUPCTrack *trk1, const StUPCTr
 
 }
 
-void BemcEfficiency::fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
+void AnaChiC::fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTrack *trk2, double posZ){
 
    Double_t eta2 = trk2->getEta();
    Double_t phi2 = trk2->getPhi();
@@ -457,41 +551,4 @@ void BemcEfficiency::fillEtaVtxPlotsAfter(const StUPCTrack *trk1, const StUPCTra
 
    hEtaCut->Fill(eta1);
    hEtaCut->Fill(eta2);
-}
-
-bool BemcEfficiency::isProjectedToBemc(const StUPCTrack *trk){
-
-   // first check pseudorapidity
-   if( abs(trk->getEta()) > MAXETA ) return false;
-
-   double radius = 220.0;
-
-   StPicoHelix *helix = new StPicoHelix(trk->getCurvature(), trk->getDipAngle(), trk->getPhase(), trk->getOrigin() );
-   if(!helix) {
-      cerr << "ERROR: Could not create helix from track parameters!" << endl;
-      return false;
-   }
-
-   pair<double,double> pathLength = helix->pathLength(radius);
-   if(pathLength.first < 0) {
-      cerr << "ERROR: path length is negative!" << endl;
-      return false;
-   }
-
-   TVector3 posAtRadius = helix->at(pathLength.first);
-
-   double radiusCheck = sqrt( posAtRadius.X()*posAtRadius.X() + posAtRadius.Y()*posAtRadius.Y() );
-   if( fabs(radiusCheck - radius) > 1.0 ) {
-      cerr << "ERROR: radius check failed! Calculated radius: " << radiusCheck << endl;
-      return false;
-   }
-
-   // check z position whether it is inside the BEMC acceptance
-   if( fabs(posAtRadius.Z()) > 200.0 ) {
-      cerr << "ERROR: z position check failed! Calculated z position: " << posAtRadius.Z() << endl;
-      return false;
-   }
-
-   return true;
-
 }

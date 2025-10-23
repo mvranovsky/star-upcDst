@@ -14,10 +14,9 @@ const bool runTofEffMult = false;
 const bool runAnaJPsi = false;
 const bool runAnaJPSI = false;
 const bool runAnaGoodRun = false;
-const bool runEmbeddingJPsi = true;
+const bool runEmbeddingJPsi = false;
 const bool runAnaZeroBias = false;
-const bool runBemcEfficiency = false;
-const bool runAnaChiC = false;
+const bool runBemcEfficiency = true;
 
 
 const bool runSysStudy = false;   // used in JPsi analyses for loose conditions
@@ -26,7 +25,7 @@ const bool runMCAna = false;   // used for TofEff and V0
 const bool DEBUG = false;
 const bool V0Control = false;
 const bool analysisWithRPs = false;
-const bool runCustomBemcSimulator = true;   // override BEMC efficiency from embedding
+const bool runCustomBemcSimulator = false;   // override BEMC efficiency from embedding
 
 
 // 570702 RP_UPC // 570712 RP_UPC // 570703 RP_SDT // 570709 RP_ET // 570719 RP_ET // 570701 RP_CPT2 // 570711 RP_CPT2 
@@ -90,10 +89,6 @@ const TString nameOfAnaZeroBiasDir = "AnaZeroBiasPlots";
 const TString nameOfBemcEfficiencyTree = "recTreeBemcEfficiency";
 const std::bitset<16> BemcEfficiencyTreeBits = std::bitset<16>(std::string("0011000000001111"));
 const TString nameOfBemcEfficiencyDir = "BemcEfficiencyPlots";
-
-const TString nameOfAnaChiCTree = "recTreeAnaChiC";
-const std::bitset<16> AnaChiCTreeBits = std::bitset<16>(std::string("0011000000011111"));
-const TString nameOfAnaChiCDir = "AnaChiCPlots";
 
 
 const TString offsetFilePath = "/star/u/mvranovsk/star-upcDst/work/OffSetsRun17.list";

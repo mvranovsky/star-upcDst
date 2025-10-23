@@ -154,6 +154,19 @@ Util::Util(): mSpeedOfLight(299792458), mBeamMomentum(254.867), mPi(3.1415926535
    mJPSICutName[JPSIRPFIDCUT] = TString("Fiducial RP cut");
    mJPSICutName[JPSIQTOT] = TString("Q_{tot} = 0");
 
+   mCHICCutName = new TString[nCHICSelectionCuts];
+   mCHICCutName[CHICALL] = TString("All");
+   mCHICCutName[CHICTRIG] = TString("J/#psi trigger");
+   mCHICCutName[CHIC1VTX] = TString("1 Vertex");
+   mCHICCutName[CHICBEMC] = TString("2 BEMC tracks");
+   mCHICCutName[CHICVTXZETA] = TString("V_{Z} - #eta cut");
+   mCHICCutName[CHICBACKTOBACK] = TString("Back-to-back");
+   mCHICCutName[CHICPID] = TString("PID");
+   mCHICCutName[CHIC2RP] = TString("2 RP tracks");
+   mCHICCutName[CHICRPFIDCUT] = TString("Fiducial RP cut");
+   mCHICCutName[CHICQTOT   ] = TString("Q_{tot} = 0");
+
+
    mJPSI2CutName = new TString[nJPSI2SelectionCuts];
    mJPSI2CutName[JPSI2ALL] = TString("All");
    mJPSI2CutName[JPSI2TRIG] = TString("J/#Psi trigger");

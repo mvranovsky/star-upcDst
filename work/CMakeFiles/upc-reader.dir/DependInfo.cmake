@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/star/u/mvranovsk/star-upcDst/work/src/Ana.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/Ana.cxx.o"
+  "/star/u/mvranovsk/star-upcDst/work/src/AnaChiC.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/AnaChiC.cxx.o"
   "/star/u/mvranovsk/star-upcDst/work/src/AnaGoodRun.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/AnaGoodRun.cxx.o"
   "/star/u/mvranovsk/star-upcDst/work/src/AnaJPSI.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/AnaJPSI.cxx.o"
   "/star/u/mvranovsk/star-upcDst/work/src/AnaJPsi.cxx" "/star/u/mvranovsk/star-upcDst/work/CMakeFiles/upc-reader.dir/src/AnaJPsi.cxx.o"
